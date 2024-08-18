@@ -22,15 +22,20 @@ ifneq ($(IN_NIX_SHELL),undefined)
     OBJCOPY = aarch64-unknown-none-elf-objcopy
 endif
 
-#UNAME_S := $(shell uname -s)
-#ifeq ($(UNAME_S),Linux)
-#    CCFLAGS += -D LINUX
-#endif
-#ifeq ($(UNAME_S),Darwin)
-#    CCFLAGS += -D OSX
-#endif
+# default clean for windows
+RM = del
 
-# default RPI3
+UNAME_S := $(shell uname -s)
+# linux clean
+ifeq ($(UNAME_S),Linux)
+	RM = rm
+endif
+# macOS clean
+ifeq ($(UNAME_S),Darwin)
+	RM = rm
+endif
+
+# default compiles to RPI4
 all: clean $(BUILD_DIR)/kernel8.img
 
 target_rpi3: GCCFLAGS += -DRPI3
@@ -53,6 +58,4 @@ $(BUILD_DIR)/kernel8.img: $(BUILD_DIR)/boot.o $(LIB_OBJ) $(OBJ)
 	aarch64-unknown-none-elf-objcopy -O binary $(BUILD_DIR)/kernel8.elf kernel8.img
 
 clean:
-	rm -rf $(BUILD_DIR) 
-	mkdir $(BUILD_DIR) 
-
+	-$(RM) $(BUILD_DIR)/kernel8.elf $(BUILD_DIR)/*.o *.img
