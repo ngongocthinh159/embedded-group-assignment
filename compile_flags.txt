@@ -1,0 +1,6 @@
+-Wall
+-O2
+-ffreestanding
+-nostdinc
+-nostdlib
+-Iinclude
