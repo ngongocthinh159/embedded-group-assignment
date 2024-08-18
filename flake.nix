@@ -51,7 +51,10 @@
 
           # libraries needed for the host platform
           buildInputs = [];
-        }) {};
+
+          packages = with pkgs; [qemu];
+        }) {
+      };
     });
   };
 }
