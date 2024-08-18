@@ -1,13 +1,18 @@
-/* Raspberry Pi's peripheral physical address (MMIO_BASE) is 0xFE000000 in RPI4,
-0x3F000000 in RPI3
---> Select correct option to set the value properly
-*/
-#ifdef RPI3 // RPI3
+/**
+ * Peripheral physical address:
+ * - 0xFE000000 for RPI4 (Low Peripheral mode)
+ * - 0x3F000000 for EPI3
+ */
+#ifdef RPI3
 #define MMIO_BASE 0x3F000000
-#else // RPI4
+#else
 #define MMIO_BASE 0xFE000000
 #endif
-// Define GPIO Registers based on their addresses
+
+/**
+ * GPIO Registers
+ * https://datasheets.raspberrypi.com/bcm2711/bcm2711-peripherals.pdf#%5B%7B%22num%22%3A69%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C115%2C841.89%2Cnull%5D
+ */
 #define GPFSEL0 (*(volatile unsigned int *)(MMIO_BASE + 0x00200000))
 #define GPFSEL1 (*(volatile unsigned int *)(MMIO_BASE + 0x00200004))
 #define GPFSEL2 (*(volatile unsigned int *)(MMIO_BASE + 0x00200008))
@@ -27,6 +32,9 @@
 #define GPPUDCLK0 (*(volatile unsigned int *)(MMIO_BASE + 0x00200098))
 #define GPPUDCLK1 (*(volatile unsigned int *)(MMIO_BASE + 0x0020009C))
 
+/**
+ * Unsigned integer type definitions
+ */
 typedef unsigned char uint8_t;
 typedef unsigned short int uint16_t;
 typedef unsigned int uint32_t;

@@ -1,6 +1,7 @@
 #include "lib/mbox.h"
 #include "lib/gpio.h"
 #include "lib/uart.h"
+
 /* Mailbox Data Buffer (each element is 32-bit)*/
 /*
  * The keyword attribute allows you to specify special attributes
