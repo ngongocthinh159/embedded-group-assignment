@@ -7,10 +7,19 @@ SRC_DIR = src
 BUILD_DIR = build
 LIB_DIR = lib
 
-SRC = $(wildcard $(SRC_DIR)/*.c)
+# library
 LIB = $(wildcard $(LIB_DIR)/*.c)
-OBJ = $(SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 LIB_OBJ = $(LIB:$(LIB_DIR)/%.c=$(BUILD_DIR)/%.o)
+
+# main kernel
+SRC = $(wildcard $(SRC_DIR)/*.c)
+OBJ = $(SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
+
+UTIL = $(wildcard $(SRC_DIR)/util/*c)
+UTIL_OBJ = $(UTIL:$(SRC_DIR)/util/%.c=$(BUILD_DIR)/%.o)
+
+CLI = $(wildcard $(SRC_DIR)/cli/*c)
+CLI_OBJ = $(CLI:$(SRC_DIR)/cli/%.c=$(BUILD_DIR)/%.o)
 
 GCCFLAGS = -Wall -O2 -ffreestanding -nostdinc -nostdlib -Iinclude
 
@@ -53,9 +62,18 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 $(BUILD_DIR)/%.o: $(LIB_DIR)/%.c
 	aarch64-unknown-none-elf-gcc $(GCCFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/kernel8.img: $(BUILD_DIR)/boot.o $(LIB_OBJ) $(OBJ)
-	aarch64-unknown-none-elf-ld -nostdlib $(BUILD_DIR)/boot.o $(LIB_OBJ) $(OBJ) -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
+$(BUILD_DIR)/%.o: $(SRC_DIR)/util/%.c
+	aarch64-unknown-none-elf-gcc $(GCCFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/cli/%.c
+	aarch64-unknown-none-elf-gcc $(GCCFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/kernel8.img: $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(OBJ)
+	aarch64-unknown-none-elf-ld -nostdlib $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(OBJ) -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
 	aarch64-unknown-none-elf-objcopy -O binary $(BUILD_DIR)/kernel8.elf kernel8.img
 
 clean:
 	-$(RM) $(BUILD_DIR)/kernel8.elf $(BUILD_DIR)/*.o *.img
+
+run:
+	qemu-system-aarch64 -M raspi4b -kernel kernel8.img -serial null -serial stdio
