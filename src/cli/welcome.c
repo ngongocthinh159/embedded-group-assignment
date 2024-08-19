@@ -33,5 +33,10 @@ char text[] =
 
 int welcome() {
   println(text);
+  println("");
+  println("");
+  println("Group .. - EEET2490 - Embedded System");
+  println("");
+  println("");
   return 0;
 }

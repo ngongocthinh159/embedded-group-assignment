@@ -18,6 +18,7 @@
  *
  */
 volatile unsigned int __attribute__((aligned(16))) mBuf[36];
+
 /**
  * Read from the mailbox
  */
@@ -48,6 +49,7 @@ void mailbox_send(uint32_t msg, unsigned char channel) {
   // send the message
   MBOX1_WRITE = msg;
 }
+
 /**
  * Make a mailbox call. Returns 0 on failure, non-zero on success
  */

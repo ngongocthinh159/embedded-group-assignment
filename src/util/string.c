@@ -3,21 +3,29 @@ int strcmp(const char *str1, const char *str2) {
   const unsigned char *p2 = (const unsigned char *)str2;
 
   while (*p1 != '\0') {
-    if (*p2 == '\0')
+    if (*p2 == '\0') {
       return 1;
-    if (*p2 > *p1)
+    }
+    if (*p2 > *p1) {
       return -1;
-    if (*p1 > *p2)
+    }
+    if (*p1 > *p2) {
       return 1;
+    }
 
     p1++;
     p2++;
   }
 
-  if (*p2 != '\0')
+  if (*p2 != '\0') {
     return -1;
+  }
 
   return 0;
+}
+
+int str_equal(const char *str1, const char *str2) {
+  return strcmp(str1, str2) == 0;
 }
 
 char push(char *str, char value) {

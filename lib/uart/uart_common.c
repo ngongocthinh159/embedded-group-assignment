@@ -1,6 +1,9 @@
 #include "../../include/lib/uart.h"
 #include "../../include/lib/mbox.h"
 #include "../../include/lib/gpio.h"
+#include "../../include/lib/stack.h"
+
+int new_line_received = 0;
 
 // New function: Check and return if no new character, don't wait
 // Usage: unsigned char c = uart_getc_non_block()
@@ -11,6 +14,45 @@ unsigned char uart_getc_non_block()
 	if (uart_isReadByteReady())
 		ch = uart_getc();
 	return ch;
+}
+
+void uart_scanning() {
+	char ch = uart_getc_non_block();
+	if (ch != 0) {
+		if (ch == '\n') {
+			new_line_received = 1;
+			uart_sendc(ch);
+		} else if (ch == 127) { // DEL
+			int pop_success = st_pop();
+			if (pop_success) {
+				uart_puts("\b \b");
+			}
+		} else {
+			int push_success = st_push(ch);
+			if (push_success) {
+				uart_sendc(ch);
+			} else {
+				// TODO: when stack buffer is full might do something..
+			}
+		}
+	}
+}
+
+int is_there_new_line() {
+	return new_line_received;
+}
+
+// Flush all chars inside stack buffer into input buffer
+// AND reset the stack
+void get_line(char *buffer) {
+	new_line_received = 0; // reset
+	char *saved_buffer = get_buffer();
+	for (int i = 0; i < st_cnt(); i++) {
+		buffer[i] = saved_buffer[i];
+	}
+	buffer[st_cnt()] = '\0';
+
+	st_reset_buffer();
 }
 
 /**

@@ -1,0 +1,1 @@
+#define CMD_VIDEO_PLAYER "playvideo"

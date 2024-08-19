@@ -177,3 +177,6 @@ unsigned char uart_getc_non_block();
 void uart_puts(char *s);
 void uart_hex(unsigned int num);
 void uart_dec(int num);
+void uart_scanning();
+int is_there_new_line();
+void get_line(char *buffer);
