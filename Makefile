@@ -84,10 +84,6 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 $(BUILD_DIR)/%.o: $(LIB_DIR)/%.c
 	$(GCC) $(GCCFLAGS) -c $< -o $@
 
-# compile uart
-$(BUILD_DIR)/uart.o:
-	$(GCC) $(GCCFLAGS) -c $(if $(filter 1,$(UART1)),$(LIB_DIR)/uart/uart1.c,$(LIB_DIR)/uart/uart0.c) -o $@
-
 # compile util
 $(BUILD_DIR)/%.o: $(SRC_DIR)/util/%.c
 	$(GCC) $(GCCFLAGS) -c $< -o $@
@@ -97,8 +93,8 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/cli/%.c
 	$(GCC) $(GCCFLAGS) -c $< -o $@
 
 # build final image
-$(BUILD_DIR)/kernel8.img: $(BUILD_DIR)/boot.o $(LIB_OBJ) $(BUILD_DIR)/uart.o $(UTIL_OBJ) $(CLI_OBJ) $(OBJ)
-	$(LD) -nostdlib $(BUILD_DIR)/boot.o $(LIB_OBJ) $(BUILD_DIR)/uart.o $(UTIL_OBJ) $(CLI_OBJ) $(OBJ) -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
+$(BUILD_DIR)/kernel8.img: $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(OBJ)
+	$(LD) -nostdlib $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(OBJ) -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
 	$(OBJCOPY) -O binary $(BUILD_DIR)/kernel8.elf kernel8.img
 	@echo build successfully for $(if $(filter 1,$(RPI4)),RPI4,RPI3) $(if $(filter 1,$(UART1)),UART1,UART0)
 

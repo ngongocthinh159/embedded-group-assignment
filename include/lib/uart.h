@@ -2,21 +2,7 @@
 
 #include "./gpio.h"
 
-/* Auxilary mini UART (UART1) registers */
-#define AUX_ENABLE      (* (volatile unsigned int*)(MMIO_BASE+0x00215004))
-#define AUX_MU_IO       (* (volatile unsigned int*)(MMIO_BASE+0x00215040))
-#define AUX_MU_IER      (* (volatile unsigned int*)(MMIO_BASE+0x00215044))
-#define AUX_MU_IIR      (* (volatile unsigned int*)(MMIO_BASE+0x00215048))
-#define AUX_MU_LCR      (* (volatile unsigned int*)(MMIO_BASE+0x0021504C))
-#define AUX_MU_MCR      (* (volatile unsigned int*)(MMIO_BASE+0x00215050))
-#define AUX_MU_LSR      (* (volatile unsigned int*)(MMIO_BASE+0x00215054))
-#define AUX_MU_MSR      (* (volatile unsigned int*)(MMIO_BASE+0x00215058))
-#define AUX_MU_SCRATCH  (* (volatile unsigned int*)(MMIO_BASE+0x0021505C))
-#define AUX_MU_CNTL     (* (volatile unsigned int*)(MMIO_BASE+0x00215060))
-#define AUX_MU_STAT     (* (volatile unsigned int*)(MMIO_BASE+0x00215064))
-#define AUX_MU_BAUD     (* (volatile unsigned int*)(MMIO_BASE+0x00215068))
-
-/* UART0 */
+//-------------------------UART0-------------------------
 /* PL011 UART (UART0) registers */
 #define UART0_BASE	(MMIO_BASE + 0x201000)
 
@@ -165,6 +151,23 @@
 /* TDR = Test Data Register */
 #define UART0_TDR	(* (volatile unsigned int*)(UART0_BASE + 0x8C))
 
+
+//-------------------------UART1-------------------------
+/* Auxilary mini UART (UART1) registers */
+#define AUX_ENABLE      (* (volatile unsigned int*)(MMIO_BASE+0x00215004))
+#define AUX_MU_IO       (* (volatile unsigned int*)(MMIO_BASE+0x00215040))
+#define AUX_MU_IER      (* (volatile unsigned int*)(MMIO_BASE+0x00215044))
+#define AUX_MU_IIR      (* (volatile unsigned int*)(MMIO_BASE+0x00215048))
+#define AUX_MU_LCR      (* (volatile unsigned int*)(MMIO_BASE+0x0021504C))
+#define AUX_MU_MCR      (* (volatile unsigned int*)(MMIO_BASE+0x00215050))
+#define AUX_MU_LSR      (* (volatile unsigned int*)(MMIO_BASE+0x00215054))
+#define AUX_MU_MSR      (* (volatile unsigned int*)(MMIO_BASE+0x00215058))
+#define AUX_MU_SCRATCH  (* (volatile unsigned int*)(MMIO_BASE+0x0021505C))
+#define AUX_MU_CNTL     (* (volatile unsigned int*)(MMIO_BASE+0x00215060))
+#define AUX_MU_STAT     (* (volatile unsigned int*)(MMIO_BASE+0x00215064))
+#define AUX_MU_BAUD     (* (volatile unsigned int*)(MMIO_BASE+0x00215068))
+
+//-------------------------Common-------------------------
 /* Function prototypes */
 void uart_init();
 void uart_sendc(char c);

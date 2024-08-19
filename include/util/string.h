@@ -1,3 +1,5 @@
+#pragma once
+
 int strcmp(char *str1, char *str2);
 
 char push(char *str, char value);
