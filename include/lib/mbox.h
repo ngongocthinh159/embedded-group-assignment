@@ -1,4 +1,6 @@
-#include "gpio.h"
+#pragma once
+
+#include "./gpio.h"
 
 /**
  * Properly aligned buffer

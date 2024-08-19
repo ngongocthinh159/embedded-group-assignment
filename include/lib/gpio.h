@@ -1,3 +1,5 @@
+#pragma once
+
 /**
  * Peripheral physical address:
  * - 0xFE000000 for RPI4 (Low Peripheral mode)
@@ -28,9 +30,17 @@
 #define GPEDS1 (*(volatile unsigned int *)(MMIO_BASE + 0x00200044))
 #define GPHEN0 (*(volatile unsigned int *)(MMIO_BASE + 0x00200064))
 #define GPHEN1 (*(volatile unsigned int *)(MMIO_BASE + 0x00200068))
-#define GPPUD (*(volatile unsigned int *)(MMIO_BASE + 0x00200094))
-#define GPPUDCLK0 (*(volatile unsigned int *)(MMIO_BASE + 0x00200098))
-#define GPPUDCLK1 (*(volatile unsigned int *)(MMIO_BASE + 0x0020009C))
+
+//RBP3 only
+#define GPPUD           (* (volatile unsigned int*)(MMIO_BASE+0x00200094))
+#define GPPUDCLK0       (* (volatile unsigned int*)(MMIO_BASE+0x00200098))
+#define GPPUDCLK1       (* (volatile unsigned int*)(MMIO_BASE+0x0020009C))
+
+//RBP4 only
+#define GPIO_PUP_PDN_CNTRL_REG0    (* (volatile unsigned int*)(MMIO_BASE+0x002000E4))
+#define GPIO_PUP_PDN_CNTRL_REG1    (* (volatile unsigned int*)(MMIO_BASE+0x002000E8))
+#define GPIO_PUP_PDN_CNTRL_REG2    (* (volatile unsigned int*)(MMIO_BASE+0x002000EC))
+#define GPIO_PUP_PDN_CNTRL_REG3    (* (volatile unsigned int*)(MMIO_BASE+0x002000F0))
 
 /**
  * Unsigned integer type definitions
