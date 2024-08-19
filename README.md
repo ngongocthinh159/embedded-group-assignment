@@ -2,7 +2,7 @@
 
 This project by default compiles for Raspberry Pi 4 with UART1.
 
-Alternatively, these are different commands for Raspberry Pi 3 and UART0:"
+Alternatively, these are different commands for Raspberry Pi 3 and UART0:
 
 ```sh
 make r3_u0
