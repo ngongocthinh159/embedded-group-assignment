@@ -14,6 +14,9 @@ void main()
   // set up serial console
   uart_init();
 
+  // set up framebuffer
+  framebf_init(1920, 1080, 1920, 1080, 0, 0);
+
   clrscr();
   welcome();
   print_prefix();
