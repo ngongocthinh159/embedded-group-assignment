@@ -9,7 +9,7 @@
 char *OS_NAME = "os_name";
 char *GROUP_NAME = "6";
 
-int current_mode = CLI;
+volatile int current_mode = CLI;
 
 int welcome()
 {
@@ -19,7 +19,6 @@ int welcome()
   print("Group ");
   print(GROUP_NAME);
   println(" - EEET2490 - Embedded System");
-  println("");
   println("");
   return 0;
 }
@@ -31,6 +30,12 @@ void print_prefix()
 }
 
 extern int current_mode; // mode switching in kernel.c
+
+void _handle_internal() {
+  if (str_equal(command, CMD_HELP)) {
+    // do?
+  }
+}
 
 void handle_cli_mode()
 {
@@ -48,6 +53,7 @@ void handle_cli_mode()
       print("Command received: ");
       println(command);
 
+      // flow control
       if (str_equal(command, CMD_SWITCH_TO_VIDEO_PLAYER_MODE))
       {
         switch_to_video_player_mode();
@@ -58,6 +64,7 @@ void handle_cli_mode()
       }
 
       // handle command in cli mode
+      _handle_internal();
 
       print_prefix();
     }

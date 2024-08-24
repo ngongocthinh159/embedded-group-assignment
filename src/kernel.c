@@ -14,7 +14,7 @@ void main()
   uart_init();
 
   // set up framebuffer
-  framebf_init(1920, 1080, 1920, 1080, 0, 0);
+  framebf_init(1024, 768, 1024, 768, 0, 0);
 
   clrscr();
   welcome();

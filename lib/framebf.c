@@ -3,6 +3,7 @@
 #include "lib/mbox.h"
 #include "lib/uart.h"
 #include "lib/math.h"
+#include "lib/timer.h"
 
 // Use RGBA32 (32 bits for each pixel)
 #define COLOR_DEPTH 32
@@ -378,5 +379,31 @@ void drawLCircle(int center_x, int center_y, int radius, unsigned int attr, int 
 
         drawPixelARGB32(left_x, y, attr);
         drawPixelARGB32(right_x, y, attr);
+    }
+}
+
+// example usage
+// img: unsigned long img_name[] = {0x1, 0x2, 0x1, 0x2};
+// drawImage(img_name, 0, 0, 2, 2);
+void drawImage(const unsigned long *img, int x, int y, int img_pixels_width, int img_pixels_height) {
+    for (int cur_y = y, i = 0; cur_y < y + img_pixels_height; cur_y++, i++) {
+        for (int cur_x = x, j = 0; cur_x < x + img_pixels_width; cur_x++, j++) {
+            if (0 <= cur_x && cur_x < width && 0 <= cur_y && cur_y < height) {
+                drawPixelARGB32(cur_x, cur_y, img[img_pixels_width*i + j]);
+            }
+        }
+    }
+}
+
+// example usage
+// img 1: unsigned long img_1[] = {0x1, 0x2, 0x1, 0x2};
+// img 2: unsigned long img_2[] = {0x1, 0x2, 0x1, 0x2};
+// video: const unsigned long* video_array = {img_1, img_2};
+// drawVideo(video_array, 0, 0, 2, 2, 2);
+void drawVideo(const unsigned long **video, int x, int y, int video_pixels_width, int video_pixels_height, int video_length) {
+    for (int i = 0; i < video_length; i++) {
+        set_wait_timer(1, 200);
+        drawImage(video[i], x, y, video_pixels_width, video_pixels_height);
+        set_wait_timer(0, 200);
     }
 }
