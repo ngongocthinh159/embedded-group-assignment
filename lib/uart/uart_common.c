@@ -1,7 +1,8 @@
-#include "../../include/lib/uart.h"
-#include "../../include/lib/mbox.h"
-#include "../../include/lib/gpio.h"
-#include "../../include/lib/stack.h"
+#include "lib/uart.h"
+#include "lib/mbox.h"
+#include "lib/gpio.h"
+#include "lib/stack.h"
+#include "lib/keyboard.h"
 
 int new_line_received = 0;
 
@@ -19,10 +20,11 @@ unsigned char uart_getc_non_block()
 void uart_scanning() {
 	char ch = uart_getc_non_block();
 	if (ch != 0) {
-		if (ch == '\n') {
+		if (ch == ENTER || ch == ESC) {
 			new_line_received = 1;
-			uart_sendc(ch);
-		} else if (ch == 127) { // DEL
+			
+			uart_sendc('\n');
+		} else if (ch == DEL) { // DEL
 			int pop_success = st_pop();
 			if (pop_success) {
 				uart_puts("\b \b");

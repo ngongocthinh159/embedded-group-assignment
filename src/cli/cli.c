@@ -6,6 +6,7 @@
 #include "cli/welcome_text.h"
 
 char *OS_NAME = "os_name";
+char *GROUP_NAME = "6";
 
 int current_mode = CLI;
 
@@ -14,7 +15,9 @@ int welcome()
   println(welcome_text);
   println("");
   println("");
-  println("Group .. - EEET2490 - Embedded System");
+  print("Group ");
+  print(GROUP_NAME);
+  println(" - EEET2490 - Embedded System");
   println("");
   println("");
   return 0;
