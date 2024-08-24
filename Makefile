@@ -21,6 +21,12 @@ UTIL_OBJ = $(UTIL:$(SRC_DIR)/util/%.c=$(BUILD_DIR)/%.o)
 CLI = $(wildcard $(SRC_DIR)/cli/*c)
 CLI_OBJ = $(CLI:$(SRC_DIR)/cli/%.c=$(BUILD_DIR)/%.o)
 
+VIDEO_PLAYER = $(wildcard $(SRC_DIR)/video-player/*c)
+VIDEO_PLAYER_OBJ = $(VIDEO_PLAYER:$(SRC_DIR)/video-player/%.c=$(BUILD_DIR)/%.o)
+
+GAME = $(wildcard $(SRC_DIR)/game/*c)
+GAME_OBJ = $(GAME:$(SRC_DIR)/game/%.c=$(BUILD_DIR)/%.o)
+
 GCCFLAGS = -Wall -O2 -ffreestanding -nostdinc -nostdlib -Iinclude
 
 # nix-shell cross-compile toolchain check
@@ -92,9 +98,17 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/util/%.c
 $(BUILD_DIR)/%.o: $(SRC_DIR)/cli/%.c
 	$(GCC) $(GCCFLAGS) -c $< -o $@
 
+# compile video player
+$(BUILD_DIR)/%.o: $(SRC_DIR)/video-player/%.c
+	$(GCC) $(GCCFLAGS) -c $< -o $@
+
+# compile game
+$(BUILD_DIR)/%.o: $(SRC_DIR)/game/%.c
+	$(GCC) $(GCCFLAGS) -c $< -o $@
+
 # build final image
-$(BUILD_DIR)/kernel8.img: $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(OBJ)
-	$(LD) -nostdlib $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(OBJ) -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
+$(BUILD_DIR)/kernel8.img: $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(VIDEO_PLAYER_OBJ) $(GAME_OBJ) $(OBJ)
+	$(LD) -nostdlib $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(VIDEO_PLAYER_OBJ) $(GAME_OBJ) $(OBJ) -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
 	$(OBJCOPY) -O binary $(BUILD_DIR)/kernel8.elf kernel8.img
 	@echo build successfully for $(if $(filter 1,$(RPI4)),RPI4,RPI3) $(if $(filter 1,$(UART1)),UART1,UART0)
 

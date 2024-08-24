@@ -1,16 +1,13 @@
-#include "all.h"
-
-char* OS_NAME = "os_name";
-
-void print_prefix() {
-  print(OS_NAME);
-  print(" > ");
-}
+#include "lib/uart.h"
+#include "lib/command.h"
+#include "lib/framebf.h"
+#include "cli/cli.h"
+#include "video-player/video-player.h"
+#include "game/game.h"
+#include "util/tty.h"
 
 void main()
 {
-  char shell_buffer[256];
-
   // set up serial console
   uart_init();
 
@@ -21,23 +18,14 @@ void main()
   welcome();
   print_prefix();
 
-  char command[201];
-
   while (1)
   {
-    uart_scanning(); // always scanning for new char
-
-    if (is_there_new_line()) {
-      get_line(command);
-
-      print("Command received: ");
-      println(command);
-
-      if (str_equal(command, CMD_VIDEO_PLAYER)) {
-        println("play video now..");
-      }
-
-      print_prefix();
+    if (is_cli_mode()) {
+      handle_cli_mode();
+    } else if (is_video_player_mode()) {
+      handle_video_player_mode();
+    } else if (is_game_mode()) {
+      handle_game_mode();
     }
   }
 }

@@ -1,6 +1,6 @@
-#include "../include/lib/uart.h"
-#include "../include/lib/mbox.h"
-#include "../include/lib/gpio.h"
+#include "lib/uart.h"
+#include "lib/mbox.h"
+#include "lib/gpio.h"
 #include "./uart/uart_common.c"
 
 #ifdef UART0

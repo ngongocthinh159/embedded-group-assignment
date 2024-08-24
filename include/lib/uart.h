@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./gpio.h"
+#include "gpio.h"
 
 //-------------------------UART0-------------------------
 /* PL011 UART (UART0) registers */

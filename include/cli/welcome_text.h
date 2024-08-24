@@ -1,6 +1,6 @@
-#include "util/tty.h"
+#pragma once
 
-char text[] =
+char welcome_text[] =
     "oooooooooooo oooooooooooo oooooooooooo ooooooooooooo   .oooo.         .o  "
     "  .ooooo.     .oooo.\r\n"
     "`888'     `8 `888'     `8 `888'     `8 8'   888   `8 .dP\"\""
@@ -30,13 +30,3 @@ char text[] =
     "    .d8P\r\n"
     "o888bood8P'  o88o     o8888o o888o  o888o o888ooooood8     `Y8bood8P'  8"
     "88888P'\r\n";
-
-int welcome() {
-  println(text);
-  println("");
-  println("");
-  println("Group .. - EEET2490 - Embedded System");
-  println("");
-  println("");
-  return 0;
-}

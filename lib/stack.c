@@ -1,4 +1,4 @@
-#include "../include/lib/stack.h"
+#include "lib/stack.h"
 
 int top = -1;
 
