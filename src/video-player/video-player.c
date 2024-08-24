@@ -1,3 +1,4 @@
+#include "lib/kernel.h"
 #include "cli/cli.h"
 #include "lib/uart.h"
 #include "lib/command.h"
@@ -12,10 +13,15 @@ void _mode_exit() {
     drawRectARGB32(0, 0, width - 1, height - 1, COLOR_BLACK, 1);
 }
 
-void handle_video_player_mode() {
-    char command[201];
+int is_playing = 1;
 
-    uart_puts("Video player mode!\n");
+void _handle_internal() {
+    
+}
+
+void handle_video_player_mode() {
+
+    uart_puts("\n\nVideo player mode!\n");
     print_prefix();
 
     while (is_video_player_mode()) {
@@ -27,7 +33,7 @@ void handle_video_player_mode() {
             print("Command received: ");
             println(command);
 
-            if (str_equal(command, CMD_ESC))
+            if (str_equal(command, CMD_EXIT))
             {
                 switch_to_cli_mode();
                 _mode_exit();
@@ -39,6 +45,8 @@ void handle_video_player_mode() {
             }
 
             // handle command in video player mode
+
+            _handle_internal();
 
             print_prefix();
         }

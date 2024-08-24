@@ -6,6 +6,8 @@
 #include "game/game.h"
 #include "util/tty.h"
 
+char command[201]; // global buffer for shell command
+
 void main()
 {
   // set up serial console
@@ -16,7 +18,6 @@ void main()
 
   clrscr();
   welcome();
-  print_prefix();
 
   while (1)
   {
@@ -26,6 +27,8 @@ void main()
       handle_video_player_mode();
     } else if (is_game_mode()) {
       handle_game_mode();
+    } else {
+      uart_puts("Wrong program state!");
     }
   }
 }

@@ -1,3 +1,4 @@
+#include "lib/kernel.h"
 #include "cli/cli.h"
 #include "lib/command.h"
 #include "lib/uart.h"
@@ -33,8 +34,9 @@ extern int current_mode; // mode switching in kernel.c
 
 void handle_cli_mode()
 {
-  char command[201];
-
+  uart_puts("\n\nCLI mode!\n");
+  print_prefix();
+  
   while (is_cli_mode())
   {
     uart_scanning(); // always scanning for new char
