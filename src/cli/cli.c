@@ -9,7 +9,7 @@
 char *OS_NAME = "os_name";
 char *GROUP_NAME = "6";
 
-volatile int current_mode = CLI;
+volatile int current_mode = CLI; // mode switching in kernel.c
 
 int welcome()
 {
@@ -28,8 +28,6 @@ void print_prefix()
   print(OS_NAME);
   print(" > ");
 }
-
-extern int current_mode; // mode switching in kernel.c
 
 void _handle_internal() {
   if (str_equal(command, CMD_HELP)) {

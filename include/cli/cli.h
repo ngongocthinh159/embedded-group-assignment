@@ -6,7 +6,7 @@ enum MODE {
   GAME
 };
 
-extern int current_mode;
+extern volatile int current_mode;
 
 int welcome();
 void handle_cli_mode();
