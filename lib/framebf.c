@@ -400,7 +400,7 @@ void drawImage(const unsigned long *img, int x, int y, int img_pixels_width, int
 // img 2: unsigned long img_2[] = {0x1, 0x2, 0x1, 0x2};
 // video: const unsigned long* video_array = {img_1, img_2};
 // drawVideo(video_array, 0, 0, 2, 2, 2);
-void drawVideo(const unsigned long **video, int x, int y, int video_pixels_width, int video_pixels_height, int video_length) {
+void drawVideo(int x, int y, const unsigned long **video, int video_pixels_width, int video_pixels_height, int video_length) {
     for (int i = 0; i < video_length; i++) {
         set_wait_timer(1, 200);
         drawImage(video[i], x, y, video_pixels_width, video_pixels_height);

@@ -8,6 +8,7 @@
 #include "lib/color.h"
 #include "lib/timer.h"
 #include "video-player/video.h"
+#include "video-player/img-background.h"
 
 extern int width, height, pitch;
 
@@ -17,6 +18,14 @@ void _mode_exit() {
 
 volatile int is_playing = 1;
 
+// int _get_cinema_background_fit_x() {
+//     return (width - video_pixels_width)/2 + 18;
+// }
+
+// int _get_cinema_background_fit_y() {
+//     return 48;
+// }
+
 void _handle_video_mode_internal() {
     if (str_equal(command, CMD_VIDEO_PAUSE) && is_playing) {
         is_playing = 0;
@@ -25,7 +34,7 @@ void _handle_video_mode_internal() {
     }
 
     if (is_playing) {
-        // drawVideo(video_array, (width - video_pixels_width)/2, 0, video_pixels_width, video_pixels_height, video_array_len);
+        // drawVideo(_get_cinema_background_fit_x(), _get_cinema_background_fit_y(), video_array, video_pixels_width, video_pixels_height, video_array_len);
     }
 }
 
@@ -34,7 +43,8 @@ void handle_video_player_mode() {
     uart_puts("\n\nVideo player mode!\n");
     print_prefix();
 
-    drawRectARGB32(0, 0, width - 1, height - 1, COLOR_RED, 1);
+    // draw background
+    // drawImage(img_cinema, 0, 0, img_pixels_width, img_pixels_height);
 
     while (is_video_player_mode()) {
         uart_scanning(); // always scanning for new char
