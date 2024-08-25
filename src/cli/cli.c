@@ -7,8 +7,9 @@
 #include "util/string.h"
 #include "util/tty.h"
 #include "lib/stack.h"
+#include "lib/color.h"
 
-char *OS_NAME = "os_name";
+char *OS_NAME = "FIRE_OS";
 char *GROUP_NAME = "6";
 
 const unsigned int COMMAND_MAX_SIZE = 200;
@@ -31,8 +32,8 @@ int welcome() {
 }
 
 void print_prefix() {
-    print(OS_NAME);
-    print(" > ");
+    print_color(OS_NAME, CMD_COLOR_RED);
+    print_color(" > ", CMD_COLOR_RED);
 }
 
 void _handle_internal() {
