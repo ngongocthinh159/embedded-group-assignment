@@ -14,6 +14,6 @@
 #define CMD_VIDEO_RESUME "resume"
 #define CMD_VIDEO_PAUSE "pause"
 
-extern char* all_commands[];
-
-void auto_complete_command();
+extern int all_commands_size;
+extern char *all_commands[];
+extern int cmd_len[];

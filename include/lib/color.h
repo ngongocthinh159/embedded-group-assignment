@@ -13,5 +13,5 @@
 #define CMD_COLOR_MAG   "\x1B[35m"
 #define CMD_COLOR_CYN   "\x1B[36m"
 #define CMD_COLOR_WHT   "\x1B[37m"
+#define CMD_COLOR_YEL_UNDER_Line "\x1b[33;4;3m"
 #define CMD_COLOR_RESET "\x1B[0m"
-#define CMD_COLOR_RESET "\033[0m"
