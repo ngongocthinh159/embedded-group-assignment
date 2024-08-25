@@ -17,16 +17,21 @@ unsigned char uart_getc_non_block() {
 void uart_scanning() {
   char ch = uart_getc_non_block();
   if (ch != 0) {
-    if (ch == ENTER || ch == ESC) {
+    if (ch == ENTER) {
       new_line_received = 1;
 
       uart_sendc('\n');
+    } else if (ch == ESC) {
+      for (int i = 0; i < st_cnt(); i++) {
+        uart_puts(REMOVE_A_CHAR);
+      }
+      st_reset_buffer();
     } else if (ch == TAB) {
       // TODO: display autocomplete command
-    } else if (ch == DEL) { // DEL
+    } else if (ch == BACKSPACE) { // DEL
       int pop_success = st_pop();
       if (pop_success) {
-        uart_puts("\b \b");
+        uart_puts(REMOVE_A_CHAR);
       }
     } else {
       int push_success = st_push(ch);
