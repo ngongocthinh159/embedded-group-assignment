@@ -1,5 +1,4 @@
 #include "cli/cli.h"
-
 #include "cli/help_text.h"
 #include "cli/welcome_text.h"
 #include "cli/command.h"
@@ -8,6 +7,7 @@
 #include "util/tty.h"
 #include "lib/stack.h"
 #include "lib/color.h"
+#include "lib/uart/uart_common.c"
 
 char *OS_NAME = "FIRE_OS";
 char *GROUP_NAME = "FIRE OS";
@@ -36,6 +36,19 @@ void print_prefix() {
     print_color(" > ", CMD_COLOR_RED);
 }
 
+
+void set_baudrate(int rate) {
+    uart_set_baudrate(rate);
+    print("Baudrate set to ");
+    println(int_to_str(rate));
+}
+
+void set_stopbit(int stopbit) {
+    uart_set_stopbit(stopbit);
+    print("Stopbit set to ");
+    println(int_to_str(stopbit));
+}
+
 void _handle_internal() {
     if (str_equal(command, CMD_HELP)) {
         print(help_text);
@@ -43,7 +56,18 @@ void _handle_internal() {
         // exit();
     } else if (str_equal(command, CMD_CLEAR)) {
         clrscr();
+    } else if (str_equal(command, CMD_SHOW_INFO)) {
+        showinfo();
+    } else if (str_equal(command, CMD_STOPBIT)) {
+        // Extract the stop bit value and set it
+        int stopbit = extract_value_from_command(command, CMD_STOPBIT);
+        set_stopbit(stopbit);
     }
+}
+
+int extract_value_from_command(char *command, char *cmd_type) {
+    char *value_str = command + strlen(cmd_type) + 1; // Skip past the command and space
+    return atoi(value_str);
 }
 
 void handle_cli_mode() {

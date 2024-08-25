@@ -3,6 +3,11 @@
 #include "lib/uart.h"
 #include "util/string.h"
 #include "cli/cli.h"
+#define UART_BASE 0x101f1000
+#define UART_LCR (UART_BASE + 0x0C)  // Line Control Register
+
+#define LCR_STOPBIT_1 0x00  // 1 stop bit
+#define LCR_STOPBIT_2 0x04  // 2 stop bits
 
 /* Private function prototype */
 void _handle_auto_completion();
@@ -10,6 +15,23 @@ int _transfer_from_stack_buffer_to(char* buffer);
 
 int new_line_received = 0; // used in for loop to check if there is a new command
 int in_auto_completion = 0;
+
+
+
+void uart_set_stopbit(int stopbit) {
+    unsigned int lcr = *(volatile unsigned int *)UART_LCR;
+    
+    if (stopbit == 1) {
+        lcr &= ~LCR_STOPBIT_2;
+    } else if (stopbit == 2) {
+        lcr |= LCR_STOPBIT_2;
+    } else {
+        // Invalid stop bit setting
+        return;
+    }
+    
+    *(volatile unsigned int *)UART_LCR = lcr;
+}
 
 // New function: Check and return if no new character, don't wait
 // Usage: unsigned char c = uart_getc_non_block()

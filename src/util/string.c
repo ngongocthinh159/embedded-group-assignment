@@ -85,6 +85,8 @@ void str_replace_all(char *str, unsigned int size, char old_char, char new_char)
     }
 }
 
+
+
 // look for complete list of space characters: char space_characters[]
 int compress_mutiple_space_chars_into_one_space(char *str, unsigned int size) {
     int i = 0, j = 0;

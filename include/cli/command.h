@@ -9,6 +9,7 @@
 #define CMD_HELP "help"
 #define CMD_CLEAR "clear"
 #define CMD_SHOW_INFO "showinfo"
+#define CMD_STOPBIT "stopbit" 
 
 // video player control command
 #define CMD_VIDEO_RESUME "resume"
