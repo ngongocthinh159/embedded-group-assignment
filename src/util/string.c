@@ -150,6 +150,42 @@ int str_is_blank(char *str, unsigned int size) {
   return 1;
 }
 
+// fetch last token from str to buffer
+// str must be called with str_beautify() first
+// must make sure the buffer size is enought for storing token
+// example: "fsdf my_token"
+// return: "my_token"
+int str_last_token(char *str, char *buffer, int str_size) {
+    if (str_size == 0) return 0;
+
+    int i = str_size - 1;
+    int start_idx = -1;
+    while (i >= 0 && !str_is_space_charaters(str[i])) {
+        start_idx = i;
+        i--;
+    }
+
+    if (start_idx == -1) return 0;
+
+    int end_idx = str_size - 1;
+    int token_size = 0;
+    for (int i = start_idx, j = 0; i <= end_idx; i++, j++) {
+        buffer[j] = str[i];
+        token_size++;
+    }
+
+    return token_size;
+}
+
+int str_start_with(char *str, char *prefix, int str_size, int prefix_size) {
+    if (str_size < prefix_size) return 0;
+
+    for (int i = 0; i < prefix_size; i++) {
+        if (str[i] != prefix[i]) return 0;
+    }
+    return 1;
+}
+
 int pop(char *str) {
   char *c = str;
   while (*c)

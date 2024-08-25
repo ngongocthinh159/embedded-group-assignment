@@ -2,6 +2,8 @@
 
 #include "lib/stack.h"
 
+#define COMMAND_MAX_SIZE 200
+
 enum MODE {
   CLI,
   VIDEO_PLAYER,
@@ -10,10 +12,13 @@ enum MODE {
 
 extern volatile int current_mode;
 
-extern const unsigned int COMMAND_MAX_SIZE;
 extern char command[];
+
 extern char stack_buffer[];
 extern Stack *cmd_st;
+
+extern char auto_complete_buffer[];
+extern Stack *auto_complete_st;
 
 int welcome();
 void handle_cli_mode();

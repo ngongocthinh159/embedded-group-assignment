@@ -11,16 +11,16 @@
 #include "util/tty.h"
 
 char *OS_NAME = "FIRE_OS";
-char *GROUP_NAME = "6";
+char *GROUP_NAME = "FIRE OS";
 
-const unsigned int COMMAND_MAX_SIZE = 200;
-char command[201]; // global buffer for command shell: after strip from stack
-                   // buffer (size + 1 for '\0' character)
+char command[COMMAND_MAX_SIZE + 1]; // global buffer for command shell: after strip from stack buffer (size + 1 for '\0' character)
 
-char
-    stack_buffer[200]; // global buffer for command shell: record all user input
-Stack *cmd_st; // wrapper for command shell buffer (when wrapped the buffer can
-               // be treated as a stack and use like a stack)
+char stack_buffer[COMMAND_MAX_SIZE]; // global buffer for command shell: record all user input
+Stack *cmd_st; // wrapper for command shell buffer (when wrapped the buffer can be treated as a stack and use like a stack)
+
+
+char auto_complete_buffer[COMMAND_MAX_SIZE + 1];
+Stack *auto_complete_st;
 
 volatile int current_mode = CLI; // mode switching in kernel.c
 
