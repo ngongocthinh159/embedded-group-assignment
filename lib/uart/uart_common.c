@@ -4,7 +4,12 @@
 #include "util/string.h"
 #include "cli/cli.h"
 
+/* Private function prototype */
+void _handle_auto_completion();
+int _transfer_from_stack_buffer_to(char* buffer);
+
 int new_line_received = 0; // used in for loop to check if there is a new command
+int in_auto_completion = 0;
 
 // New function: Check and return if no new character, don't wait
 // Usage: unsigned char c = uart_getc_non_block()
@@ -35,7 +40,7 @@ void uart_scanning() {
             }
             st_reset_buffer(cmd_st);
         } else if (ch == TAB) {
-            // TODO: display autocomplete command
+            _handle_auto_completion();
         } else if (ch == BACKSPACE) {  // DEL
             int pop_success = st_pop(cmd_st);
             if (pop_success) {
@@ -60,6 +65,17 @@ void get_line(char *buffer) {
     new_line_received = 0;  // reset
 
     // transfer chars from stack buffer to command buffer
+    int size = _transfer_from_stack_buffer_to(buffer);
+
+    // remove all redudant chars
+    str_beautify(buffer, size);
+
+    // reset stack after transering
+    st_reset_buffer(cmd_st);
+}
+
+// return size of the buffer after transfering
+int _transfer_from_stack_buffer_to(char *buffer) {
     char *saved_buffer = st_get_buffer(cmd_st);
     int size = 0;
     for (int i = 0; i < st_size(cmd_st); i++) {
@@ -67,12 +83,15 @@ void get_line(char *buffer) {
         size++;
     }
     buffer[st_size(cmd_st)] = '\0';
+    return size;
+}
 
-    // remove all redudant chars
-    str_beautify(buffer, size);
+void _handle_auto_completion() {
+    if (in_auto_completion) {
 
-    // reset stack after transering
-    st_reset_buffer(cmd_st);
+    } else {
+        
+    }
 }
 
 /**

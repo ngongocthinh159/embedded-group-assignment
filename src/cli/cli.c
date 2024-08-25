@@ -10,7 +10,7 @@
 #include "lib/color.h"
 
 char *OS_NAME = "FIRE_OS";
-char *GROUP_NAME = "6";
+char *GROUP_NAME = "FIRE OS";
 
 const unsigned int COMMAND_MAX_SIZE = 200;
 char command[201]; // global buffer for command shell: after strip from stack buffer (size + 1 for '\0' character)
