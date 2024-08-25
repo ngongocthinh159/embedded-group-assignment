@@ -4,6 +4,7 @@
 #include "lib/uart.h"
 #include "lib/math.h"
 #include "lib/timer.h"
+#include "image-renderer/image.h"
 
 // Use RGBA32 (32 bits for each pixel)
 #define COLOR_DEPTH 32
@@ -405,5 +406,21 @@ void drawVideo(int x, int y, const unsigned long **video, int video_pixels_width
         set_wait_timer(1, 200);
         drawImage(video[i], x, y, video_pixels_width, video_pixels_height);
         set_wait_timer(0, 200);
+    }
+}
+
+//For the background image
+void renderImage() {
+    int pixel_index = 0;
+    for (int y = 0; y < image_height; y++) {
+        for (int x = 0; x < image_width; x++) {
+            // Extract the ARGB32 color from the bitmap array
+            unsigned int color = imageBitmap[pixel_index];
+
+            // Draw the pixel at that coordinates
+            drawPixelARGB32(x, y, color);
+
+            pixel_index++; // Move to the next pixel
+        }
     }
 }

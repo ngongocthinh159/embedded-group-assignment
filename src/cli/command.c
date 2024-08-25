@@ -9,6 +9,7 @@ char* all_commands[] = {
     CMD_SHOW_INFO,
     CMD_VIDEO_RESUME,
     CMD_VIDEO_PAUSE,
+    CMD_SHOW_IMAGE,
 };
 
 void auto_complete_command() {

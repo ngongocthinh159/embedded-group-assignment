@@ -3,6 +3,7 @@
 // flow control command
 #define CMD_SWITCH_TO_VIDEO_PLAYER_MODE "playvideo"
 #define CMD_SWITCH_TO_GAME_MODE "playgame"
+#define CMD_SHOW_IMAGE "displayimage"
 #define CMD_EXIT "exit"
 
 // cli command
