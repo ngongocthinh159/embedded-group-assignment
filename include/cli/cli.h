@@ -3,7 +3,6 @@
 #include "lib/stack.h"
 
 #define COMMAND_MAX_SIZE 200
-#define AUTO_COMPLETE_MAX_SIZE 50
 
 enum MODE {
   CLI,
