@@ -90,13 +90,13 @@ void get_line(char *buffer) {
 void get_ansi_control(char *buffer) {
   char *ansi_buffer = st_get_buffer(cmd_st);
 
-  if (str_equal(ansi_buffer, "[A")) {
+  if (str_equal(ansi_buffer, UP_ARROW)) {
     strcpy(buffer, CMD_ARROW_UP);
-  } else if (str_equal(ansi_buffer, "[B")) {
+  } else if (str_equal(ansi_buffer, DOWN_ARROW)) {
     strcpy(buffer, CMD_ARROW_DOWN);
-  } else if (str_equal(ansi_buffer, "[C")) {
+  } else if (str_equal(ansi_buffer, RIGHT_ARROW)) {
     strcpy(buffer, CMD_ARROW_RIGHT);
-  } else if (str_equal(ansi_buffer, "[D")) {
+  } else if (str_equal(ansi_buffer, LEFT_ARROW)) {
     strcpy(buffer, CMD_ARROW_LEFT);
   }
 

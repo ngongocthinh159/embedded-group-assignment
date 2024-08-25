@@ -1,5 +1,6 @@
 #include "cli/cli.h"
 #include "game/game.h"
+#include "lib/framebf.h"
 #include "lib/stack.h"
 #include "lib/uart.h"
 #include "util/cirbuf.h"
@@ -13,6 +14,9 @@ int history_head = 0;
 void main() {
   // set up serial console
   uart_init();
+
+  // setup framebuffer
+  framebf_init(1024, 768, 1024, 768, 0, 0);
 
   // init global command shell buffer
   st_init(cmd_st, stack_buffer, COMMAND_MAX_SIZE);
