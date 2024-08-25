@@ -48,6 +48,8 @@ void _handle_internal() {
     // exit();
   } else if (str_equal(command, CMD_CLEAR)) {
     clrscr();
+  } else if (str_equal(command, CMD_SHOW_IMAGE)){
+      renderImage();
   } else if (str_equal(command, CMD_HISTORY)) {
     for (int i = 0; i < HISTORY_LENGTH; i++) {
       uart_dec(i);
