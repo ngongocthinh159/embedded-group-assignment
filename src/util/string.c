@@ -28,6 +28,18 @@ int strcmp(const char *str1, const char *str2) {
     return 0;
 }
 
+int strcpy(char *dest, char *src) {
+  int i = 0;
+  while (1) {
+    dest[i] = src[i];
+    if (dest[i] == '\0')
+      break;
+    i++;
+  }
+
+  return 1;
+}
+
 int str_equal(const char *str1, const char *str2) {
     return strcmp(str1, str2) == 0;
 }
