@@ -2,14 +2,20 @@
 
 #include "cli/help_text.h"
 #include "cli/welcome_text.h"
-#include "lib/command.h"
-#include "lib/kernel.h"
+#include "cli/command.h"
 #include "lib/uart.h"
 #include "util/string.h"
 #include "util/tty.h"
+#include "lib/stack.h"
 
 char *OS_NAME = "os_name";
 char *GROUP_NAME = "6";
+
+const unsigned int COMMAND_MAX_SIZE = 200;
+char command[201]; // global buffer for command shell: after strip from stack buffer (size + 1 for '\0' character)
+
+char stack_buffer[200]; // global buffer for command shell: record all user input
+Stack *cmd_st; // wrapper for command shell buffer (when wrapped the buffer can be treated as a stack and use like a stack)
 
 volatile int current_mode = CLI;  // mode switching in kernel.c
 

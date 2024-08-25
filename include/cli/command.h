@@ -10,8 +10,10 @@
 #define CMD_CLEAR "clear"
 #define CMD_SHOW_INFO "showinfo"
 
-
-
 // video player control command
 #define CMD_VIDEO_RESUME "resume"
 #define CMD_VIDEO_PAUSE "pause"
+
+extern char* all_commands[];
+
+void auto_complete_command();

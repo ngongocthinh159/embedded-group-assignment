@@ -1,7 +1,6 @@
-#include "lib/kernel.h"
 #include "cli/cli.h"
+#include "cli/command.h"
 #include "lib/uart.h"
-#include "lib/command.h"
 #include "util/string.h"
 #include "util/tty.h"
 #include "lib/framebf.h"

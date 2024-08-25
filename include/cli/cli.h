@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lib/stack.h"
+
 enum MODE {
   CLI,
   VIDEO_PLAYER,
@@ -7,6 +9,11 @@ enum MODE {
 };
 
 extern volatile int current_mode;
+
+extern const unsigned int COMMAND_MAX_SIZE;
+extern char command[];
+extern char stack_buffer[];
+extern Stack *cmd_st;
 
 int welcome();
 void handle_cli_mode();
