@@ -175,7 +175,7 @@ void _print_auto_completion_if_applicable() {
 
         if (suffix_size) {
             st_copy_from_str(suffix_guess, auto_complete_st, suffix_size);
-            print_color(suffix_guess, CMD_COLOR_YEL_UNDER_Line);
+            print_color(suffix_guess, CMD_COLOR_YEL_UNDER_LINE);
 
             ok = 1;
         }
