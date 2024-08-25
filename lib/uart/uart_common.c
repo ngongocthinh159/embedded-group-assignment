@@ -1,5 +1,5 @@
 #include "cli/cli.h"
-#include "lib/command.h"
+#include "cli/command.h"
 #include "lib/keyboard.h"
 #include "lib/stack.h"
 #include "lib/uart.h"

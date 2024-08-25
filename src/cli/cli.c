@@ -1,11 +1,12 @@
 #include "cli/cli.h"
+#include "cli/command.h"
 #include "cli/help_text.h"
 #include "cli/welcome_text.h"
 #include "lib/color.h"
-#include "lib/command.h"
 #include "lib/kernel.h"
 #include "lib/stack.h"
 #include "lib/uart.h"
+#include "util/cirbuf.h"
 #include "util/string.h"
 #include "util/tty.h"
 

@@ -2,10 +2,10 @@
 #include "game/game.h"
 #include "lib/stack.h"
 #include "lib/uart.h"
+#include "util/cirbuf.h"
 #include "util/tty.h"
 #include "video-player/video-player.h"
 
-char command[201]; // global buffer for shell command
 char __attribute__((
     aligned(16))) history_buffer[HISTORY_LENGTH][HISTORY_ENTRY_LENGTH];
 int history_head = 0;
