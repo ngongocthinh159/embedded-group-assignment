@@ -1,6 +1,7 @@
 #pragma once
 
 int strcmp(char *str1, char *str2);
+int strcpy(char dest[], const char source[]);
 int str_equal(const char *str1, const char *str2);
 int str_strip(char *str, unsigned int size);
 int str_beautify(char *str, unsigned int size);

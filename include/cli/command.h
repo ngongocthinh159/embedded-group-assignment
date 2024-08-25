@@ -9,6 +9,12 @@
 #define CMD_HELP "help"
 #define CMD_CLEAR "clear"
 #define CMD_SHOW_INFO "showinfo"
+#define CMD_HISTORY "history"
+
+#define CMD_ARROW_UP "arrow_up"
+#define CMD_ARROW_DOWN "arrow_down"
+#define CMD_ARROW_RIGHT "arrow_right"
+#define CMD_ARROW_LEFT "arrow_left"
 
 // video player control command
 #define CMD_VIDEO_RESUME "resume"
