@@ -5,6 +5,7 @@
 #include "util/string.h"
 #include "util/tty.h"
 #include "cli/welcome_text.h"
+#include "cli/help_text.h"
 
 char *OS_NAME = "os_name";
 char *GROUP_NAME = "6";
@@ -31,7 +32,11 @@ void print_prefix()
 
 void _handle_internal() {
   if (str_equal(command, CMD_HELP)) {
-    // do?
+      print(help_text);
+  }else if(str_equal(command,CMD_EXIT)){
+      exit();
+  }else if(str_equal(command,CMD_CLEAR)){
+    clrscr();
   }
 }
 
