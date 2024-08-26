@@ -15,4 +15,4 @@ void drawCircleARGB32(int x_center, int y_center, int radius, unsigned int attr,
 void drawStarARGB32(int centerX, int centerY, int outerRadius, int innerRadius, unsigned int attr);
 void drawImage(const unsigned long *img, int x, int y, int img_pixels_width, int img_pixels_height);
 void drawVideo(int x, int y, const unsigned long **video, int video_pixels_width, int video_pixels_height, int video_length);
-void renderImage();
+void displayWelcomeImage();
