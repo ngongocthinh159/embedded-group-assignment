@@ -32,4 +32,8 @@ _start:
 
 4:  bl    main
     // In case it does return, halt the master core too
-    b     1b
+    mov x0, #0 //exit status
+    mov x8, #93
+    //b     1b
+    //wfi
+    svc #0

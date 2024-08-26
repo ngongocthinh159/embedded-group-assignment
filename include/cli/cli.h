@@ -9,7 +9,7 @@ enum MODE {
 extern volatile int current_mode;
 
 int welcome();
-void handle_cli_mode();
+int handle_cli_mode();
 void print_prefix();
 void switch_to_cli_mode();
 void switch_to_video_player_mode();

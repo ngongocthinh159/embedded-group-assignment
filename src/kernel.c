@@ -18,17 +18,23 @@ void main()
 
   clrscr();
   welcome();
-
+  int exit_command;
   while (1)
-  {
+  {  
     if (is_cli_mode()) {
-      handle_cli_mode();
+      exit_command = handle_cli_mode();
+      if(exit_command == -1){
+        break;
+      }
     } else if (is_video_player_mode()) {
       handle_video_player_mode();
     } else if (is_game_mode()) {
       handle_game_mode();
     } else {
       uart_puts("Wrong program state!");
-    }
+    }      
+  }
+  if(exit_command == -1){
+    return;
   }
 }

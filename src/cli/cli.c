@@ -29,20 +29,25 @@ void print_prefix() {
     print(" > ");
 }
 
-void _handle_internal() {
+int _handle_internal() {
+    int x;
     if (str_equal(command, CMD_HELP)) {
         print(help_text);
+            x = 0;
     } else if (str_equal(command, CMD_EXIT)) {
         // exit();
+        x= -1;
     } else if (str_equal(command, CMD_CLEAR)) {
         clrscr();
+        x = 0;
     }
+    return x;
 }
 
-void handle_cli_mode() {
+int handle_cli_mode() {
+    int handle_cli_mode_exit = 0;
     uart_puts("\n\nCLI mode!\n");
     print_prefix();
-
     while (is_cli_mode()) {
         uart_scanning();  // always scanning for new char
 
@@ -62,11 +67,19 @@ void handle_cli_mode() {
             }
 
             // handle command in cli mode
-            _handle_internal();
-
+            int _handle_internal_return = _handle_internal();
+            //print(_handle_internal_return);
+            if(_handle_internal_return ==-1){
+                handle_cli_mode_exit = _handle_internal_return;
+                break;
+            }else{
+                handle_cli_mode_exit = 0;
+            }
             print_prefix();
         }
     }
+    return handle_cli_mode_exit;
+
 }
 
 void switch_to_cli_mode() { current_mode = CLI; }
