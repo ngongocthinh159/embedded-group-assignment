@@ -9,6 +9,7 @@
 #include "util/cirbuf.h"
 #include "util/string.h"
 #include "util/tty.h"
+#include "lib/mbox.h"
 
 char *OS_NAME = "FIRE_OS";
 char *GROUP_NAME = "FIRE OS";
@@ -38,6 +39,55 @@ int welcome() {
 void print_prefix() {
   print_color(OS_NAME, CMD_COLOR_RED);
   print_color(" > ", CMD_COLOR_RED);
+}
+void showinfo(){
+    mBuf[0] = 10*4;
+    mBuf[1] = MBOX_REQUEST;
+
+    mBuf[2] = MBOX_TAG_GETBOARDREV;
+    mBuf[3] = 4;
+    mBuf[4] = 0;
+    mBuf[5] = 0;
+
+    mBuf[6] = MBOX_TAG_GETMAC;
+    mBuf[7] = 6;
+    mBuf[8] = 0;
+    mBuf[9] = 0;
+
+    mBuf[10] = MBOX_TAG_LAST;
+
+    if(mbox_call(ADDR(mBuf),MBOX_CH_PROP)){
+      print("\nResponse Code for whole message: ");
+      uart_hex(mBuf[1]);
+
+      print("\n+ Response Code in Message TAG: ");
+      uart_hex(mBuf[2]);
+      uart_puts("\nDATA: Board revision = ");
+      uart_dec(mBuf[5]);
+
+      uart_puts("\n+ Response Code in Message TAG: ");
+      uart_hex(mBuf[6]);
+      uart_puts("\nDATA: MAC address = ");
+      uart_hex(mBuf[9]);
+      uart_puts("\n");
+      //uart_puts(mBuf[9]);
+      
+      unsigned int MAC = mBuf[9];
+	    uart_puts("00:");
+      for (int i = 7; i >=0; i--)
+      { 
+        int j = 0xF;
+        unsigned int number = (MAC >> (i*4)) & j;
+        uart_dec(number);
+        if(i%2 ==0 && i >0){
+          print(":");
+        }
+        j = j * 0x10;
+      }
+        uart_puts(":00");}
+    else {
+        uart_puts("Unable to query!\n");
+    }
 }
 
 void _handle_internal() {
