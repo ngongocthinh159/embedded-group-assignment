@@ -76,23 +76,7 @@ void showinfo(){
       
       unsigned int MAC = mBuf[9];
       
-      /*
-      unsigned int masks[12];
-      unsigned int numbers[12];
-      for (int i = 48; i > 0; i = i-4)
-      { 
-        int array_count = 11;
-        unsigned int number = (MAC >>i);
-        numbers[array_count] = number;
-        array_count--;
-      }
-      for (int i = 4; i <=48; i=i+4)
-      { 
-        int array_count = 0;
-        unsigned int mask = (pow(2,i)-1);
-        masks[array_count] = mask;
-        array_count++;
-      }*/
+     
       uart_puts("00:");
       for (int i = 7; i >=0; i--)
       { 
@@ -105,18 +89,7 @@ void showinfo(){
         j = j * 0x10;
       }
       uart_puts(":00");
-      /*
-      print("\n");
-      unsigned int first_chunk = (MAC >> 44) & 0xF;
-     uart_dec(first_chunk);
-     print("\n");
-     uart_hex(MAC);
-     print("\n");
-      unsigned int second_num = (MAC >>40) & 0xF0;
-      uart_dec(second_num);
-      unsigned int third = (MAC >> 36) & 0xFF;
-      uart_dec(third);*/
-      
+            
     }
     else {
         uart_puts("Unable to query!\n");
