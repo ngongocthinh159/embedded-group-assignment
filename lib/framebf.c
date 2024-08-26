@@ -411,7 +411,7 @@ void drawVideo(int x, int y, const unsigned long **video, int video_pixels_width
 }
 
 //For the background image and font
-void renderImage() {
+void displayWelcomeImage() {
     int pixel_index = 0;
     for (int y = 0; y < image_height; y++) {
         for (int x = 0; x < image_width; x++) {
