@@ -89,6 +89,7 @@ void showinfo(){
         j = j * 0x10;
       }
       uart_puts(":00");
+      print("\n");
             
     }
     else {
