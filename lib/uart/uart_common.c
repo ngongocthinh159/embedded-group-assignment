@@ -1,8 +1,26 @@
+#include "cli/cli.h"
+#include "cli/command.h"
 #include "lib/keyboard.h"
 #include "lib/stack.h"
 #include "lib/uart.h"
+#include "util/string.h"
+#include "cli/cli.h"
+#include "util/tty.h"
+#include "lib/color.h"
+#include "cli/command.h"
 
-int new_line_received = 0;
+/* Private function prototype */
+void _handle_auto_completion(char ch);
+int char_buffer_cpy(char *src, char *dest, int src_size);
+void _print_auto_completion_if_applicable();
+void _internal_char_handle(char ch);
+void _apply_auto_completion();
+void _abort_auto_completion();
+
+int new_line_received =
+    0; // used in for loop to check if there is a new command
+volatile int in_auto_completion = 0;
+int ansi_escaped_received = 0;
 
 // New function: Check and return if no new character, don't wait
 // Usage: unsigned char c = uart_getc_non_block()
@@ -15,48 +33,184 @@ unsigned char uart_getc_non_block() {
 }
 
 void uart_scanning() {
-  char ch = uart_getc_non_block();
-  if (ch != 0) {
-    if (ch == ENTER) {
-      new_line_received = 1;
-
-      uart_sendc('\n');
-    } else if (ch == ESC) {
-      for (int i = 0; i < st_cnt(); i++) {
-        uart_puts(REMOVE_A_CHAR);
-      }
-      st_reset_buffer();
-    } else if (ch == TAB) {
-      // TODO: display autocomplete command
-    } else if (ch == BACKSPACE) { // DEL
-      int pop_success = st_pop();
-      if (pop_success) {
-        uart_puts(REMOVE_A_CHAR);
-      }
-    } else {
-      int push_success = st_push(ch);
-      if (push_success) {
-        uart_sendc(ch);
-      } else {
-        // TODO: when stack buffer is full might do something..
-      }
+    char ch = uart_getc_non_block();
+    if (ch != 0) {
+        _internal_char_handle(ch);
     }
-  }
+}
+
+void _internal_char_handle(char ch) {
+    if (in_auto_completion) {
+        _handle_auto_completion(ch);
+        return;
+    }
+
+    if (ch == ENTER) {
+        // handle when buffer is empty
+        if (str_is_blank(cmd_st->buffer, st_size(cmd_st))) {
+            uart_sendc(ENTER);
+        
+        // when buffer is not empty => turn on new_line_received flag
+        } else {
+            new_line_received = 1;
+            
+            uart_sendc(ENTER);
+        }
+    } else if (ch == ESC) {
+        // for (int i = 0; i < st_size(cmd_st); i++) {
+        //     uart_puts(REMOVE_A_CHAR);
+        // }
+        // st_reset_buffer(cmd_st);
+
+        ansi_escaped_received = 1;
+    // Auto completion handler
+    } else if (ch == TAB && !str_is_blank(cmd_st->buffer, st_size(cmd_st))) {
+        in_auto_completion = 1;
+        _print_auto_completion_if_applicable();
+    } else if (ch == BACKSPACE) {  // DEL
+        int pop_success = st_pop(cmd_st);
+        if (pop_success) {
+            uart_puts(REMOVE_A_CHAR);
+        }
+    } else {
+        int push_success = st_push(cmd_st, ch);
+        if (push_success && !ansi_escaped_received) {
+            uart_sendc(ch);
+        } else if (ansi_escaped_received) {
+            if (ch == 'A' || ch == 'B' || ch == 'C' || ch == 'D') {
+            ansi_escaped_received = 2;
+            }
+        } else {
+            // TODO: when stack buffer is full might do something..
+        }
+    }
 }
 
 int is_there_new_line() { return new_line_received; }
+
+int is_there_ansi_escape() { return ansi_escaped_received; }
 
 // Flush all chars inside stack buffer into input buffer
 // AND reset the stack
 void get_line(char *buffer) {
   new_line_received = 0; // reset
-  char *saved_buffer = get_buffer();
-  for (int i = 0; i < st_cnt(); i++) {
-    buffer[i] = saved_buffer[i];
-  }
-  buffer[st_cnt()] = '\0';
 
-  st_reset_buffer();
+    // transfer chars from stack buffer to command buffer
+    int size = char_buffer_cpy(st_get_buffer(cmd_st), buffer, st_size(cmd_st));
+
+  // remove all redudant chars
+  str_beautify(buffer, size);
+
+  // reset stack after transering
+  st_reset_buffer(cmd_st);
+}
+
+// return size of destination buffer after transfering
+// make sure dest buffer has enough buffer memory (>= src_size + 1 for '\0')
+int char_buffer_cpy(char *src, char *dest, int src_size) {
+    for (int i = 0; i < src_size; i++) {
+        dest[i] = src[i];
+    }
+    dest[src_size] = '\0';
+    return src_size;
+}
+
+void _handle_auto_completion(char ch) {
+    // apply
+    if (ch == TAB || ch == ENTER) {
+        _apply_auto_completion();
+        in_auto_completion = 0;
+
+    // abort
+    } else {
+        _abort_auto_completion();
+        in_auto_completion = 0;
+
+        // handle char normal flow
+        if (ch != BACKSPACE) _internal_char_handle(ch);
+    }
+}
+
+void _apply_auto_completion() {
+    // remove draft guess char
+    for (int i = 0; i < st_size(auto_complete_st); i++) {
+        uart_puts(REMOVE_A_CHAR);
+    }
+
+    // add real guess char
+    uart_puts(st_get_buffer(auto_complete_st));
+    st_append_from_st(auto_complete_st, cmd_st);
+
+    // reset auto complet stack
+    st_reset_buffer(auto_complete_st);
+}
+
+void _abort_auto_completion() {
+    for (int i = 0; i < st_size(auto_complete_st); i++) {
+        uart_puts(REMOVE_A_CHAR);
+    }
+    st_reset_buffer(auto_complete_st);
+}
+
+int _get_suffix_auto_complete(char *token, char *suffix_buffer, int token_size) {
+    int suffix_size = 0;
+    int j = 0;
+    for (int i = 0; i < all_commands_size; i++) {
+        int command_size = cmd_len[i];
+        if (command_size > token_size && str_start_with(all_commands[i], token, command_size, token_size)) {
+            for (int k = token_size; k < command_size; k++, j++) {
+                suffix_buffer[j] = all_commands[i][k];
+                suffix_size++;
+            }
+            suffix_buffer[suffix_size] = '\0';
+            break;
+        }
+    }
+
+    return suffix_size;
+}
+
+void _print_auto_completion_if_applicable() {
+    // example: playvideo
+    char last_token[50]; // playvi
+    char suffix_guess[50]; // deo
+
+    st_copy_from_st(cmd_st, auto_complete_st);
+
+    st_beautify_buffer(auto_complete_st);
+
+    int token_size = str_last_token(st_get_buffer(auto_complete_st), last_token, st_size(auto_complete_st));
+
+    int ok = 0;
+    if (token_size) {
+        int suffix_size = _get_suffix_auto_complete(last_token, suffix_guess, token_size);
+
+        if (suffix_size) {
+            st_copy_from_str(suffix_guess, auto_complete_st, suffix_size);
+            print_color(suffix_guess, CMD_COLOR_YEL_UNDER_LINE);
+
+            ok = 1;
+        }
+    }
+
+    if (!ok) in_auto_completion = 0;
+}
+
+void get_ansi_control(char *buffer) {
+  char *ansi_buffer = st_get_buffer(cmd_st);
+
+  if (str_equal(ansi_buffer, UP_ARROW)) {
+    strcpy(buffer, CMD_ARROW_UP);
+  } else if (str_equal(ansi_buffer, DOWN_ARROW)) {
+    strcpy(buffer, CMD_ARROW_DOWN);
+  } else if (str_equal(ansi_buffer, RIGHT_ARROW)) {
+    strcpy(buffer, CMD_ARROW_RIGHT);
+  } else if (str_equal(ansi_buffer, LEFT_ARROW)) {
+    strcpy(buffer, CMD_ARROW_LEFT);
+  }
+
+  st_reset_buffer(cmd_st);
+  ansi_escaped_received = 0;
 }
 
 /**
@@ -77,7 +231,6 @@ void uart_puts(char *s) {
 void uart_hex(unsigned int num) {
   uart_puts("0x");
   for (int pos = 28; pos >= 0; pos = pos - 4) {
-
     // Get highest 4-bit nibble
     char digit = (num >> pos) & 0xF;
 

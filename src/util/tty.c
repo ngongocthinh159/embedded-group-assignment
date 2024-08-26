@@ -1,4 +1,8 @@
+#include "util/tty.h"
 #include "lib/uart.h"
+#include "lib/color.h"
+
+char buff[200];
 
 void print(char *str) {
   char *c = str;
@@ -9,9 +13,40 @@ void print(char *str) {
 void println(char *str) {
   // carriage return + line feed
   // https://developer.mozilla.org/en-US/docs/Glossary/CRLF
-  char crlf[] = "\r\n";
   print(str);
-  print(crlf);
+  print("\r\n");
+}
+
+void print_color(char *str, char *color_code) {
+    int i = 0;
+
+    char *c = color_code;
+    while (*c) {
+        buff[i++] = *c;
+        c++;
+    }
+        
+
+    c = str;
+    while (*c) {
+        buff[i++] = *c;
+        c++;
+    }
+
+    c = CMD_COLOR_RESET;
+    while (*c) {
+        buff[i++] = *c;
+        c++;
+    }
+    
+    buff[i] = '\0';
+
+    uart_puts(buff);
+}
+
+void println_color(char *str, char *color_code) {
+    print_color(str, color_code);
+    print("\r\n");
 }
 
 void clrscr() {
