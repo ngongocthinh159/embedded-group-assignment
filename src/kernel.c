@@ -8,7 +8,7 @@
 #include "video-player/video-player.h"
 
 char __attribute__((
-    aligned(16))) history_buffer[HISTORY_LENGTH][HISTORY_ENTRY_LENGTH];
+    aligned(16))) history_buffer[HISTORY_LENGTH][COMMAND_MAX_SIZE];
 int history_head = 0;
 
 void main() {
