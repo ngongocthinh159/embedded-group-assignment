@@ -42,11 +42,6 @@ unsigned char uart_getc_non_block() {
 void uart_scanning() {
     char ch = uart_getc_non_block();
     if (ch != 0) {
-        if (ansi_escaped_received) {
-          // await any timer
-          set_wait_timer(0, 100);
-        }
-
         _internal_char_handle(ch);
     }
 }
@@ -75,7 +70,7 @@ void _internal_char_handle(char ch) {
         // st_reset_buffer(cmd_st);
 
         // wait for 100ms for next scan sequence
-        set_wait_timer(1, 100);
+        // set_wait_timer(1, 100);
         // set received to 1st char
         ansi_escaped_received = 1;
     // Auto completion handler
@@ -89,7 +84,7 @@ void _internal_char_handle(char ch) {
         }
     } else {
       // await any pending timer
-      set_wait_timer(0, 100);
+      // set_wait_timer(0, 100);
 
       if (ansi_escaped_received) {
         // handle ongoing escape sequence
@@ -97,7 +92,7 @@ void _internal_char_handle(char ch) {
         if (ch == '[') {
           // set received to 2nd char;
           ansi_escaped_received++;
-          set_wait_timer(1, 100);
+          // set_wait_timer(1, 100);
         } else if (ansi_escaped_received == 2 && ch >= UP_ARROW && ch <= LEFT_ARROW) {
           ansi_escaped_received++;
         } else {
