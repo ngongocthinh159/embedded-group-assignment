@@ -8,3 +8,5 @@ extern int history_head;
 
 int cir_buf_push(char *data);
 void cir_buf_latest(char **res);
+int cir_buf_next(int index);
+int cir_buf_previous(int index);
