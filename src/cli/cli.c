@@ -63,11 +63,9 @@ void _handle_internal() {
 
 void _handle_history() {
   if (strstr(command, CSI_CUU)) {
-    if (history_req < history_head) 
-    history_req++;
+    history_req = cir_buf_previous(history_req);
   } else if (strstr(command, CSI_CUD)) {
-    if (history_req > 0)
-    history_req--;
+    history_req = cir_buf_next(history_req);
   }
 }
 
@@ -85,19 +83,14 @@ void handle_cli_mode() {
 
       clrln();
       print_prefix();
-      if (history_req) {
-        char* cmd = history_buffer[history_head - history_req];
-        print(cmd);
-        st_copy_from_str(cmd, cmd_st, strlen(cmd));
-      } else {
-        // TODO: left arrow and right arrow will ALSO clear this, fix.
-        st_copy_from_str("", cmd_st, 0);
-      }
+      char* cmd = history_buffer[history_req];
+      print(cmd);
+      st_copy_from_str(cmd, cmd_st, strlen(cmd));
     }
 
     if (is_there_new_line()) {
       // clear history_req buffer
-      history_req = 0;
+      history_req = history_head + 1;
 
       get_line(command);
       // push command to history, similar to bash history
