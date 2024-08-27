@@ -56,7 +56,6 @@ void _handle_internal() {
     for (int i = 0; i < HISTORY_LENGTH; i++) {
       uart_dec(i);
       print(". ");
-      uart_dec(str_equal(history_buffer[i], ""));
       println(history_buffer[i]);
     }
   }
