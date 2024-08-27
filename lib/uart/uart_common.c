@@ -3,6 +3,7 @@
 #include "lib/keyboard.h"
 #include "lib/stack.h"
 #include "lib/uart.h"
+#include "lib/timer.h"
 #include "util/string.h"
 #include "cli/cli.h"
 #include "util/tty.h"
@@ -20,6 +21,12 @@ void _abort_auto_completion();
 int new_line_received =
     0; // used in for loop to check if there is a new command
 volatile int in_auto_completion = 0;
+/**
+ * 0: uninitiated
+ * 1: ESC 
+ * 2: [
+ * 3: A-D
+ */
 int ansi_escaped_received = 0;
 
 // New function: Check and return if no new character, don't wait
@@ -35,6 +42,11 @@ unsigned char uart_getc_non_block() {
 void uart_scanning() {
     char ch = uart_getc_non_block();
     if (ch != 0) {
+        if (ansi_escaped_received) {
+          // await any timer
+          set_wait_timer(0, 100);
+        }
+
         _internal_char_handle(ch);
     }
 }
@@ -62,6 +74,9 @@ void _internal_char_handle(char ch) {
         // }
         // st_reset_buffer(cmd_st);
 
+        // wait for 100ms for next scan sequence
+        set_wait_timer(1, 100);
+        // set received to 1st char
         ansi_escaped_received = 1;
     // Auto completion handler
     } else if (ch == TAB && !str_is_blank(cmd_st->buffer, st_size(cmd_st))) {
@@ -73,22 +88,39 @@ void _internal_char_handle(char ch) {
             uart_puts(REMOVE_A_CHAR);
         }
     } else {
-        int push_success = st_push(cmd_st, ch);
-        if (push_success && !ansi_escaped_received) {
-            uart_sendc(ch);
-        } else if (ansi_escaped_received) {
-            if (ch == 'A' || ch == 'B' || ch == 'C' || ch == 'D') {
-            ansi_escaped_received = 2;
-            }
+      // await any pending timer
+      set_wait_timer(0, 100);
+
+      if (ansi_escaped_received) {
+        // handle ongoing escape sequence
+        // 2nd char sequence
+        if (ch == '[') {
+          // set received to 2nd char;
+          ansi_escaped_received++;
+          set_wait_timer(1, 100);
+        } else if (ansi_escaped_received == 2 && ch >= UP_ARROW && ch <= LEFT_ARROW) {
+          ansi_escaped_received++;
         } else {
-            // TODO: when stack buffer is full might do something..
+          ansi_escaped_received = 0;
+          // pop everything 
+          for (int i = 0; i <= ansi_escaped_received; i++) {
+            st_pop(cmd_st);
+          }
         }
+      }
+
+      int push_success = st_push(cmd_st, ch);
+      if (push_success && !ansi_escaped_received) {
+          uart_sendc(ch);
+      }  else {
+          // TODO: when stack buffer is full might do something..
+      }
     }
 }
 
 int is_there_new_line() { return new_line_received; }
 
-int is_there_ansi_escape() { return ansi_escaped_received; }
+int is_there_ansi_escape() { return ansi_escaped_received == 3; }
 
 // Flush all chars inside stack buffer into input buffer
 // AND reset the stack
@@ -197,20 +229,15 @@ void _print_auto_completion_if_applicable() {
 }
 
 void get_ansi_control(char *buffer) {
-  char *ansi_buffer = st_get_buffer(cmd_st);
+  ansi_escaped_received = 0;
 
-  if (str_equal(ansi_buffer, UP_ARROW)) {
-    strcpy(buffer, CMD_ARROW_UP);
-  } else if (str_equal(ansi_buffer, DOWN_ARROW)) {
-    strcpy(buffer, CMD_ARROW_DOWN);
-  } else if (str_equal(ansi_buffer, RIGHT_ARROW)) {
-    strcpy(buffer, CMD_ARROW_RIGHT);
-  } else if (str_equal(ansi_buffer, LEFT_ARROW)) {
-    strcpy(buffer, CMD_ARROW_LEFT);
-  }
+  // transfer chars from stack buffer to command buffer
+  int size = char_buffer_cpy(st_get_buffer(cmd_st), buffer, st_size(cmd_st));
+
+  // remove all redudant chars
+  str_beautify(buffer, size);
 
   st_reset_buffer(cmd_st);
-  ansi_escaped_received = 0;
 }
 
 /**
