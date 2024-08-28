@@ -1,19 +1,18 @@
 #include "cli/show_info.h"
-#include "cli/get_boardrev.h"
 #include "util/tty.h"
 #include "lib/uart.h"
 void show_boardrev(unsigned int revision){
-    set_revision(revision);
-    unsigned int revision_bits = get_revision_bits();
-    unsigned int type_bits = get_type_bits();
-    unsigned int processor_bits = get_processor_bits();
-    unsigned int manufracturer_bits = get_manufacturer_bits();
-    unsigned int memory_size_bits = get_memory_size_bits();
-    unsigned int style_flag_bit = get_style_flag_bit();
-    unsigned int warranty_bit = get_warranty_bit();
-    unsigned int otp_read_bit = get_otp_read_bit();
-    unsigned int otp_program = get_otp_program_bit();
-    unsigned int overvoltage = get_overvoltage_bit();
+    //set_revision(revision);
+    unsigned int revision_bits = revision & 0b111;
+    unsigned int type_bits = (revision >> 4) & 0xFF;
+    unsigned int processor_bits = (revision >> 12) & 0xF;
+    unsigned int manufracturer_bits = (revision >> 15) & 0xF;
+    unsigned int memory_size_bits = (revision >> 20) & 0b111;
+    unsigned int style_flag_bit = (revision >> 23) & 1;
+    unsigned int warranty_bit = (revision >> 25) & 1;
+    unsigned int otp_read_bit = (revision >> 29) & 1;
+    unsigned int otp_program = (revision >> 30) & 1;
+    unsigned int overvoltage = (revision >> 31) & 1;
 
     for(int i=0;i<=5;i++){
         if(revision_bits == i){

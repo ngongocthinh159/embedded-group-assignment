@@ -1,3 +1,4 @@
+/*
 #include "cli/get_boardrev.h"
 unsigned int revision;
 void set_revision(unsigned int revision_input){
@@ -51,4 +52,4 @@ unsigned int get_otp_program_bit() {
 unsigned int get_overvoltage_bit() {
     unsigned int overvoltage_bit = (revision >> 31) & 1;
     return overvoltage_bit;
-}
+}*/
