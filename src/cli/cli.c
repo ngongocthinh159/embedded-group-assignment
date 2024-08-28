@@ -64,7 +64,7 @@ void showinfo(){
       print("\nResponse Code for whole message: ");
       uart_hex(mBuf[1]);
 
-      print("\n+ Response Code in Message TAG: ");
+      print("\n\n+ Response Code in Message TAG: ");
       uart_hex(mBuf[2]);
       uart_puts("\nDATA: Board revision = ");
       unsigned int revision = mBuf[5];
