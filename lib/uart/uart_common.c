@@ -8,6 +8,7 @@
 
 #define LCR_STOPBIT_1 0x00  // 1 stop bit
 #define LCR_STOPBIT_2 0x04  // 2 stop bits
+#define SYSTEM_CLOCK_FREQ 250000000
 
 /* Private function prototype */
 void _handle_auto_completion();
@@ -168,4 +169,14 @@ void uart_dec(int num) {
     str[len] = '\0';
 
     uart_puts(str);
+}
+
+
+void uart_set_baudrate(int baudrate) {
+    // Calculate the baud rate register value using the formula
+    unsigned int baudrate_reg = (SYSTEM_CLOCK_FREQ / (8 * baudrate)) - 1;
+    
+    // Set the baud rate register in UART0
+    UART0_IBRD = (baudrate_reg >> 6) & 0xFFFF;  // Integer part
+    UART0_FBRD = baudrate_reg & 0x3F;           // Fractional part
 }

@@ -37,12 +37,6 @@ void print_prefix() {
 }
 
 
-void set_baudrate(int rate) {
-    uart_set_baudrate(rate);
-    print("Baudrate set to ");
-    println(int_to_str(rate));
-}
-
 void set_stopbit(int stopbit) {
     uart_set_stopbit(stopbit);
     print("Stopbit set to ");
@@ -58,10 +52,14 @@ void _handle_internal() {
         clrscr();
     } else if (str_equal(command, CMD_SHOW_INFO)) {
         showinfo();
-    } else if (str_equal(command, CMD_STOPBIT)) {
-        // Extract the stop bit value and set it
+    } else if (str_starts_with(command, CMD_BAUDRATE)) {
+        int baudrate = extract_value_from_command(command, CMD_BAUDRATE);
+        uart_set_baudrate(baudrate); 
+        print("Baudrate set to ");
+        println(int_to_str(baudrate));
+    } else if (str_starts_with(command, CMD_STOPBIT)) {
         int stopbit = extract_value_from_command(command, CMD_STOPBIT);
-        set_stopbit(stopbit);
+        uart_set_stopbit(stopbit);
     }
 }
 

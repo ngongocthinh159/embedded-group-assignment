@@ -10,6 +10,7 @@
 #define CMD_CLEAR "clear"
 #define CMD_SHOW_INFO "showinfo"
 #define CMD_STOPBIT "stopbit" 
+#define CMD_BAUDRATE "baudrate"
 
 // video player control command
 #define CMD_VIDEO_RESUME "resume"
