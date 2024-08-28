@@ -10,8 +10,7 @@
 #include "util/string.h"
 #include "util/tty.h"
 #include "lib/mbox.h"
-//#include "cli/info.h"
-//#include "info.c"
+#include "cli/show_info.h"
 
 char *OS_NAME = "FIRE_OS";
 char *GROUP_NAME = "FIRE OS";
@@ -42,8 +41,9 @@ void print_prefix() {
   print_color(OS_NAME, CMD_COLOR_RED);
   print_color(" > ", CMD_COLOR_RED);
 }
+
 void showinfo(){
-    mBuf[0] = 16*4;
+    mBuf[0] = 12*4;
     mBuf[1] = MBOX_REQUEST;
 
     mBuf[2] = MBOX_TAG_GETBOARDREV;
@@ -59,7 +59,8 @@ void showinfo(){
 
     mBuf[11] = MBOX_TAG_LAST;
 
-    if(mbox_call(ADDR(mBuf),MBOX_CH_PROP)){
+    if (mbox_call(ADDR(mBuf), MBOX_CH_PROP))
+    {
       print("\nResponse Code for whole message: ");
       uart_hex(mBuf[1]);
 
@@ -68,161 +69,27 @@ void showinfo(){
       uart_puts("\nDATA: Board revision = ");
       unsigned int revision = mBuf[5];
       uart_hex(mBuf[5]);
-      unsigned int revision_bits = revision & 0b111;
-      unsigned int type_bits = (revision>>4) & 0xFF;
-      unsigned int processor_bits = (revision>>12) &0xF;
-      unsigned int manufracturer_bits = (revision>>15)&0xF;
-      unsigned int memory_size_bits = (revision>>20) &0b111;
-      unsigned int style_flag_bit = (revision >> 23) &1;
-      unsigned int warranty_bit = (revision>>25) &1;
-      unsigned int otp_read_bit = (revision>>29) &1;
-      unsigned int otp_program = (revision>>30) &1;
-      unsigned int overvoltage = (revision>>31) &1;
-      print("\n");
-      //uart_hex_no_base(revision_bits,1);
-      for(int i=0;i<=5;i++){
-        if(revision_bits == i){
-          print("Revisions: 1.");
-          uart_dec(i);
-          print(" \n");
-        }
-      }
-      print("Revision bits value: ");
-      uart_hex_no_base(revision_bits,1);
-      print("\n");
-     // uart_hex_no_base(type_bits,2);
-      if(type_bits == 0x11){
-          print("Type: 4B");
-      }else if(type_bits == 0xD){
-          print("Type: 3B+");
-      }// the two boards used in this course
-      print("\nType bits value: ");
-      uart_hex_no_base(type_bits,2);
-      print("\n");
-      //print("\n");
-      //uart_hex_no_base(processor_bits,1);
-      print("Processor:");
-      if(processor_bits ==0x0){
-        print(" BCM2835");
-      }else if(processor_bits == 0x1){
-        print(" BCM2836");
-      }else if(processor_bits == 0x2){
-        print(" BCM2837");
-      }else if(processor_bits == 0x3){
-        print(" BCM2711");
-      }else if (processor_bits == 0x4)
-      {
-        print(" BCM2712");
-      }
-      print("\n processor bits value: ");
-      uart_hex_no_base(processor_bits,1);
-      print("\n");
-      print(" Manufracturer:");
-       if(manufracturer_bits ==0x0){
-        print(" Sony UK");
-      }else if(manufracturer_bits == 0x1){
-        print(" Egoman");
-      }else if(manufracturer_bits == 0x2){
-        print(" Embest");
-      }else if(manufracturer_bits == 0x3){
-        print(" Sony Japan");
-      }
-      else if (manufracturer_bits == 0x4)
-      {
-        print(" Embest");
-      }
-      else if (manufracturer_bits == 0x5)
-      {
-        print(" Stadium");
-      }
-      print("\n Manufracture bit value: ");
-      uart_hex_no_base(manufracturer_bits,1);
-      print("\n");      
-      //print("Manufracturer: Sony UK \n");
-      //uart_hex_no_base(memory_size_bits,1);
-      print("Memory size: ");
-      if(memory_size_bits ==0x0){
-        print(" 256MB");
-      }else if(memory_size_bits == 0x1){
-        print(" 512MB");
-      }else if(memory_size_bits == 2){
-        print(" 1GB");
-      }else if(memory_size_bits == 3){
-        print(" 2GB");
-      }
-      else if (memory_size_bits == 4)
-      {
-        print(" 4GB");
-      }
-      else if (memory_size_bits == 5)
-      {
-        print(" 8GB");
-      }
-      print("\n");
-      print("Memory bit value: ");
-      uart_hex_no_base(memory_size_bits,1);
-      print("\n");
-      //uart_hex_no_base(style_flag_bit,1);
-      if(style_flag_bit == 0x0){
-        print("Revision code style: old\n");
-      }else if(style_flag_bit == 0x1){
-      print("Revision code style: new\n");}
-      print("style bit value: ");
-      uart_hex_no_base(style_flag_bit,1);
-      print("\n");
-      //uart_hex_no_base(warranty_bit,1);
-      if(warranty_bit == 0x0){
-          print("Warranty intact");
-      }else if (warranty_bit ==0x1)
-      {
-        print("warranty voided");
-      }
-      print("\n warranty bit value: ");
-      uart_hex_no_base(warranty_bit,1);
-      print("\n");
-      if(otp_read_bit == 0x1){
-          print("OTP reading allowed");
-      }else if(otp_read_bit ==0x0){
-        print("OTP reading not allowed");
-      }
-      print("\n OTP read bit value: ");
-      uart_hex_no_base(otp_read_bit,1);
-      print("\n");
-      if(otp_program == 0x1){
-        print("OTP programming allow");
-      }else if(otp_program ==0){
-        print("OTP programming not allow");
-      }
-      print("\n");
-      print("OTP programming bit value: ");
-      uart_hex_no_base(otp_program,1);
-      print("\n");
-      if(overvoltage == 0x0){
-        print("Overvoltage allowed\n value: ");
-      }else if(overvoltage = 0x0){
-        print("Overvoltage not allowed\n value: ");
-      }
-      uart_hex_no_base(overvoltage,1);
-      print("\n");
-      
+     
+      print("\n\n");
+
+      show_boardrev(revision);
+
       uart_puts("\n+ Response Code in Message TAG: ");
       uart_hex(mBuf[6]);
       uart_puts("\nDATA: MAC address = ");
-      //uart_hex(mBuf[9]);
-      //uart_puts("\n");
-      
-      unsigned char *byte_ptr = (unsigned char *) (&mBuf[9]);
-	    //uart_puts("00:");
-      for (int i = 0; i <=5; i++)
-      { 
-        uart_hex_no_base(*byte_ptr,2);
-        if(i !=5){
-          print(":");
+      //unsigned int MAC_address = &mBuf[9];
+      unsigned char *byte_ptr = (unsigned char *)(&mBuf[9]);
+      for (int i = 0; i <= 5; i++)
+        {
+          uart_hex_no_base(*byte_ptr, 2);
+          if (i != 5)
+          {
+            print(":");
+          }
+            byte_ptr++;
         }
-        byte_ptr++;
-      }
-        print("\n");}
-    else {
+      print("\n");
+    } else { 
         uart_puts("Unable to query!\n");
     }
 }
@@ -241,8 +108,7 @@ void _handle_internal() {
       print(". ");
       println(history_buffer[i]);
     }
-  }
-  else if(str_equal(command,CMD_SHOW_INFO)){
+  } else if(str_equal(command,CMD_SHOW_INFO)){
     showinfo();
   }
 }
