@@ -1,4 +1,5 @@
 #include "cli/cli.h"
+#include "cli/command.h"
 #include "cli/help_text.h"
 #include "cli/welcome_text.h"
 #include "cli/command.h"
@@ -60,6 +61,14 @@ void _handle_internal() {
     } else if (str_starts_with(command, CMD_STOPBIT)) {
         int stopbit = extract_value_from_command(command, CMD_STOPBIT);
         uart_set_stopbit(stopbit);
+    } else if (str_equal(command, CMD_SHOW_IMAGE)){
+      displayWelcomeImage();
+    } else if (str_equal(command, CMD_HISTORY)) {
+    for (int i = 0; i < HISTORY_LENGTH; i++) {
+      uart_dec(i);
+      print(". ");
+      println(history_buffer[i]);
+    }
     }
 }
 

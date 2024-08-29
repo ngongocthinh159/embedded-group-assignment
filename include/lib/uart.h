@@ -181,3 +181,4 @@ void uart_scanning();
 int is_there_new_line();
 void get_line(char *buffer);
 void uart_set_stopbit(int stopbit);
+void get_ansi_control(char *buffer);

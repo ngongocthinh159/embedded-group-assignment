@@ -11,7 +11,21 @@ char* all_commands[] = {
     CMD_STOPBIT,
     CMD_VIDEO_RESUME,
     CMD_VIDEO_PAUSE,
+    CMD_SHOW_IMAGE,
+    CMD_BAUDRATE,
 };
 void auto_complete_command() {
 
 }
+int cmd_len[] = {
+    9,
+    8,
+    4,
+    
+    4,
+    5,
+    8,
+
+    6,
+    5
+};

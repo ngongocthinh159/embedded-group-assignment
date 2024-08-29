@@ -9,6 +9,9 @@
 #define LCR_STOPBIT_1 0x00  // 1 stop bit
 #define LCR_STOPBIT_2 0x04  // 2 stop bits
 #define SYSTEM_CLOCK_FREQ 250000000
+#include "util/tty.h"
+#include "lib/color.h"
+#include "cli/command.h"
 
 /* Private function prototype */
 void _handle_auto_completion();
@@ -171,12 +174,40 @@ void uart_dec(int num) {
     uart_puts(str);
 }
 
+void uart_init() {
+    // Disable UART
+    UART0_CR = 0x00000000;
+
+    // Setup the GPIO pins 14 and 15 for UART functionality
+    gpio_set_function(14, GPIO_FUNC_ALT0);
+    gpio_set_function(15, GPIO_FUNC_ALT0);
+
+    // Clear pending interrupts
+    UART0_ICR = 0x7FF;
+
+    // Set integer & fractional part of baud rate to 115200 as default
+    uart_set_baudrate(115200);  // Use previously defined function to set the baud rate
+
+    // Enable FIFO & 8-bit data transmission (1 stop bit, no parity)
+    UART0_LCRH = (UART0_LCRH_FEN | UART0_LCRH_WLEN_8BIT);
+
+    // Enable UART, receive & transmit
+    UART0_CR = (UART0_CR_UARTEN | UART0_CR_TXE | UART0_CR_RXE);
+}
 
 void uart_set_baudrate(int baudrate) {
-    // Calculate the baud rate register value using the formula
-    unsigned int baudrate_reg = (SYSTEM_CLOCK_FREQ / (8 * baudrate)) - 1;
-    
-    // Set the baud rate register in UART0
-    UART0_IBRD = (baudrate_reg >> 6) & 0xFFFF;  // Integer part
-    UART0_FBRD = baudrate_reg & 0x3F;           // Fractional part
+    // Calculate the baud rate divisor
+    unsigned int baudrate_divisor = SYSTEM_CLOCK_FREQ / (16 * baudrate);  // Integer part
+    unsigned int remainder = SYSTEM_CLOCK_FREQ % (16 * baudrate);
+    unsigned int fraction = ((remainder * 64) + (baudrate / 2)) / baudrate;  // Fractional part
+
+    // Disable UART to set baud rate
+    UART0_CR &= ~(UART0_CR_UARTEN);
+
+    // Set the integer and fractional part of the baud rate divisor
+    UART0_IBRD = baudrate_divisor;  // Integer part
+    UART0_FBRD = fraction;          // Fractional part
+
+    // Enable UART after setting baud rate
+    UART0_CR |= (UART0_CR_UARTEN);
 }
