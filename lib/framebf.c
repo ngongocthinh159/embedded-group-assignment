@@ -306,20 +306,24 @@ void drawCircleARGB32(int x_center, int y_center, int radius, unsigned int attr,
     }
 }
 
-/* Functions to display text on the screen */
+/* Functions to display text on the screen, 16x16 */
 // NOTE: zoom = 0 will not display the character
 void drawChar(unsigned char ch, int x, int y, unsigned int attr, int zoom)
 {
     unsigned char *glyph = (unsigned char *)&font + (ch < FONT_NUMGLYPHS ? ch : 0) * FONT_BPG;
 
-    for (int i = 1; i <= (FONT_HEIGHT*zoom); i++) {
-		for (int j = 0; j< (FONT_WIDTH*zoom); j++) {
-			unsigned char mask = 1 << (j/zoom);
-            if (*glyph & mask) { //only draw pixels belong to the character glyph
-			    drawPixelARGB32(x + j, y + i, attr);
+    for (int i = 0; i < FONT_HEIGHT * zoom; i++) {
+        for (int j = 0; j < FONT_WIDTH * zoom; j++) {
+            unsigned char byte = glyph[(j / zoom) / 8];
+            unsigned char mask = 1 << (7 - ((j / zoom) % 8)); 
+
+            if (byte & mask) {
+                drawPixelARGB32(x + j, y + i, attr);
             }
-		}
-		glyph += (i % zoom) ? 0 : FONT_BPL;
+        }
+        if ((i + 1) % zoom == 0) {
+            glyph += FONT_BPL;
+        }
     }
 }
 
@@ -424,10 +428,10 @@ void displayWelcomeImage() {
             pixel_index++; // Move to the next pixel
         }
     }
-    drawString(100,100,"Team member:",0xFF0000, 5);
-    drawString(100,200,"Tran The Quang Minh",0x0000FF, 5);
-    drawString(100,300,"Do Khoa Nguyen",0xFFFF00, 5);
-    drawString(100,400,"Ngo Ngoc Thinh",0x008000, 5);
-    drawString(100,500,"Nguyen Dinh Quoc Bao",0xFFFF00, 5);
-     drawString(100,600,"Tran Kiem Phuc",0xA020F0, 5);
+    drawString(100,100,"Team member:",0xFF0000, 3);
+    drawString(100,200,"Tran The Quang Minh",0x2702F5, 2);
+    drawString(100,300,"Do Khoa Nguyen",0xFFFF00, 2);
+    drawString(100,400,"Ngo Ngoc Thinh",0xFFA500, 2);
+    drawString(100,500,"Nguyen Dinh Quoc Bao",0xFFFF00, 2);
+    drawString(100,600,"Tran Kiem Phuc",0xE502F5, 2);
 }
