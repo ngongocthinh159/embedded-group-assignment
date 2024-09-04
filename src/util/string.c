@@ -38,8 +38,26 @@ int strcpy(char *dest, char *src) {
   return 1;
 }
 
+// BSD strlen implementation
+// https://cvsweb.openbsd.org/cgi-bin/cvsweb/src/lib/libc/string/strlen.c?rev=1.7&content-type=text/x-cvsweb-markup
+int strlen(const char *str) {
+  const char *s;
+  for (s = str; *s; ++s);
+  return (s - str);
+}
+
 int str_equal(const char *str1, const char *str2) {
   return strcmp(str1, str2) == 0;
+}
+ 
+const int strstr(const char* source, const char* match) {
+    while (*source != '\0') {
+        if ((*source == *match) && str_equal(source, match)) {
+            return 1;
+        }
+        source++;
+    }
+    return 0;
 }
 
 char push(char *str, char value) {

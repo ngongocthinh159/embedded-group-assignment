@@ -2,7 +2,9 @@
 
 int strcmp(char *str1, char *str2);
 int strcpy(char dest[], const char source[]);
+int strlen(const char *str);
 int str_equal(const char *str1, const char *str2);
+int strstr(const char *source, const char *match);
 int str_strip(char *str, unsigned int size);
 int str_beautify(char *str, unsigned int size);
 int str_is_blank(char *str, unsigned int size);

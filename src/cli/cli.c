@@ -4,8 +4,10 @@
 #include "cli/welcome_text.h"
 #include "lib/color.h"
 #include "lib/kernel.h"
+#include "lib/keyboard.h"
 #include "lib/stack.h"
 #include "lib/uart.h"
+#include "lib/framebf.h"
 #include "util/cirbuf.h"
 #include "util/string.h"
 #include "util/tty.h"
@@ -23,6 +25,7 @@ char auto_complete_buffer[COMMAND_MAX_SIZE + 1];
 Stack *auto_complete_st;
 
 volatile int current_mode = CLI; // mode switching in kernel.c
+int history_req = 0;
 
 int welcome() {
   println(welcome_text);
@@ -41,7 +44,6 @@ void print_prefix() {
 }
 
 void _handle_internal() {
-
   if (str_equal(command, CMD_HELP)) {
     print(help_text);
   } else if (str_equal(command, CMD_EXIT)) {
@@ -59,6 +61,14 @@ void _handle_internal() {
   }
 }
 
+void _handle_history() {
+  if (strstr(command, CSI_CUU)) {
+    history_req = cir_buf_previous(history_req);
+  } else if (strstr(command, CSI_CUD)) {
+    history_req = cir_buf_next(history_req);
+  }
+}
+
 void handle_cli_mode() {
   uart_puts("\n\nCLI mode!\n");
   print_prefix();
@@ -66,17 +76,22 @@ void handle_cli_mode() {
   while (is_cli_mode()) {
     uart_scanning(); // always scanning for new char
 
-    if (is_there_ansi_escape() == 2) {
+    if (is_there_ansi_escape()) {
       get_ansi_control(command);
 
-      print("ANSI escape sequence received: ");
-      println(command);
+      _handle_history();
 
-      _handle_internal();
+      clrln();
       print_prefix();
+      char* cmd = history_buffer[history_req];
+      print(cmd);
+      st_copy_from_str(cmd, cmd_st, strlen(cmd));
     }
 
     if (is_there_new_line()) {
+      // clear history_req buffer
+      history_req = history_head + 1;
+
       get_line(command);
       // push command to history, similar to bash history
       cir_buf_push(command);

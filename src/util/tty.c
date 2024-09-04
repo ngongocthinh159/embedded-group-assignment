@@ -41,12 +41,19 @@ void print_color(char *str, char *color_code) {
     
     buff[i] = '\0';
 
-    uart_puts(buff);
+    print(buff);
 }
 
 void println_color(char *str, char *color_code) {
     print_color(str, color_code);
     print("\r\n");
+}
+
+void clrln() {
+  char clrln_sequence[] = "\033[2K";
+  print(clrln_sequence);
+  // return to line start
+  print("\r");
 }
 
 void clrscr() {
