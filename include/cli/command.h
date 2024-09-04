@@ -11,6 +11,8 @@
 #define CMD_CLEAR "clear"
 #define CMD_SHOW_INFO "showinfo"
 #define CMD_HISTORY "history"
+#define CMD_BAUDRATE_PREFIX "baudrate"
+#define CMD_STOPBIT_PREFIX "stopbit"
 
 // video player control command
 #define CMD_VIDEO_RESUME "resume"
