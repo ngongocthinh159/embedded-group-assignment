@@ -170,4 +170,6 @@ void showinfo() {
     } else {
         uart_puts("Unable to query!\n");
     }
+    print_color(OS_NAME, CMD_COLOR_RED);
+    print_color(" > ", CMD_COLOR_RED);
 }
