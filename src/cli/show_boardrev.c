@@ -130,7 +130,7 @@ void show_boardrev(unsigned int revision) {
     print("\n\n");
     if (overvoltage == 0x0) {
         print("Overvoltage allowed\nOvervoltage value: ");
-    } else if (overvoltage = 0x1) {
+    } else if (overvoltage == 0x1) {
         print("Overvoltage not allowed\nOvervoltage value: ");
     }
     uart_hex_no_base(overvoltage, 1);
