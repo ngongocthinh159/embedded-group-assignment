@@ -1,16 +1,17 @@
 #include "cli/cli.h"
 
+#include "cli/baudrate.h"
 #include "cli/command.h"
 #include "cli/help_text.h"
 #include "cli/show_boardrev.h"
 #include "cli/welcome_text.h"
 #include "lib/color.h"
+#include "lib/framebf.h"
 #include "lib/kernel.h"
 #include "lib/mbox.h"
 #include "lib/keyboard.h"
 #include "lib/stack.h"
 #include "lib/uart.h"
-#include "lib/framebf.h"
 #include "util/cirbuf.h"
 #include "util/string.h"
 #include "util/tty.h"
@@ -24,7 +25,14 @@ char *GROUP_NAME = "FIRE OS";
 char command[COMMAND_MAX_SIZE +
              1];  // global buffer for command shell: after strip from stack
                   // buffer (size + 1 for '\0' character)
+char command[COMMAND_MAX_SIZE +
+             1];  // global buffer for command shell: after strip from stack
+                  // buffer (size + 1 for '\0' character)
 
+char stack_buffer[COMMAND_MAX_SIZE];  // global buffer for command shell: record
+                                      // all user input
+Stack *cmd_st;  // wrapper for command shell buffer (when wrapped the buffer can
+                // be treated as a stack and use like a stack)
 char stack_buffer[COMMAND_MAX_SIZE];  // global buffer for command shell: record
                                       // all user input
 Stack *cmd_st;  // wrapper for command shell buffer (when wrapped the buffer can
@@ -33,9 +41,16 @@ Stack *cmd_st;  // wrapper for command shell buffer (when wrapped the buffer can
 char auto_complete_buffer[COMMAND_MAX_SIZE + 1];
 Stack *auto_complete_st;
 
+char tmp_buffer[COMMAND_MAX_SIZE + 1];
+
 volatile int current_mode = CLI;  // mode switching in kernel.c
 int history_req = 0;
 
+/* Functions prototype */
+void _handle_baudrate_config();
+void _handle_stopbit_config();
+void _print_list_of_valid_baudrates();
+void _print_current_baudrate_and_stopbit();
 
 int welcome() {
     println(welcome_text);
@@ -54,22 +69,27 @@ void print_prefix() {
 }
 
 void _handle_internal() {
-    if (str_equal(command, CMD_HELP)) {
-        print(help_text);
-    } else if (str_equal(command, CMD_EXIT)) {
-        // exit();
-    } else if (str_equal(command, CMD_CLEAR)) {
-        clrscr();
-    } else if (str_equal(command, CMD_HISTORY)) {
-        for (int i = 0; i < HISTORY_LENGTH; i++) {
-            uart_dec(i);
-            print(". ");
-            println(history_buffer[i]);
-        }
-    } else if (str_equal(command, CMD_SHOW_INFO)) {
-        showinfo();
-
+  if (str_equal(command, CMD_HELP)) {
+    print(help_text);
+  } else if (str_equal(command, CMD_EXIT)) {
+    // exit();
+  } else if (str_equal(command, CMD_CLEAR)) {
+    clrscr();
+  } else if (str_equal(command, CMD_SHOW_IMAGE)){
+      displayWelcomeImage();
+  } else if (str_equal(command, CMD_HISTORY)) {
+    for (int i = 0; i < HISTORY_LENGTH; i++) {
+      uart_dec(i);
+      print(". ");
+      println(history_buffer[i]);
     }
+  } else if (str_equal(command, CMD_SHOW_INFO)) {
+        showinfo();
+  } else if (str_start_with_2(command, CMD_BAUDRATE_PREFIX)) {
+    _handle_baudrate_config();
+  } else if (str_start_with_2(command, CMD_STOPBIT_PREFIX)) {
+    _handle_stopbit_config();
+  }
 }
 
 void _handle_history() {
@@ -84,9 +104,8 @@ void handle_cli_mode() {
     uart_puts("\n\nCLI mode!\n");
     print_prefix();
 
-    while (is_cli_mode()) {
-        uart_scanning();  // always scanning for new char
-
+  while (is_cli_mode()) {
+    uart_scanning();  // always scanning for new char
 
     if (is_there_ansi_escape()) {
       get_ansi_control(command);
@@ -95,7 +114,7 @@ void handle_cli_mode() {
 
       clrln();
       print_prefix();
-      char* cmd = history_buffer[history_req];
+      char *cmd = history_buffer[history_req];
       print(cmd);
       st_copy_from_str(cmd, cmd_st, strlen(cmd));
     }
@@ -191,4 +210,104 @@ void showinfo() {
     } else {
         uart_puts("Unable to query!\n");
     }
+}
+
+void _handle_baudrate_config() {
+  TokenIndex idx = get_nth_token_indices(command, 1, ' ');
+  if (idx.start == -1) {
+    uart_puts("Please specify a baudrate number!\n");
+    _print_list_of_valid_baudrates();
+  } else {
+    char *baudNumStr = tmp_buffer;
+    TokenIndex idx = get_nth_token_indices(command, 1, ' ');
+    unsigned int token_len = idx.end - idx.start + 1;
+    for (unsigned int i = 0; i < token_len; i++) {
+      baudNumStr[i] = command[idx.start + i];
+    }
+    baudNumStr[token_len] = '\0';
+
+    Baudrate *inputBaudrate = get_baudrate(baudNumStr);
+    if (!is_valid_baudrate(inputBaudrate)) {
+      uart_puts("Invalid baudrate!\n");
+      _print_list_of_valid_baudrates();
+    } else {
+      uart_puts("Configuring UART");
+#ifdef UART0
+      uart_puts("0");
+#else  // RPI4
+      uart_puts("1");
+#endif
+      uart_puts(" with baudrate = ");
+      uart_puts(baudNumStr);
+      uart_puts(" now...\n");
+
+      uart_init_with_config(inputBaudrate, current_stopbits);
+
+      uart_puts("Done configuring baudrate!\n");
+      _print_current_baudrate_and_stopbit();
+    }
+  }
+}
+
+void _print_list_of_valid_baudrates() {
+  uart_puts("Valid baudrate list:\n");
+  for (int i = 0; i < number_of_valid_baudrates(); i++) {
+    uart_puts("- ");
+    uart_dec(valid_baudrates[i].value);
+    uart_puts("\n");
+  }
+  uart_puts("\n");
+}
+
+void _handle_stopbit_config() {
+  TokenIndex idx = get_nth_token_indices(command, 1, ' ');
+  if (idx.start == -1 || idx.end == -1) {
+    uart_puts("Please specify a stopbit number for UART either:\n+ 1 or 2 for UART0\n+ 1 for UART1\n");
+  } else {
+    char *stopbitNumsStr = tmp_buffer;
+    TokenIndex idx = get_nth_token_indices(command, 1, ' ');
+    unsigned int token_len = idx.end - idx.start + 1;
+    for (unsigned int i = 0; i < token_len; i++) {
+      stopbitNumsStr[i] = command[idx.start + i];
+    }
+    stopbitNumsStr[token_len] = '\0';
+
+#ifdef UART0
+    if (!str_equal(stopbitNumsStr, "1") && !str_equal(stopbitNumsStr, "2")) {
+      uart_puts("Invalid a stopbit for UART0 number must be either: 1 or 2\n");
+    } else {
+      uart_puts("Configuring UART0 with stopbit = ");
+      uart_puts(stopbitNumsStr);
+      uart_puts(" now...\n");
+
+      uart_init_with_config(current_baudrate, str_equal(stopbitNumsStr, "1") ? 1 : 2);
+
+      uart_puts("Done configuring stopbit!\n");
+      _print_current_baudrate_and_stopbit();
+    }
+#else // UART1
+    if (!str_equal(stopbitNumsStr, "1" + '\0')) {
+      uart_puts("Invalid a stopbit for UART1 number must be only: 1\n");
+    } else {
+      uart_puts("Configuring UART1 with stopbit = ");
+      uart_puts(stopbitNumsStr);
+      uart_puts(" now...\n");
+
+      uart_init_with_config(current_baudrate, 1);
+
+      uart_puts("Done configuring stopbit!\n");
+      _print_current_baudrate_and_stopbit();
+    }
+#endif
+  }
+}
+
+void _print_current_baudrate_and_stopbit() {
+  print("Current baudrate: ");
+  uart_dec(current_baudrate->value);
+  println("");
+  print("Current stopbit: ");
+  uart_dec(current_stopbits);
+  println("");
+  println("");
 }

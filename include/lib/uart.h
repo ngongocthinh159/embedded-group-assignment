@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gpio.h"
+#include "cli/baudrate.h"
 
 //-------------------------UART0-------------------------
 /* PL011 UART (UART0) registers */
@@ -183,3 +184,4 @@ int is_there_ansi_escape();
 void get_line(char *buffer);
 void get_ansi_control(char *buffer);
 void uart_hex_no_base(unsigned int num, unsigned int width);
+void uart_init_with_config(Baudrate* baudrate, unsigned int numberOfStopBits);

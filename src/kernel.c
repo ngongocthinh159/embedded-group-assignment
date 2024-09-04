@@ -1,4 +1,5 @@
 #include "cli/cli.h"
+#include "cli/baudrate.h"
 #include "game/game.h"
 #include "lib/framebf.h"
 #include "lib/stack.h"
@@ -12,19 +13,15 @@ char __attribute__((
 int history_head = 0;
 
 void main() {
-  // set up serial console
-  uart_init();
+  // set up serial console with initial baudrate and stopbit
+  uart_init_with_config(current_baudrate, current_stopbits);
 
   // setup framebuffer
   framebf_init(1024, 768, 1024, 768, 0, 0);
 
-    // init global command shell buffer
-    Stack _cmd_st = {stack_buffer, COMMAND_MAX_SIZE, -1};
-    cmd_st = &_cmd_st;
-    Stack _auto_comp = {auto_complete_buffer, COMMAND_MAX_SIZE, -1};
-    auto_complete_st = &_auto_comp;
-    // st_init(cmd_st, stack_buffer, COMMAND_MAX_SIZE);
-    // st_init(auto_complete_st, auto_complete_buffer, AUTO_COMPLETE_MAX_SIZE);
+  // init global command shell buffer
+  Stack _cmd_st = {stack_buffer, COMMAND_MAX_SIZE, -1}; cmd_st = &_cmd_st;
+  Stack _auto_comp = {auto_complete_buffer, COMMAND_MAX_SIZE, -1}; auto_complete_st = &_auto_comp;
 
   clrscr();
   welcome();
