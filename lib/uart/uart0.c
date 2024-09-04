@@ -24,7 +24,7 @@ void uart_init()
 	mBuf[6] = 48000000;			   // rate: 48Mhz
 	mBuf[7] = 0;				   // clear turbo
 	mBuf[8] = MBOX_TAG_LAST;
-	mbox_call(ADDR(mBuf), MBOX_CH_PROP);
+	mbox_call_no_print(ADDR(mBuf), MBOX_CH_PROP);
 
 	/* Setup GPIO pins 14 and 15 */
 
@@ -145,7 +145,7 @@ void uart_init_with_config(Baudrate* baudrate, unsigned int numberOfStopBits) {
 	mBuf[6] = 48000000;			   // rate: 48Mhz
 	mBuf[7] = 0;				   // clear turbo
 	mBuf[8] = MBOX_TAG_LAST;
-	mbox_call(ADDR(mBuf), MBOX_CH_PROP);
+	mbox_call_no_print(ADDR(mBuf), MBOX_CH_PROP);
 
 	/* Setup GPIO pins 14 and 15 */
 
