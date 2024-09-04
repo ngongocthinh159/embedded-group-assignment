@@ -7,8 +7,10 @@
 #include "lib/color.h"
 #include "lib/kernel.h"
 #include "lib/mbox.h"
+#include "lib/keyboard.h"
 #include "lib/stack.h"
 #include "lib/uart.h"
+#include "lib/framebf.h"
 #include "util/cirbuf.h"
 #include "util/string.h"
 #include "util/tty.h"
@@ -32,6 +34,8 @@ char auto_complete_buffer[COMMAND_MAX_SIZE + 1];
 Stack *auto_complete_st;
 
 volatile int current_mode = CLI;  // mode switching in kernel.c
+int history_req = 0;
+
 
 int welcome() {
     println(welcome_text);
@@ -64,7 +68,16 @@ void _handle_internal() {
         }
     } else if (str_equal(command, CMD_SHOW_INFO)) {
         showinfo();
+
     }
+}
+
+void _handle_history() {
+  if (strstr(command, CSI_CUU)) {
+    history_req = cir_buf_previous(history_req);
+  } else if (strstr(command, CSI_CUD)) {
+    history_req = cir_buf_next(history_req);
+  }
 }
 
 void handle_cli_mode() {
@@ -74,37 +87,44 @@ void handle_cli_mode() {
     while (is_cli_mode()) {
         uart_scanning();  // always scanning for new char
 
-        if (is_there_ansi_escape() == 2) {
-            get_ansi_control(command);
 
-            print("ANSI escape sequence received: ");
-            println(command);
+    if (is_there_ansi_escape()) {
+      get_ansi_control(command);
 
-            _handle_internal();
-            print_prefix();
-        }
+      _handle_history();
 
-        if (is_there_new_line()) {
-            get_line(command);
-            // push command to history, similar to bash history
-            cir_buf_push(command);
+      clrln();
+      print_prefix();
+      char* cmd = history_buffer[history_req];
+      print(cmd);
+      st_copy_from_str(cmd, cmd_st, strlen(cmd));
+    }
 
-            print("Command received: ");
-            println(command);
+    if (is_there_new_line()) {
+      // clear history_req buffer
+      history_req = history_head + 1;
+
+      get_line(command);
+      // push command to history, similar to bash history
+      cir_buf_push(command);
+
+
+      print("Command received: ");
+      println(command);
 
             // flow control
-            if (str_equal(command, CMD_SWITCH_TO_VIDEO_PLAYER_MODE)) {
-                switch_to_video_player_mode();
-                break;
-            } else if (str_equal(command, CMD_SWITCH_TO_GAME_MODE)) {
-                switch_to_game_mode();
-                break;
-            }
+      if (str_equal(command, CMD_SWITCH_TO_VIDEO_PLAYER_MODE)) {
+          switch_to_video_player_mode();
+          break;
+      } else if (str_equal(command, CMD_SWITCH_TO_GAME_MODE)) {
+        switch_to_game_mode();
+         break;
+      }
 
             // handle command in cli mode
-            _handle_internal();
+       _handle_internal();
 
-            print_prefix();
+       print_prefix();
         }
     }
 }

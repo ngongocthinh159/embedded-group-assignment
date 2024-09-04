@@ -38,3 +38,30 @@ void cir_buf_latest(char **res) {
     }
   } while (start != history_head - 1);
 }
+
+int cir_buf_next(int index) {
+  int idx = index + 1;
+  for (int i = 0; i < HISTORY_LENGTH; i++) {
+    if (!str_equal(history_buffer[idx], "")) {
+      return idx;
+    }
+    if (idx < HISTORY_LENGTH) idx++;
+    else idx = 0;
+  }
+
+  return HISTORY_LENGTH;
+}
+
+int cir_buf_previous(int index) {
+  int idx = index - 1;
+  for (int i = 0; i < HISTORY_LENGTH; i++) {
+    if (!str_equal(history_buffer[idx], "")) {
+      return idx;
+    }
+    if (idx > 0) idx--;
+    else idx = HISTORY_LENGTH - 1;
+  }
+
+  return HISTORY_LENGTH;
+}
+

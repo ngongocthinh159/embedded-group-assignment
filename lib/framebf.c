@@ -5,6 +5,7 @@
 #include "lib/math.h"
 #include "lib/timer.h"
 #include "image-renderer/image.h"
+#include "cli/font.h"
 
 // Use RGBA32 (32 bits for each pixel)
 #define COLOR_DEPTH 32
@@ -305,38 +306,42 @@ void drawCircleARGB32(int x_center, int y_center, int radius, unsigned int attr,
     }
 }
 
-/* Functions to display text on the screen */
+/* Functions to display text on the screen, 16x16 */
 // NOTE: zoom = 0 will not display the character
-// void drawChar(unsigned char ch, int x, int y, unsigned int attr, int zoom)
-// {
-//     unsigned char *glyph = (unsigned char *)&font + (ch < FONT_NUMGLYPHS ? ch : 0) * FONT_BPG;
+void drawChar(unsigned char ch, int x, int y, unsigned int attr, int zoom)
+{
+    unsigned char *glyph = (unsigned char *)&font + (ch < FONT_NUMGLYPHS ? ch : 0) * FONT_BPG;
 
-//     for (int i = 1; i <= (FONT_HEIGHT*zoom); i++) {
-// 		for (int j = 0; j< (FONT_WIDTH*zoom); j++) {
-// 			unsigned char mask = 1 << (j/zoom);
-//             if (*glyph & mask) { //only draw pixels belong to the character glyph
-// 			    drawPixelARGB32(x + j, y + i, attr);
-//             }
-// 		}
-// 		glyph += (i % zoom) ? 0 : FONT_BPL;
-//     }
-// }
+    for (int i = 0; i < FONT_HEIGHT * zoom; i++) {
+        for (int j = 0; j < FONT_WIDTH * zoom; j++) {
+            unsigned char byte = glyph[(j / zoom) / 8];
+            unsigned char mask = 1 << (7 - ((j / zoom) % 8)); 
 
-// void drawString(int x, int y, char *str, unsigned int attr, int zoom)
-// {
-//     while (*str) {
-//         if (*str == '\r') {
-//             x = 0;
-//         } else if (*str == '\n') {
-//             x = 0;
-// 			y += (FONT_HEIGHT*zoom);
-//         } else {
-//             drawChar(*str, x, y, attr, zoom);
-//             x += (FONT_WIDTH*zoom);
-//         }
-//         str++;
-//     }
-// }
+            if (byte & mask) {
+                drawPixelARGB32(x + j, y + i, attr);
+            }
+        }
+        if ((i + 1) % zoom == 0) {
+            glyph += FONT_BPL;
+        }
+    }
+}
+
+void drawString(int x, int y, char *str, unsigned int attr, int zoom)
+{
+    while (*str) {
+        if (*str == '\r') {
+            x = 0;
+        } else if (*str == '\n') {
+            x = 0;
+			y += (FONT_HEIGHT*zoom);
+        } else {
+            drawChar(*str, x, y, attr, zoom);
+            x += (FONT_WIDTH*zoom);
+        }
+        str++;
+    }
+}
 
 // Function to draw line
 void drawLine(int x1, int y1, int x2, int y2, unsigned int attr)
@@ -409,8 +414,8 @@ void drawVideo(int x, int y, const unsigned long **video, int video_pixels_width
     }
 }
 
-//For the background image
-void renderImage() {
+//For the background image and font
+void displayWelcomeImage() {
     int pixel_index = 0;
     for (int y = 0; y < image_height; y++) {
         for (int x = 0; x < image_width; x++) {
@@ -423,4 +428,10 @@ void renderImage() {
             pixel_index++; // Move to the next pixel
         }
     }
+    drawString(100,100,"Team member:",0xFF0000, 3);
+    drawString(100,200,"Tran The Quang Minh",0x2702F5, 2);
+    drawString(100,300,"Do Khoa Nguyen",0xFFFF00, 2);
+    drawString(100,400,"Ngo Ngoc Thinh",0xFFA500, 2);
+    drawString(100,500,"Nguyen Dinh Quoc Bao",0xFFFF00, 2);
+    drawString(100,600,"Tran Kiem Phuc",0xE502F5, 2);
 }
