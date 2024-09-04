@@ -52,6 +52,8 @@ extern volatile unsigned int mBuf[36];
 #define MBOX_TAG_SETPXLORDR 0x00048006
 #define MBOX_TAG_GETFB 0x00040001
 #define MBOX_TAG_GETPITCH 0x00040008
+#define MBOX_TAG_GETMAC 0x00010003
+#define MBOX_TAG_GETBOARDREV 0x00010002
 
 /* Function Prototypes */
 int mbox_call(unsigned int buffer_addr, unsigned char channel);
