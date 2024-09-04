@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "show_boardrev.h": "c",
-        "get_boardrev.h": "c",
-        "show_info.h": "c",
-        "tty.h": "c"
-    }
-}
