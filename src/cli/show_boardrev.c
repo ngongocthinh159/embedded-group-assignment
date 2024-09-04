@@ -26,16 +26,16 @@ void show_boardrev(unsigned int revision) {
     print("\n\n");
 
     if (type_bits == 0x11) {
-        print("Type: 4B");
+        print("Model: 4B");
     } else if (type_bits == 0xD) {
-        print("Type: 3B+");
+        print("Model: 3B+");
     }else if(type_bits ==0xE){
-        print("Type: 3A+");
+        print("Model: 3A+");
     }else if(type_bits == 0x8){
-        print("Type: 3B");
+        print("Model: 3B");
     }
     // cover 4 types of board
-    print("\nType bits value: ");
+    print("\nModel bits value: ");
     uart_hex_no_base(type_bits, 2);
     print("\n\n");
 
