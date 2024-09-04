@@ -262,6 +262,18 @@ void uart_hex(unsigned int num) {
     uart_sendc(digit);
   }
 }
+void uart_hex_no_base(unsigned int num, unsigned int width){
+  int printed = 0;
+  for (int position = 28; position >= 0; position = position - 4){
+    char digit = (num >> position) & 0xF;
+
+    digit += (digit > 9) ? (-10 + 'A') : '0';
+    if (digit != '0' || printed == 1 || position <= 4 * (width - 1)){
+      uart_sendc(digit);
+      printed = 1;
+    }
+  }
+}
 
 /*
 **
