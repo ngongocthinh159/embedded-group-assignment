@@ -4,6 +4,7 @@ typedef struct {
   char *name;
   int length;
   char *help;
+  void (*fn)();
 } Command;
 
 // flow control command
@@ -23,6 +24,8 @@ typedef struct {
 // video player control command
 #define CMD_VIDEO_RESUME "resume"
 #define CMD_VIDEO_PAUSE "pause"
+
+int resolve_command(char *command);
 
 extern Command all_commands[];
 extern int all_commands_size;
