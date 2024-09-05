@@ -196,7 +196,7 @@ void showinfo() {
         uart_puts("\n+ Response Code in Message TAG MBOX_TAG_GETMAC: ");
         uart_hex(mBuf[8]);
         uart_puts("\nDATA: MAC address = ");
-        // unsigned int MAC_address = &mBuf[9];
+      
         unsigned char *byte_ptr = (unsigned char *)(&mBuf[9]);
         for (int i = 0; i <= 5; i++) {
             uart_hex_no_base(*byte_ptr, 2);
