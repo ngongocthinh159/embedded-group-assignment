@@ -440,39 +440,41 @@ void displayWelcomeImage() {
 
 // ------- Game assets -------- //
 void drawRedBlock(int x, int y){
-    drawImage(redBlock, x, y, 30, 30);
+    drawImage(redBlock, x, y, block_width, block_height);
 }
 
 void drawOrangeBlock(int x, int y){
-    drawImage(orangeBlock, x, y, 30, 30);
+    drawImage(orangeBlock, x, y, block_width, block_height);
 }
 
 void drawYellowBlock(int x, int y){
-    drawImage(yellowBlock, x, y, 30, 30);
+    drawImage(yellowBlock, x, y, block_width, block_height);
 }
 
 void drawGreenBlock(int x, int y){
-    drawImage(greenBlock, x, y, 30, 30);
+    drawImage(greenBlock, x, y, block_width, block_height);
 }
 
 void drawCyanBlock(int x, int y){
-    drawImage(cyanBlock, x, y, 30, 30);
+    drawImage(cyanBlock, x, y, block_width, block_height);
 }
 
 void drawBlueBlock(int x, int y){
-    drawImage(blueBlock, x, y, 30, 30);
+    drawImage(blueBlock, x, y, block_width, block_height);
 }
 
 void drawPurpleBlock(int x, int y){
-    drawImage(purpleBlock, x, y, 30, 30);
+    drawImage(purpleBlock, x, y, block_width, block_height);
 }
 
 // Same color as background
 void drawClearBlock(int x, int y){
-    drawImage(clearBlock, x, y, 30, 30);
+    drawImage(clearBlock, x, y, block_width, block_height);
 }
 
-// Use this to render the play field
+// Use this to render the play screen
+// Play field is a 330 x 630 rectangle, starts from (242, 64) ends at (572, 694)
+// Next-block field is a 150 x 150 square, starts from (602, 522) ends at (752, 694)
 void displayGamePlayScreen() {
     drawImage(playImageBitmap, 212, 34, playImage_width, playImage_height);
     drawString(602,64,"SCORE",0xff4D3D, 2);
