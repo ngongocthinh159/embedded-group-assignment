@@ -18,10 +18,11 @@ int _handle_game_mode_internal() {
     println("LEFT");
   } else if (_is_right_command()) {
     println("RIGHT");
-  } else if (_is_exit_game_command()) {
-    _exit_game();
-    return 1;
-  } else {
+  } else if (_is_enter_or_space_command()) {
+    println("SPACE or ENTER");
+  } else if (_is_back_tick_command()) {
+    println("BACK TICK");
+  } else {  
     _print_error_game_mode();
   }
 
@@ -66,15 +67,19 @@ int _is_down_command() {
 }
 
 int _is_left_command() {
-  return strstr(command, CSI_CUF) || str_equal(command, "a");
+  return strstr(command, CSI_CUB) || str_equal(command, "a");
 }
 
 int _is_right_command() {
-  return strstr(command, CSI_CUB) || str_equal(command, "d");
+  return strstr(command, CSI_CUF) || str_equal(command, "d");
 }
 
-int _is_exit_game_command() {
-  return str_equal(command, BACK_TICK);
+int _is_back_tick_command() {
+  return str_equal(command, BACK_TICK_STR);
+}
+
+int _is_enter_or_space_command() {
+  return str_equal(command, SPACE_STR);
 }
 
 void _exit_game() {
