@@ -8,3 +8,4 @@ double fabs(double x);
 double sqrt(double n);
 double sin(double x);
 double cos(double x);
+int rand(int from, int to);
