@@ -7,8 +7,8 @@
 #include "util/tty.h"
 #include "video-player/video-player.h"
 #include "util/cirbuf.h"
-// #include "video-player/video.h"
-// #include "video-player/img-background.h"
+#include "video-player/video.h"
+#include "video-player/img-background.h"
 
 void _mode_exit() {
   drawRectARGB32(0, 0, width - 1, height - 1, COLOR_BLACK, 1);
@@ -16,13 +16,13 @@ void _mode_exit() {
 
 volatile int is_playing = 1;
 
-// int _get_cinema_background_fit_x() {
-//     return (width - video_pixels_width)/2 + 18;
-// }
+int _get_cinema_background_fit_x() {
+    return (width - video_pixels_width)/2 + 18;
+}
 
-// int _get_cinema_background_fit_y() {
-//     return 48;
-// }
+int _get_cinema_background_fit_y() {
+    return 48;
+}
 
 int _handle_video_mode_internal() {
   int is_handled = 0;
@@ -42,10 +42,10 @@ void handle_video_player_mode() {
   print_prefix();
   
   // draw background
-  // drawImage(img_cinema, 0, 0, img_pixels_width, img_pixels_height);
+  drawImage(img_cinema, 0, 0, img_pixels_width, img_pixels_height);
 
   while (is_video_player_mode()) {
-    // _draw_video_if_is_playing(); // draw video first then handle command
+    _draw_video_if_is_playing(); // draw video first then handle command
     
     uart_scanning();  // always scanning for new char
 
@@ -97,9 +97,9 @@ void pause_video() {
   is_playing = 0;
 }
 
-// void _draw_video_if_is_playing() {
-//   if (is_playing) {
-//     drawVideo(_get_cinema_background_fit_x(), _get_cinema_background_fit_y(),
-//     video_array, video_pixels_width, video_pixels_height, video_array_len);
-//   }
-// }
+void _draw_video_if_is_playing() {
+  if (is_playing) {
+    drawVideo(_get_cinema_background_fit_x(), _get_cinema_background_fit_y(),
+    video_array, video_pixels_width, video_pixels_height, video_array_len);
+  }
+}
