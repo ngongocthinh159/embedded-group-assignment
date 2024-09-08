@@ -1,3 +1,5 @@
+#pragma once
+
 static unsigned int block_width = 30;
 static unsigned int block_height = 30;
 
