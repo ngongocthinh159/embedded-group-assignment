@@ -4,6 +4,9 @@
 
 
 
+
 void handle_game_mode() {
+    draw_general_menu();
+    displayGamePlayScreen();
     
 }
