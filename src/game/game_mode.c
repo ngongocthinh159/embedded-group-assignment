@@ -5,26 +5,18 @@
 #include "../../include/game/screen/game-mode/welcome_screen_hard.h"
 #include "../../include/game/screen/game-mode/background.h"
 //unsigned long *mode_menu;
-char easy_mode []={"CURRENT DIFFICULTY: EASY"};
-char medium_mode []={"CURRENT DIFFICULTY: MEDIUM"};
+char normal_mode []={"CURRENT DIFFICULTY: NORMAL"};
+//char medium_mode []={"CURRENT DIFFICULTY: MEDIUM"};
 char hard_mode []={"CURRENT DIFFICULTY: HARD"};
 //char *title_ptr = &title;
-void hard_mode_screen(){
-    drawImage(welcome_screen_hard,0,0,image_width,image_height);
-}
-void easy_mode_screen(){
-    drawImage(welcome_screen_easy,0,0,image_width,image_height);
-}
-void medium_mode_screen(){
-    drawImage(welcome_screen_medium,0,0,image_width,image_height);
-}
+
 
 void draw_new_game_highlight(){
     drawLineWithThicknessARGB32(430,355,430,405,0xFFFFFF,1);//left line of new game, added 30 pixel to x coors compare to canva soruce
     drawLineWithThicknessARGB32(610,355,610,405,0xFFFFFF,1);//right line of new game
 }
 void draw_difficulty_highlight(){
-    drawString(265,440,easy_mode,0xFFFFFF,1);
+    drawString(265,440,normal_mode,0xFFFFFF,1); // normal mode as default
     drawLineWithThicknessARGB32(779,430,779,480,0xFFFFFF,1);// right line of difficulty
     drawLineWithThicknessARGB32(254,430,254,480,0xFFFFFF,1);//left line of difficulty
 }
@@ -48,7 +40,7 @@ void draw_nav_exit(){
     draw_general_menu();
     draw_exit_highlight();
 }
-void draw_choose_new_game(){
+void draw_nav_new_game(){ // new game element highlighted
     draw_general_menu();
     draw_new_game_highlight();
 }
@@ -56,7 +48,11 @@ void draw_nav_diffuclty(){
     draw_general_menu();
     draw_exit_highlight();
 }
-void displayGamePlayScreen();
+void draw_hard_difficultu(){
+    draw_general_menu();
+    draw_exit_highlight();
+}
+
 /*
 void read_from_screen(){
     int array_length = sizeof(mode_menu) / sizeof(unsigned long);
