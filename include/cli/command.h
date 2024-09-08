@@ -1,5 +1,12 @@
 #pragma once
 
+typedef struct {
+  char *name;
+  int length;
+  char *help;
+  void (*fn)();
+} Command;
+
 // flow control command
 #define CMD_SWITCH_TO_VIDEO_PLAYER_MODE "playvideo"
 #define CMD_SWITCH_TO_GAME_MODE "playgame"
@@ -18,6 +25,8 @@
 #define CMD_VIDEO_RESUME "resume"
 #define CMD_VIDEO_PAUSE "pause"
 
+int resolve_command(char *command);
+
+extern Command all_commands[];
 extern int all_commands_size;
-extern char *all_commands[];
-extern int cmd_len[];
+

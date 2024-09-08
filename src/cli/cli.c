@@ -2,7 +2,6 @@
 
 #include "cli/baudrate.h"
 #include "cli/command.h"
-#include "cli/help_text.h"
 #include "cli/show_boardrev.h"
 #include "cli/welcome_text.h"
 #include "lib/color.h"
@@ -15,9 +14,6 @@
 #include "util/cirbuf.h"
 #include "util/string.h"
 #include "util/tty.h"
-
-/* Functions prototype */
-void showinfo();
 
 char *OS_NAME = "FIRE_OS";
 char *GROUP_NAME = "FIRE OS";
@@ -46,12 +42,6 @@ char tmp_buffer[COMMAND_MAX_SIZE + 1];
 volatile int current_mode = CLI;  // mode switching in kernel.c
 int history_req = 0;
 
-/* Functions prototype */
-void _handle_baudrate_config();
-void _handle_stopbit_config();
-void _print_list_of_valid_baudrates();
-void _print_current_baudrate_and_stopbit();
-
 int welcome() {
     println(welcome_text);
     println("");
@@ -69,26 +59,10 @@ void print_prefix() {
 }
 
 void _handle_internal() {
-  if (str_equal(command, CMD_HELP)) {
-    print(help_text);
-  } else if (str_equal(command, CMD_EXIT)) {
-    // exit();
-  } else if (str_equal(command, CMD_CLEAR)) {
-    clrscr();
-  } else if (str_equal(command, CMD_SHOW_IMAGE)){
-      displayWelcomeImage();
-  } else if (str_equal(command, CMD_HISTORY)) {
-    for (int i = 0; i < HISTORY_LENGTH; i++) {
-      uart_dec(i);
-      print(". ");
-      println(history_buffer[i]);
+  for (int i = 0; i < all_commands_size; i++) {
+    if (str_start_with_2(command, all_commands[i].name)) {
+      all_commands[i].fn();
     }
-  } else if (str_equal(command, CMD_SHOW_INFO)) {
-        showinfo();
-  } else if (str_start_with_2(command, CMD_BAUDRATE_PREFIX)) {
-    _handle_baudrate_config();
-  } else if (str_start_with_2(command, CMD_STOPBIT_PREFIX)) {
-    _handle_stopbit_config();
   }
 }
 
@@ -286,7 +260,7 @@ void _handle_stopbit_config() {
       _print_current_baudrate_and_stopbit();
     }
 #else // UART1
-    if (!str_equal(stopbitNumsStr, "1" + '\0')) {
+    if (!str_equal(stopbitNumsStr, "1\0")) {
       uart_puts("Invalid a stopbit for UART1 number must be only: 1\n");
     } else {
       uart_puts("Configuring UART1 with stopbit = ");
@@ -309,5 +283,20 @@ void _print_current_baudrate_and_stopbit() {
   print("Current stopbit: ");
   uart_dec(current_stopbits);
   println("");
+  println("");
+}
+
+void _print_help() {
+  print("For more information on a specific command, type ");
+  print_color("help ", CMD_COLOR_RED);
+  print_color("<command> ", CMD_COLOR_MAG);
+  println("");
+  for (int i = 0; i < all_commands_size; i++) {
+    print_color(all_commands[i].name, CMD_COLOR_BLU);
+    if (all_commands[i].length < 8) print("\t\t");
+    else print("\t");
+    print(all_commands[i].help);
+    println("");
+  }
   println("");
 }

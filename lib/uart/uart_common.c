@@ -183,10 +183,11 @@ int _get_suffix_auto_complete(char *token, char *suffix_buffer, int token_size) 
     int suffix_size = 0;
     int j = 0;
     for (int i = 0; i < all_commands_size; i++) {
-        int command_size = cmd_len[i];
-        if (command_size > token_size && str_start_with(all_commands[i], token, command_size, token_size)) {
+        char *command_name = all_commands[i].name;
+        int command_size = all_commands[i].length;
+        if (command_size > token_size && str_start_with(command_name, token, command_size, token_size)) {
             for (int k = token_size; k < command_size; k++, j++) {
-                suffix_buffer[j] = all_commands[i][k];
+                suffix_buffer[j] = all_commands[i].name[k];
                 suffix_size++;
             }
             suffix_buffer[suffix_size] = '\0';
