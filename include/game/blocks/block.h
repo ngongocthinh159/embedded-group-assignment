@@ -1,3 +1,5 @@
+static unsigned int block_width = 30;
+static unsigned int block_height = 30;
 
 const unsigned long redBlock [] = {
 	0x00f686a1, 0x00f985a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00fa84a4, 0x00f984a4, 0x00fa84a4, 0x00fa84a4, 0x00f983a2, 0x00ee9eb1, 
@@ -263,9 +265,9 @@ const unsigned long clearBlock [] = {
 	0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040, 0x00404040
 };
 
-// Array of all bitmaps for convenience.
-const int bitmap_allArray_LEN = 8;
-const unsigned long* bitmap_allArray[8] = {
+// Array of all block bitmaps for convenience.
+const int block_bitmap_allArray_LEN = 8;
+const unsigned long* block_bitmap_allArray[8] = {
 	redBlock,
 	orangeBlock,
 	yellowBlock,
