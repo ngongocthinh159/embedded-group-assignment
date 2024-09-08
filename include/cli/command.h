@@ -12,6 +12,7 @@ typedef struct {
 #define CMD_SWITCH_TO_GAME_MODE "playgame"
 #define CMD_SHOW_IMAGE "displayimage"
 #define CMD_EXIT "exit"
+#define CMD_CURRENT_MODE "currentmode"
 
 // cli command
 #define CMD_HELP "help"

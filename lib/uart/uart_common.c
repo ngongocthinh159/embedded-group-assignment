@@ -52,7 +52,7 @@ void _internal_char_handle(char ch) {
         return;
     }
 
-    if (ch == ENTER) {
+    if (ch == ENTER && !is_game_mode()) {
         // handle when buffer is empty
         if (str_is_blank(cmd_st->buffer, st_size(cmd_st))) {
             uart_sendc(ENTER);
@@ -102,10 +102,15 @@ void _internal_char_handle(char ch) {
             st_pop(cmd_st);
           }
         }
+      
+      // handle game mode only receive ansi or 1 char
+      } else if (is_game_mode()) {
+        new_line_received = 1;
       }
 
       int push_success = st_push(cmd_st, ch);
       if (push_success && !ansi_escaped_received) {
+          if (is_game_mode()) return; // not output receved char in game mode 
           uart_sendc(ch);
       }  else {
           // TODO: when stack buffer is full might do something..
