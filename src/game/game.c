@@ -1,5 +1,5 @@
-//#include "../../include/game/game_mode.h"
-//#include "../../include/game/game.h"
+#include "../../include/game/game_mode.h"
+#include "../../include/game/game.h"
 
 
 
@@ -37,7 +37,7 @@ int _handle_game_mode_internal() {
 }
 
 void handle_game_mode() {
-    //draw_general_menu();
+    draw_general_menu();
     //displayGamePlayScreen();
     
   print_color("\n\nGame mode!\n", CMD_COLOR_YEL);
