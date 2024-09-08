@@ -15,6 +15,7 @@
 #include "game/game.h"
 
 int _handle_game_mode_internal() {
+    draw_general_menu();
   if (_is_up_command()) {
     println("UP");
   } else if (_is_down_command()) {
@@ -37,7 +38,7 @@ int _handle_game_mode_internal() {
 }
 
 void handle_game_mode() {
-    draw_general_menu();
+    
     //displayGamePlayScreen();
     
   print_color("\n\nGame mode!\n", CMD_COLOR_YEL);
@@ -45,7 +46,7 @@ void handle_game_mode() {
 
   while (is_game_mode()) {
     uart_scanning();  // always scanning for new char
-
+   
     if (is_there_ansi_escape()) {
       get_ansi_control(command);
 
