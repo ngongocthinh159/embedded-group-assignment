@@ -55,14 +55,15 @@ void handle_video_player_mode() {
   drawImage(img_cinema, 0, 0, img_pixels_width, img_pixels_height);
 
   while (is_video_player_mode()) {
-    _draw_next_frame_if_is_playing(); // draw video first then handle command
-
     if (should_exit_video_mode) {
       break;
     }
 
-    // 0.04s/frame => 25 fps
+    // frame_time_ms = 0.04s, video_len = 1s => 25 fps
     set_wait_timer_cb1(1, frame_time_ms, _uart_scanning_call_back);
+
+    _draw_next_frame_if_is_playing(); // draw next video frame
+
     set_wait_timer_cb1(0, frame_time_ms, _uart_scanning_call_back);
   }
 }
