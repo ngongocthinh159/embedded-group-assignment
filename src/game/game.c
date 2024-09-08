@@ -339,6 +339,8 @@ Point _get_init_center_point(Piece *piece) {
 }
 
 void _rotate_piece(Piece *piece) {
+  if (piece->shape == SHAPE_O) return;
+
   if (piece->angle == ANGLE_0) {
     piece->angle = ANGLE_90;
   } else if (piece->angle == ANGLE_90) {
@@ -401,7 +403,7 @@ int _get_angle_multiplier_sin(Angle angle) {
   } else if (angle == ANGLE_180) {
     return 0;
   } else {
-    return 1;
+    return -1;
   }
 }
 
@@ -411,7 +413,7 @@ int _get_angle_multiplier_cos(Angle angle) {
   } else if (angle == ANGLE_90) {
     return 0;
   } else if (angle == ANGLE_180) {
-    return 1;
+    return -1;
   } else {
     return 0;
   }
