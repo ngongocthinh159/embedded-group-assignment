@@ -10,8 +10,6 @@
 // #include "video-player/video.h"
 // #include "video-player/img-background.h"
 
-extern int width, height, pitch;
-
 void _mode_exit() {
   drawRectARGB32(0, 0, width - 1, height - 1, COLOR_BLACK, 1);
 }

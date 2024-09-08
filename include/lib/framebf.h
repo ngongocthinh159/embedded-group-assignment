@@ -16,3 +16,5 @@ void drawStarARGB32(int centerX, int centerY, int outerRadius, int innerRadius, 
 void drawImage(const unsigned long *img, int x, int y, int img_pixels_width, int img_pixels_height);
 void drawVideo(int x, int y, const unsigned long **video, int video_pixels_width, int video_pixels_height, int video_length);
 void displayWelcomeImage();
+
+extern unsigned int width, height, pitch;
