@@ -1,5 +1,11 @@
 #pragma once
 
+typedef struct {
+  int call_every_ms; // should be mutiple of 10
+  void (*handler)();
+  volatile int counter;
+} Event;
+
 void handle_game_mode();
 void _print_error_game_mode();
 int _is_up_command();
