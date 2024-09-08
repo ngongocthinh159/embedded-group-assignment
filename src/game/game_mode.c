@@ -1,8 +1,5 @@
 #include "../../include/image-renderer/image.h"
 #include "../../include/lib/framebf.h"
-#include "../../include/game/screen/game-mode/welcome_screen_easy.h"
-#include "../../include/game/screen/game-mode/welcome_screen_medium.h"
-#include "../../include/game/screen/game-mode/welcome_screen_hard.h"
 #include "../../include/game/screen/game-mode/background.h"
 // unsigned long *mode_menu;
 char normal_mode[] = {"CURRENT DIFFICULTY: NORMAL"};
