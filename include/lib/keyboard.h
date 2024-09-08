@@ -5,6 +5,7 @@
 #define BACKSPACE 127
 #define ENTER 10
 #define SPACE 32
+#define BACK_TICK "`"
 
 #define UP_ARROW 'A'
 #define DOWN_ARROW 'B'
