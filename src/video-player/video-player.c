@@ -9,12 +9,20 @@
 #include "util/cirbuf.h"
 #include "video-player/video.h"
 #include "video-player/img-background.h"
+#include "lib/timer.h"
+
+/* Func prototype */
+void _uart_scanning_call_back();
 
 void _mode_exit() {
   drawRectARGB32(0, 0, width - 1, height - 1, COLOR_BLACK, 1);
 }
 
 volatile int is_playing = 1;
+volatile int should_exit_video_mode = 0;
+volatile int current_frame_idx = 0;
+const int frame_per_second = 25;
+const int frame_time_ms = 1000/frame_per_second;
 
 int _get_cinema_background_fit_x() {
     return (width - video_pixels_width)/2 + 18;
@@ -40,52 +48,67 @@ int _handle_video_mode_internal() {
 void handle_video_player_mode() {
   print_color("\n\nVideo mode!\n", CMD_COLOR_YEL);
   print_prefix();
+  should_exit_video_mode = 0;
+  current_frame_idx = 0;
   
   // draw background
   drawImage(img_cinema, 0, 0, img_pixels_width, img_pixels_height);
 
   while (is_video_player_mode()) {
-    _draw_video_if_is_playing(); // draw video first then handle command
+    _draw_next_frame_if_is_playing(); // draw video first then handle command
+
+    if (should_exit_video_mode) {
+      break;
+    }
+
+    // 0.04s/frame => 25 fps
+    set_wait_timer_cb1(1, frame_time_ms, _uart_scanning_call_back);
+    set_wait_timer_cb1(0, frame_time_ms, _uart_scanning_call_back);
+  }
+}
+
+void _uart_scanning_call_back() {
+  uart_scanning();  // always scanning for new char
+
+  if (is_there_ansi_escape()) {
+    get_ansi_control(command);
+
+    handle_history();
+
+    clrln();
+    print_prefix();
+    char *cmd = history_buffer[history_req];
+    print(cmd);
+    st_copy_from_str(cmd, cmd_st, strlen(cmd));
+  }
+
+  if (is_there_new_line()) {
+    // clear history_req buffer
+    history_req = history_head + 1;
+
+    get_line(command);
+    // push command to history, similar to bash history
+    cir_buf_push(command);
+
+    print_command_received();
+
+    if (handle_flow_control_commands()) {
+      should_exit_video_mode = 1;
+      return;
+    }
+
+    int command_is_handled = 0;
+    command_is_handled |= handle_global_commands();
     
-    uart_scanning();  // always scanning for new char
-
-    if (is_there_ansi_escape()) {
-      get_ansi_control(command);
-
-      handle_history();
-
-      clrln();
-      print_prefix();
-      char *cmd = history_buffer[history_req];
-      print(cmd);
-      st_copy_from_str(cmd, cmd_st, strlen(cmd));
+    if (!command_is_handled) {
+      command_is_handled |= _handle_video_mode_internal();
     }
 
-    if (is_there_new_line()) {
-      // clear history_req buffer
-      history_req = history_head + 1;
-
-      get_line(command);
-      // push command to history, similar to bash history
-      cir_buf_push(command);
-
-      print_command_received();
-
-      if (handle_flow_control_commands()) break;
-
-      int command_is_handled = 0;
-      command_is_handled |= handle_global_commands();
-      
-      if (!command_is_handled) {
-        command_is_handled |= _handle_video_mode_internal();
-      }
-
-      if (!command_is_handled) {
-        print_command_not_regconized_error();
-      }
-
-      print_prefix();
+    if (!command_is_handled) {
+      print_command_not_regconized_error();
     }
+
+    print_prefix();
   }
 }
 
@@ -97,9 +120,12 @@ void pause_video() {
   is_playing = 0;
 }
 
-void _draw_video_if_is_playing() {
+void _draw_next_frame_if_is_playing() {
   if (is_playing) {
-    drawVideo(_get_cinema_background_fit_x(), _get_cinema_background_fit_y(),
-    video_array, video_pixels_width, video_pixels_height, video_array_len);
+    drawImage(video_array[current_frame_idx], _get_cinema_background_fit_x(),_get_cinema_background_fit_y(), video_pixels_width, video_pixels_height);
+    current_frame_idx++;
+    if (current_frame_idx == video_array_len) {
+      current_frame_idx = 0;
+    }
   }
 }
