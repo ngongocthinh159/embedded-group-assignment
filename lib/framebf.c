@@ -5,6 +5,8 @@
 #include "lib/math.h"
 #include "lib/timer.h"
 #include "image-renderer/image.h"
+#include "game/screen/playScreen.h"
+#include "game/blocks/block.h"
 #include "cli/font.h"
 
 // Use RGBA32 (32 bits for each pixel)
@@ -434,4 +436,45 @@ void displayWelcomeImage() {
     drawString(100,400,"Ngo Ngoc Thinh",0xFFA500, 2);
     drawString(100,500,"Nguyen Dinh Quoc Bao",0xFFFF00, 2);
     drawString(100,600,"Tran Kiem Phuc",0xE502F5, 2);
+}
+
+// ------- Game assets -------- //
+void drawRedBlock(int x, int y){
+    drawImage(redBlock, x, y, 30, 30);
+}
+
+void drawOrangeBlock(int x, int y){
+    drawImage(orangeBlock, x, y, 30, 30);
+}
+
+void drawYellowBlock(int x, int y){
+    drawImage(yellowBlock, x, y, 30, 30);
+}
+
+void drawGreenBlock(int x, int y){
+    drawImage(greenBlock, x, y, 30, 30);
+}
+
+void drawCyanBlock(int x, int y){
+    drawImage(cyanBlock, x, y, 30, 30);
+}
+
+void drawBlueBlock(int x, int y){
+    drawImage(blueBlock, x, y, 30, 30);
+}
+
+void drawPurpleBlock(int x, int y){
+    drawImage(purpleBlock, x, y, 30, 30);
+}
+
+// Same color as background
+void drawClearBlock(int x, int y){
+    drawImage(clearBlock, x, y, 30, 30);
+}
+
+// Use this to render the play field
+void displayGamePlayScreen() {
+    drawImage(playImageBitmap, 212, 34, playImage_width, playImage_height);
+    drawString(602,64,"SCORE",0xff4D3D, 2);
+    drawString(602,510,"NEXT",0xff4D3D, 2);
 }
