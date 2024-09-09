@@ -9,3 +9,5 @@ double sqrt(double n);
 double sin(double x);
 double cos(double x);
 int rand(int from, int to);
+int min(int x, int y);
+int max(int x,int y);

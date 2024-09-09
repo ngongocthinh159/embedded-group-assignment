@@ -480,3 +480,4 @@ void displayGamePlayScreen() {
     drawString(602,64,"SCORE",0xff4D3D, 2);
     drawString(602,510,"NEXT",0xff4D3D, 2);
 }
+void display_game_(){}

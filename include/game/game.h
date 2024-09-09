@@ -56,6 +56,22 @@ typedef struct {
   Color color;
 } Block;
 
+typedef struct 
+{
+    const char* item_string;
+    int x;
+    int y;
+    void (*action)(void);
+    struct menu_item *sub_menu;
+}menu_item;
+
+/*
+menu_item menu_items[] = {
+    {"NEW GAME",450,365,1},
+    {"EXIT GAME",450,520,2,init_exit_game}
+};*/
+
+
 void handle_game_mode();
 void _print_error_game_mode();
 int _is_up_command();
