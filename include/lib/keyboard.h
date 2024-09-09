@@ -16,6 +16,11 @@
 #define RIGHT_ARROW 'C'
 #define LEFT_ARROW 'D'
 
+#define KEYBOARD_W "w"
+#define KEYBOARD_S "s"
+#define KEYBOARD_A "a"
+#define KEYBOARD_D "d"
+
 // ansi escape sequence
 #define CSI_CUU "[A" // up
 #define CSI_CUD "[B" // down
