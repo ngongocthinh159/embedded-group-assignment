@@ -113,6 +113,7 @@ double cos(double x) {
 int rand(int from, int to) {
   return 1;
 }
+
 int min(int x, int y) {
     if (x < y) {
         return x;

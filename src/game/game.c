@@ -1,4 +1,4 @@
-#include "../../include/game/game_mode.h"
+//#include "../../include/game/game_mode.h"
 #include "../../include/game/game.h"
 
 #include "cli/cli.h"
@@ -23,9 +23,13 @@ void _handle_events_call_every_100ms();
 void _handle_events_call_every_200ms();
 void _handle_events_call_every_500ms();
 void _handle_events_call_every_1s();
+void menu_cmd_delay_clear_callback();
 void handle_menu();
 void select_difficulty();
-
+volatile int menu_cmd_delay = 0;
+void menu_cmd_delay_clear_callback() {
+    menu_cmd_delay = 0;
+}
 /* Global variables */
 int should_exit_game_mode = 0;
 const int smallest_interval_ms = 10;
@@ -38,7 +42,7 @@ menu_item game_difficulties[] = {
   {"DIFFICULTY: HARD",265,440}
 };
 menu_item menu_items[] = {
-    {"NEW GAME",450,365,handle_game_mode},
+    {"NEW GAME",430,365,handle_game_mode},
     {"GAME DIFFICULTY",450,440,select_difficulty,game_difficulties},
     {"EXIT GAME",450,520,_exit_game},
 };
@@ -134,7 +138,6 @@ void handle_game_mode()
   should_exit_game_mode = 0;
 
  // _init_game();
-  draw_general_menu();
   handle_menu();
   while (is_game_mode() && !should_exit_game_mode)
   {
@@ -654,55 +657,83 @@ void _spawn_random_dynamic_piece()
 
 void draw_general_menu()
 {
-  drawString(380, 240, "TETRIS", 0xff4D3D, 3);
+  drawString(380, 240, "TETRIS", COLOR_RED, 3);
 
   for (int i = 0; i < sizeof(menu_items) / sizeof(menu_item); i++)
   { 
     drawString(menu_items[i].x,menu_items[i].y,menu_items[i].item_string,0xFFFFFF,1);
-    if (i == selected_item)
+    if (i == selected_item && i!=1) 
     {
       // Highlight the selected item
-      drawLineWithThicknessARGB32(menu_items[i].x - 30, menu_items[i].y - 10, menu_items[i].x - 30, menu_items[i].y + 10, 0xFFFFFF, 1);
-      drawLineWithThicknessARGB32(menu_items[i].x + 30, menu_items[i].y - 10, menu_items[i].x + 30, menu_items[i].y + 10, 0xFFFFFF, 1);
+      uart_dec(selected_item);
+      print("\n");
+      drawLineWithThicknessARGB32(menu_items[i].x - 20, menu_items[i].y - 20, menu_items[i].x -20, menu_items[i].y + 20, COLOR_WHITE, 1);//left line
+      drawLineWithThicknessARGB32(menu_items[i].x + 140, menu_items[i].y - 20, menu_items[i].x + 140, menu_items[i].y + 20, COLOR_WHITE, 1);//right line
+    }else{
+      drawLineWithThicknessARGB32(menu_items[i].x - 20, menu_items[i].y - 20, menu_items[i].x - 20, menu_items[i].y + 20, COLOR_BLACK, 1);
+      drawLineWithThicknessARGB32(menu_items[i].x + 140, menu_items[i].y - 20, menu_items[i].x + 140, menu_items[i].y + 20, COLOR_BLACK, 1);
     }
   }
   // Draw difficulty highlight if applicable
-  if (selected_item == 2)
-  {
+  if (selected_item == 1)
+  { uart_dec(selected_item);
+    print("\n");
     drawLineWithThicknessARGB32(779, 430, 779, 480, 0xFFFFFF, 1); // Right line of difficulty
     drawLineWithThicknessARGB32(254, 430, 254, 480, 0xFFFFFF, 1); // Left line of difficulty
   }
 }
 void handle_menu()
-{
+{   draw_general_menu();
   while (!menu_flag)
-  {
-    if (_is_enter_or_space_command)
+  { 
+    if(!menu_cmd_delay){
+
+    
+    set_wait_timer_cb1(1,500,_uart_scanning_callback);
+    set_wait_timer_cb1(0,500,_uart_scanning_callback);
+    if (_is_enter_or_space_command())
     {
-      menu_items[selected_item].action;
+      menu_items[selected_item].action();
+      menu_cmd_delay =1;
     }
-    else if (_is_up_command)
-    {
+    else if (_is_up_command())
+    { 
+      uart_dec(selected_item);
       selected_item = max(0, selected_item - 1);
+      draw_general_menu();
+      menu_cmd_delay =1;
+      set_wait_timer_cb1(1,500,menu_cmd_delay_clear_callback);
+      set_wait_timer_cb1(0,500,menu_cmd_delay_clear_callback);
+      
+      
     }
-    else if (_is_down_command)
+    else if (_is_down_command())
     {
+      uart_dec(selected_item);
       selected_item = min(sizeof(menu_items) / sizeof(menu_item) - 1, selected_item + 1);
+      draw_general_menu();
+      menu_cmd_delay = 1;
+      set_wait_timer_cb1(1,500,menu_cmd_delay_clear_callback);
+      set_wait_timer_cb1(0,500,menu_cmd_delay_clear_callback);
+    }
+    }
+    if (should_exit_game_mode){
+      menu_flag = 1;
     }
   }
 }
 void select_difficulty()
 {
-  if (_is_enter_or_space_command)
+  if (_is_enter_or_space_command())
   {
-    game_difficulties[selected_difficulty].action;
+    game_difficulties[selected_difficulty].action();
   }
-  else if (_is_up_command)
+  else if (_is_up_command())
   {
-    selected_difficulty = max(0,selected_item-1);
+    selected_difficulty = max(0,selected_difficulty-1);
   }
-  else if (_is_down_command)
+  else if (_is_down_command())
   {
-     selected_difficulty = min(sizeof(menu_items) / sizeof(menu_item) - 1, selected_item + 1);
+     selected_difficulty = min(sizeof(game_difficulties) / sizeof(menu_item) - 1, selected_difficulty + 1);
   }
 }
