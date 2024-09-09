@@ -16,6 +16,15 @@ void drawImage(const unsigned long *img, int x, int y, int img_pixels_width, int
 void drawVideo(int x, int y, const unsigned long **video, int video_pixels_width, int video_pixels_height, int video_length);
 void drawString(int x, int y, char *str, unsigned int attr, int zoom);
 void displayWelcomeImage();
+void drawRedBlock(int x, int y);
+void drawOrangeBlock(int x, int y);
+void drawYellowBlock(int x, int y);
+void drawGreenBlock(int x, int y);
+void drawCyanBlock(int x, int y);
+void drawBlueBlock(int x, int y);
+void drawPurpleBlock(int x, int y);
+void drawClearBlock(int x, int y);
+void displayGamePlayScreen();
 
 void drawString(int x, int y, char *str, unsigned int attr, int zoom);
 void drawChar(unsigned char ch, int x, int y, unsigned int attr, int zoom);

@@ -388,7 +388,7 @@ void _print_help() {
   print_color("CLI", CMD_COLOR_GRN);
   print(" or ");
   print_color("VIDEO", CMD_COLOR_GRN);
-  print(": mode list of commands\n");
+  print(" mode: list of commands\n");
   print("For more information on a specific command, type ");
   print_color("help ", CMD_COLOR_RED);
   print_color("<command> ", CMD_COLOR_MAG);
@@ -406,7 +406,7 @@ void _print_help() {
   println("");
 
   print_color("GAME", CMD_COLOR_GRN);
-  println(": mode list of commands");
+  println(" mode: list of commands");
   println("In game mode, any character typed is considered as a single command (not waiting for ENTER character like other modes) to enhance game experience. Here is available characters in game mode:");
   print_color("W or Arrow UP", CMD_COLOR_BLU);
   println("\t\tGo UP in game");
@@ -416,8 +416,10 @@ void _print_help() {
   println("\t\tGo LEFT in game");
   print_color("D or Arrow RIGHT", CMD_COLOR_BLU);
   println("\tGo RIGHT in game");
+  print_color("Enter or Space", CMD_COLOR_BLU);
+  println("\t\tDo an action both are interpreted as Enter key");
   print_color("Back Tick", CMD_COLOR_BLU);
-  println("\t\tExit game mode in any game screen and back to CLI mode");
+  println("\t\tKind of going back, will behave differently in different game screen");
 
   println("");
 }

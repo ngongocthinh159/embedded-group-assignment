@@ -108,3 +108,8 @@ double cos(double x) {
     }
     return result;
 }
+
+// TODO: implement rand
+int rand(int from, int to) {
+  return 1;
+}
