@@ -262,7 +262,6 @@ void _exit_game() {
 
 //written by Phuc
 //Use this to switch between the states of the welcome screen
-//Tho I doubt it will work at its current state
 //Some info for the game devs: 
 // index 0: choose Start Game       index 1: Choose difficulty Easy     index 2: Exit       index 3: Choose difficulty Medium 
 // index 4: Choose difficulty Hard
