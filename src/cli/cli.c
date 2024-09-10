@@ -456,7 +456,7 @@ void _handle_help_command() {
   if (!is_handled) {
     print("Can not find information for command: '");
     print_color(command, CMD_COLOR_MAG);
-    print("' as it is recognized as any command within the OS. Type 'help' to review all command");
+    print("' as it is not recognized as any command within the OS. Type 'help' to review available commands!");
     println("");
     println("");
   }
