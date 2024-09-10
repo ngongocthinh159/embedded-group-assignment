@@ -8,6 +8,7 @@
 #include "game/screen/playScreen.h"
 #include "game/blocks/block.h"
 #include "cli/font.h"
+#include "game/screen/gameWelcomeScreen.h"
 
 // Use RGBA32 (32 bits for each pixel)
 #define COLOR_DEPTH 32
@@ -481,19 +482,6 @@ void displayGamePlayScreen() {
     drawString(602,510,"NEXT",0xff4D3D, 2);
 }
 
-void displayWelcomeScreen(){
-    clearScreen();
-    drawString(300, 200, "TETRIS", 0xff4D3D, 4);
-    drawString(300, 300, "DIFFICULTY: ", 0xd9d9d9, 2);
-    drawString(300, 400, "EXIT", 0xd9d9d9, 2);
-}
-
-void displayDifficulty(int currentDifficulty){
-    char difficultyStr[20];
-    switch (currentDifficulty) {
-        case 0: strcpy(difficultyStr, "EASY"); break;
-        case 1: strcpy(difficultyStr, "MEDIUM"); break;
-        case 2: strcpy(difficultyStr, "HARD"); break;
-    };
-    drawString(350, 300, difficultyStr, 0xd9d9d9, 2);
+void displayWelcomeScreen(int currentIndex) {
+    drawImage(welcome_bitmap_allArray[currentIndex], 300, 300, welcomeScreen_width, welcomeScreen_height);
 }
