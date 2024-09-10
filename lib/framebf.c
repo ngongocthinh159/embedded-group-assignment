@@ -480,6 +480,9 @@ void displayGamePlayScreen() {
     drawImage(playImageBitmap, 0, 0, playImage_width, playImage_height);
 }
 
+// index 0: choose Start Game       index 1: Choose difficulty Easy     index 2: Exit       index 3: Choose difficulty Medium 
+// index 4: Choose difficulty Hard
+//Phuc written an implementation of this function in game.c
 void displayWelcomeScreen(int currentIndex) {
     drawImage(welcome_bitmap_allArray[currentIndex], 212, 34, welcomeScreen_width, welcomeScreen_height);
 }
