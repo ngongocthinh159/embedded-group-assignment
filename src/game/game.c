@@ -375,20 +375,27 @@ void _rotate_piece(Piece *piece) {
 void _adjust_center_point_if_overflow(Piece *piece, Point points[]) {
   int x_adjust = 0;
   int y_adjust = 0;
+  int min_x = 9999;
+  int max_x = -9999;
+  int min_y = 9999;
+  int max_y = -9999;
   for (int i = 0; i < __size; i++) {
-    int real_x = points[i].x;
-    int real_y = points[i].y - VIRTUAL_GAME_FIELD_OFFSET;
+    min_x = min(min_x, points[i].x);
+    max_x = max(max_x, points[i].x);
+    min_y = min(min_y, points[i].y);
+    max_y = max(max_y, points[i].y);
+  }
 
-    if (real_x < 0) {
-      x_adjust += 1;
-    } else if (real_x >= GAME_FIELD_WIDHT) {
-      x_adjust -= 1;
-    }
-    if (real_y < 0) {
-      y_adjust += 1;
-    } else if (real_y >= GAME_FIELD_HEIGHT) {
-      y_adjust -= 1;
-    }
+  if (min_x < 0) x_adjust = (-min_x);
+  else if (max_x >= GAME_FIELD_WIDHT) x_adjust = -(max_x - GAME_FIELD_WIDHT + 1);
+
+  int real_min_y = min_y - VIRTUAL_GAME_FIELD_OFFSET;
+  int real_max_y = max_y - VIRTUAL_GAME_FIELD_OFFSET;
+
+  if (real_min_y < 0) {
+    y_adjust = (-real_min_y);
+  } else if (real_max_y >= GAME_FIELD_HEIGHT) {
+    y_adjust = -(real_max_y - GAME_FIELD_HEIGHT + 1);
   }
 
   piece->center_point.x += x_adjust;

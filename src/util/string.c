@@ -337,13 +337,13 @@ TokenIndex get_nth_token_indices(const char *str, unsigned int tokenIndex,
   return token;
 }
 
-void int_to_string_padding(unsigned int x, char* buffer, int width) {
-    // Ensure the buffer is large enough for 5 digits plus the null terminator
-    buffer[width] = '\0';  // Set the null terminator
+void int_to_string_padding(unsigned int x, char *buffer, int width) {
+  // Ensure the buffer is large enough for 5 digits plus the null terminator
+  buffer[width] = '\0';  // Set the null terminator
 
-    // Fill the buffer from the end
-    for (int i = width - 1; i >= 0; i--) {
-        buffer[i] = '0' + (x % 10);  // Get the last digit and convert to character
-        x /= 10;  // Remove the last digit
-    }
+  // Fill the buffer from the end
+  for (int i = width - 1; i >= 0; i--) {
+    buffer[i] = '0' + (x % 10);  // Get the last digit and convert to character
+    x /= 10;                     // Remove the last digit
+  }
 }

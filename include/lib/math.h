@@ -16,3 +16,5 @@ double sin(double x);
 double cos(double x);
 int rand(int from, int to);
 unsigned int lcg_rand();
+int min(int a, int b);
+int max(int a, int b);
