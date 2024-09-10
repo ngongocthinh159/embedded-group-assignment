@@ -137,6 +137,7 @@ void handle_game_mode() {
   print_prefix();
   should_exit_game_mode = 0;
 
+  _handle_welcome_screen_input();
 
   while (is_game_mode() && !should_exit_game_mode) {
     set_wait_timer_cb1(1, smallest_interval_ms, _uart_scanning_callback);
@@ -257,6 +258,32 @@ int _is_enter_or_space_command() { return str_equal(command, SPACE_STR); }
 void _exit_game() {
   drawRectARGB32(0, 0, width - 1, height - 1, COLOR_BLACK, 1);
   switch_to_cli_mode();
+}
+
+//written by Phuc
+//Use this to switch between the states of the welcome screen
+//Tho I doubt it will work at its current state
+//Some info for the game devs: 
+// index 0: choose Start Game       index 1: Choose difficulty Easy     index 2: Exit       index 3: Choose difficulty Medium 
+// index 4: Choose difficulty Hard
+void _handle_welcome_screen_input() {
+    int currentIndex = 0; 
+    while (1) {
+        displayWelcomeScreen(currentIndex);
+        if (_is_up_command() && currentIndex > 0) {
+            currentIndex = (currentIndex - 1 + 5) % 5;
+        } else if (_is_down_command() && currentIndex < 3) {
+            currentIndex = (currentIndex + 1) % 5;
+        } else if (_is_enter_or_space_command()) {
+            if (currentIndex == 0) {   // Index 0: Start (New Game)
+                _init_game();
+                break;
+            } else if (currentIndex == 2) {  // Index 2: Exit
+                 _exit_game();
+                break;
+            }
+        }
+    }
 }
 
 void _init_game() {
