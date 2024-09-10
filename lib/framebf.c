@@ -478,3 +478,20 @@ void drawClearBlock(int x, int y){
 void displayGamePlayScreen() {
     drawImage(playImageBitmap, 0, 0, playImage_width, playImage_height);
 }
+
+void displayWelcomeScreen(){
+    clearScreen();
+    drawString(300, 200, "TETRIS", 0xff4D3D, 4);
+    drawString(300, 300, "DIFFICULTY: ", 0xd9d9d9, 2);
+    drawString(300, 400, "EXIT", 0xd9d9d9, 2);
+}
+
+void displayDifficulty(int currentDifficulty){
+    char difficultyStr[20];
+    switch (currentDifficulty) {
+        case 0: strcpy(difficultyStr, "EASY"); break;
+        case 1: strcpy(difficultyStr, "MEDIUM"); break;
+        case 2: strcpy(difficultyStr, "HARD"); break;
+    };
+    drawString(350, 300, difficultyStr, 0xd9d9d9, 2);
+}

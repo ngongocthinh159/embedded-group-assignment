@@ -56,6 +56,14 @@ typedef struct {
   Color color;
 } Block;
 
+
+enum Difficulty {
+    EASY,
+    MEDIUM,
+    HARD
+};
+
+
 // Flow control
 void handle_game_mode();
 void _print_error_game_mode();

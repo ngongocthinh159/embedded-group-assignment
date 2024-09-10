@@ -25,6 +25,7 @@ void _handle_events_call_every_1s();
 /* Global variables */
 int should_exit_game_mode = 0;
 const int smallest_interval_ms = 10;
+int selected_difficulty = 0;
 
 /* Game variables */
 unsigned int scores = 120;
@@ -136,8 +137,11 @@ void handle_game_mode() {
   print_prefix();
   should_exit_game_mode = 0;
 
-  _init_game();
+  displayWelcomeScreen();
 
+  _handle_welcome_screen_input();
+
+  
   while (is_game_mode() && !should_exit_game_mode) {
     set_wait_timer_cb1(1, smallest_interval_ms, _uart_scanning_callback);
     _handle_timing_events();
@@ -170,6 +174,38 @@ void _handle_timing_events() {
       events[i].handler();
     }
   }
+}
+
+void _handle_welcome_screen_input() {
+    int currentOption = 0;
+    int currentDifficulty = 0; 
+
+    while (1) {
+        // Display current welcome screen state
+        displayWelcomeScreen(currentOption, currentDifficulty);
+
+        // Handle user input
+        if (_is_up_command()) {
+            currentOption = (currentOption + 2) % 3;
+        } else if (_is_down_command()) {
+            currentOption = (currentOption + 1) % 3; 
+        } else if (_is_left_command() || _is_right_command()) {
+            if (currentOption == 1) {
+                currentDifficulty = (currentDifficulty + (_is_right_command() ? 1 : 2)) % 3;
+            }
+        } else if (_is_enter_or_space_command()) {
+            if (currentOption == 0) {
+                _init_game();
+                break;
+            } else if (currentOption == 2) { 
+                exit(0); 
+            }
+        }
+    }
+
+
+    // Proceed to the game screen
+    displayGamePlayScreen();
 }
 
 void _handle_events_call_every_50ms() {}
