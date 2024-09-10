@@ -162,8 +162,8 @@ int handle_flow_control_commands() {
 
 int handle_global_commands() {
   int is_handled = 0;
-  if (str_equal(command, CMD_HELP)) {
-    _print_help();
+  if (str_start_with_2(command, CMD_HELP)) {
+    _handle_help_command();
     is_handled = 1;
   } else if (str_equal(command, CMD_CLEAR)) {
     clrscr();
@@ -422,4 +422,42 @@ void _print_help() {
   println("\t\tKind of going back, will behave differently in different game screen");
 
   println("");
+}
+
+void _handle_help_command() {
+  if (str_equal(command, CMD_HELP)) {
+    _print_help();
+    return;
+  }
+
+  TokenIndex idx = get_nth_token_indices(command, 1, ' ');
+
+  if (idx.start == -1) {
+    println("Please specify command to view full information!");
+    return;
+  }
+
+  char *token = tmp_buffer;
+  unsigned int token_len = idx.end - idx.start + 1;
+  for (unsigned int i = 0; i < token_len; i++) {
+    token[i] = command[idx.start + i];
+  }
+  token[token_len] = '\0';
+
+  int is_handled = 0;
+  for (int i = 0; i < all_commands_size; i++) {
+    if (str_equal(token, all_commands[i].name)) {
+      println(all_commands[i].full_help);
+      println("");
+      is_handled = 1;
+    }
+  }
+
+  if (!is_handled) {
+    print("Can not find information for command: '");
+    print_color(command, CMD_COLOR_MAG);
+    print("' as it is recognized as any command within the OS. Type 'help' to review all command");
+    println("");
+    println("");
+  }
 }
