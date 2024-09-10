@@ -43,7 +43,7 @@ typedef struct {
   int y;
 } Point;
 
-// dynamic piece in the board (should be one piece existed at a time)
+// dynamic piece in the board (should be one moving piece and one next spawn piece existed at a time)
 typedef struct {
   Shape shape;
   Color color;
@@ -73,6 +73,8 @@ void _increase_current_piece();
 void _draw_game_state();
 void _clear_game_piece(Piece *piece);
 void _draw_game_piece(Piece *piece);
+void _draw_next_frame_piece(Piece *piece);
+void _draw_next_frame_point(int x, int y, Color color, Shape shape);
 void draw_game_point(int x, int y, Color color);
 Point* _get_init_points(Piece *piece);
 Point _get_init_center_point(Piece *piece);

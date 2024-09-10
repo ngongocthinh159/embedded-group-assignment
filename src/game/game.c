@@ -28,6 +28,8 @@ const int smallest_interval_ms = 10;
 /* Offsets */
 const unsigned int OFFSET_PHYSICAL_GAME_FIELD_X = 242;
 const unsigned int OFFSET_PHYSICAL_GAME_FIELD_Y = 64;
+const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_X = 602;
+const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_Y = 544;
 
 /* call_every_ms should be multiple of 10 */
 volatile Event events[] = {
@@ -155,9 +157,10 @@ void _handle_events_call_every_100ms() {
 }
 
 void _handle_events_call_every_200ms() {
-  _clear_game_piece(&dynamic_piece);
-  _increase_current_piece();
-  _draw_game_piece(&dynamic_piece);
+  // _clear_game_piece(&dynamic_piece);
+  // _increase_current_piece();
+  // _draw_game_piece(&dynamic_piece);
+  _draw_next_frame_piece(&dynamic_piece);
 }
 
 void _handle_events_call_every_500ms() {
@@ -472,4 +475,56 @@ void _spawn_random_dynamic_piece() {
 
   _copy_piece_rotated_points_to_buffer(&dynamic_piece, points_buffer_angle_rotated);
   _adjust_center_point_if_overflow(&dynamic_piece, points_buffer_angle_rotated);
+}
+
+void _draw_next_frame_piece(Piece *piece) {
+  Point* points = _get_init_points(piece);
+  for (int i = 0; i < __size; i++) {
+    _draw_next_frame_point(points[i].x, points[i].y, piece->color, piece->shape);
+  }
+}
+
+void _draw_next_frame_point(int x, int y, Color color, Shape shape) {
+  int physical_point_x = OFFSET_PHYSICAL_NEXT_FRAME_X + x*BLOCK_SIZE;
+  int physical_point_y = OFFSET_PHYSICAL_NEXT_FRAME_Y + y*BLOCK_SIZE;
+  
+  if (shape == SHAPE_I) {
+    physical_point_y += 2*BLOCK_SIZE;
+  } else if (shape == SHAPE_O) {
+    physical_point_x += BLOCK_SIZE;
+    physical_point_y += BLOCK_SIZE;
+  } else if (shape == SHAPE_T) {
+    physical_point_x += BLOCK_SIZE;
+    physical_point_y += BLOCK_SIZE;
+  } else if (shape == SHAPE_S) {
+    physical_point_x += BLOCK_SIZE;
+    physical_point_y += BLOCK_SIZE;
+  } else if (shape == SHAPE_Z) {
+    physical_point_x += BLOCK_SIZE;
+    physical_point_y += BLOCK_SIZE;
+  } else if (shape == SHAPE_J) {
+    physical_point_x += BLOCK_SIZE;
+    physical_point_y += BLOCK_SIZE;
+  } else {
+    physical_point_x += BLOCK_SIZE;
+    physical_point_y += BLOCK_SIZE;
+  }
+
+  if (color == CYAN) {
+    drawCyanBlock(physical_point_x, physical_point_y);
+  } else if (color == YELLOW) {
+    drawYellowBlock(physical_point_x, physical_point_y);
+  } else if (color == PURPLE) {
+    drawPurpleBlock(physical_point_x, physical_point_y);
+  } else if (color == GREEN) {
+    drawGreenBlock(physical_point_x, physical_point_y);
+  } else if (color == RED) {
+    drawRedBlock(physical_point_x, physical_point_y);
+  } else if (color == BLUE) {
+    drawBlueBlock(physical_point_x, physical_point_y);
+  } else if (color == ORANGE) {
+    drawOrangeBlock(physical_point_x, physical_point_y);
+  } else if (color == CLEAR) {
+    drawClearBlock(physical_point_x, physical_point_y);
+  }
 }
