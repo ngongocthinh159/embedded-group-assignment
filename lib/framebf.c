@@ -483,5 +483,5 @@ void displayGamePlayScreen() {
 }
 
 void displayWelcomeScreen(int currentIndex) {
-    drawImage(welcome_bitmap_allArray[currentIndex], 300, 300, welcomeScreen_width, welcomeScreen_height);
+    drawImage(welcome_bitmap_allArray[currentIndex], 212, 34, welcomeScreen_width, welcomeScreen_height);
 }
