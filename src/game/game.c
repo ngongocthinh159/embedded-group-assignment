@@ -188,20 +188,20 @@ void _handle_events_call_every_1s() {}
 
 void _handle_game_mode_internal() {
   if (_is_up_command()) {
-    println("UP");
+    println("ACK: UP");
   } else if (_is_down_command()) {
-    println("DOWN");
+    println("ACK: DOWN");
   } else if (_is_left_command()) {
-    println("LEFT");
+    println("ACK: LEFT");
   } else if (_is_right_command()) {
-    println("RIGHT");
+    println("ACK: RIGHT");
   } else if (_is_enter_or_space_command()) {
     _clear_game_piece(&dynamic_piece);
     _rotate_piece(&dynamic_piece);
     _draw_game_piece(&dynamic_piece);
-    println("SPACE or ENTER");
+    println("ACK: SPACE or ENTER");
   } else if (_is_back_tick_command()) {
-    println("BACK TICK");
+    println("ACK: BACK TICK");
   } else {
     _print_error_game_mode();
   }
@@ -210,7 +210,7 @@ void _handle_game_mode_internal() {
 }
 
 void _print_error_game_mode() {
-  print_color("Unknown command received in ", CMD_COLOR_RED);
+  print_color("NAK: Unknown command received in ", CMD_COLOR_RED);
   print_color("GAME", CMD_COLOR_GRN);
   print_color(" mode!\n", CMD_COLOR_RED);
 }
