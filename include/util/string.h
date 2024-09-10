@@ -21,6 +21,7 @@ int str_start_with(char *str, char *prefix, int str_size, int prefix_size);
 int str_start_with_2(const char *str, const char *prefix);
 char* get_nth_token_to_pointer(char* str, unsigned int tokenIndex, char separator);
 TokenIndex get_nth_token_indices(const char* str, unsigned int tokenNumber, char separator);
+void int_to_string_padding(unsigned int x, char* buffer, int width);
 
 char push(char *str, char value);
 int pop(char *str);
