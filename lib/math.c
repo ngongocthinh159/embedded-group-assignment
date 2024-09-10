@@ -109,7 +109,21 @@ double cos(double x) {
     return result;
 }
 
-// TODO: implement rand
-int rand(int from, int to) {
-  return 1;
+// Global variable to hold the current seed/state.
+unsigned long seed = 1234;
+
+unsigned int lcg_rand() {
+  seed = (LCG_A * seed + LCG_C) % LCG_M;
+  return (unsigned int) seed;
+}
+
+// Function to generate a random number within a specified range [min, max]
+int rand(int min, int max) {
+  max++;
+  if (min >= max) {
+    return min;  // Return min if range is invalid
+  }
+  int range = max - min;
+  int num = lcg_rand();
+  return num % range + min;
 }

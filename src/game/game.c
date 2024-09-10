@@ -157,10 +157,9 @@ void _handle_events_call_every_100ms() {
 }
 
 void _handle_events_call_every_200ms() {
-  // _clear_game_piece(&dynamic_piece);
-  // _increase_current_piece();
-  // _draw_game_piece(&dynamic_piece);
-  _draw_next_frame_piece(&dynamic_piece);
+  _clear_game_piece(&dynamic_piece);
+  _increase_current_piece();
+  _draw_game_piece(&dynamic_piece);
 }
 
 void _handle_events_call_every_500ms() {
@@ -481,6 +480,13 @@ void _draw_next_frame_piece(Piece *piece) {
   Point* points = _get_init_points(piece);
   for (int i = 0; i < __size; i++) {
     _draw_next_frame_point(points[i].x, points[i].y, piece->color, piece->shape);
+  }
+}
+
+void _clear_next_frame_piece(Piece *piece) {
+  Point* points = _get_init_points(piece);
+  for (int i = 0; i < __size; i++) {
+    _draw_next_frame_point(points[i].x, points[i].y, CLEAR, piece->shape);
   }
 }
 

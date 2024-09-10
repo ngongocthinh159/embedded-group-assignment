@@ -74,6 +74,7 @@ void _draw_game_state();
 void _clear_game_piece(Piece *piece);
 void _draw_game_piece(Piece *piece);
 void _draw_next_frame_piece(Piece *piece);
+void _clear_next_frame_piece(Piece *piece);
 void _draw_next_frame_point(int x, int y, Color color, Shape shape);
 void draw_game_point(int x, int y, Color color);
 Point* _get_init_points(Piece *piece);
