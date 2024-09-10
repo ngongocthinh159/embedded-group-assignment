@@ -26,4 +26,5 @@ void drawPurpleBlock(int x, int y);
 void drawClearBlock(int x, int y);
 void displayGamePlayScreen();
 void displayWelcomeScreen();
+
 extern unsigned int width, height, pitch;
