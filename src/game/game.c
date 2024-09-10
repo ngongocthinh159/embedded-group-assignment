@@ -26,6 +26,9 @@ void _handle_events_call_every_1s();
 int should_exit_game_mode = 0;
 const int smallest_interval_ms = 10;
 
+/* Game variables */
+unsigned int scores = 120;
+
 /* Offsets */
 const unsigned int OFFSET_PHYSICAL_GAME_FIELD_X = 242;
 const unsigned int OFFSET_PHYSICAL_GAME_FIELD_Y = 64;
@@ -124,9 +127,9 @@ Piece dynamic_piece = {.shape = SHAPE_I,
                        .angle = ANGLE_0};
 
 Piece next_piece = {.shape = SHAPE_I,
-                       .color = RED,
-                       .center_point = {.x = 1, .y = 0},
-                       .angle = ANGLE_0};
+                    .color = RED,
+                    .center_point = {.x = 1, .y = 0},
+                    .angle = ANGLE_0};
 
 void handle_game_mode() {
   print_color("\n\nGame mode!\n", CMD_COLOR_YEL);
@@ -242,6 +245,7 @@ void _init_game() {
   _spawn_random_piece_to(&dynamic_piece);
   _spawn_random_piece_to(&next_piece);
   _draw_next_frame_piece(&next_piece);
+  _draw_game_scores(scores);
 }
 
 void _increase_current_piece() { dynamic_piece.center_point.y += 1; }
@@ -253,7 +257,7 @@ void _clear_game_piece(Piece *piece) {
   _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
   for (int i = 0; i < __size; i++) {
     _draw_game_point(points_buffer_angle_rotated[i].x,
-                    points_buffer_angle_rotated[i].y, CLEAR);
+                     points_buffer_angle_rotated[i].y, CLEAR);
   }
 }
 
@@ -262,7 +266,7 @@ void _draw_game_piece(Piece *piece) {
   _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
   for (int i = 0; i < __size; i++) {
     _draw_game_point(points_buffer_angle_rotated[i].x,
-                    points_buffer_angle_rotated[i].y, piece->color);
+                     points_buffer_angle_rotated[i].y, piece->color);
   }
 }
 
@@ -488,8 +492,7 @@ void _spawn_random_piece_to(Piece *piece) {
 
   piece->shape = SHAPE_L;
 
-  _copy_piece_rotated_points_to_buffer(piece,
-                                       points_buffer_angle_rotated);
+  _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
   _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
 }
 
@@ -558,4 +561,10 @@ void _adjust_x_y_for_center_drawing_next_frame(int *x, int *y, Shape shape) {
     *x += 1;
     *y += 1;
   }
+}
+
+void _draw_game_scores(unsigned int score) {
+  char score_buffer[10];
+  int_to_string_padding(score, score_buffer, 5);
+  drawString(602, 64 * 3/2 + 16, score_buffer, COLOR_YEL, 2);
 }
