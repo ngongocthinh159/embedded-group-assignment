@@ -23,7 +23,7 @@ void _handle_events_call_every_100ms();
 void _handle_events_call_every_200ms();
 void _handle_events_call_every_500ms();
 void _handle_events_call_every_1s();
-void menu_cmd_delay_clear_callback();
+//void menu_cmd_delay_clear_callback();
 void handle_menu();
 void select_difficulty();
 volatile int menu_cmd_delay = 0;
@@ -41,13 +41,14 @@ menu_item game_difficulties[] = {
     {"DIFFICULTY: HARD", 265, 440}};
 menu_item menu_items[] = {
     {"NEW GAME", 430, 365, handle_game_mode},
-    {"GAME DIFFICULTY", 450, 440, select_difficulty, game_difficulties},
-    {"EXIT GAME", 450, 520, _exit_game},
+    {"GAME DIFFICULTY", 265, 440, select_difficulty, game_difficulties},
+    {"EXIT GAME", 430, 520, _exit_game},
 };
+/*
 void menu_cmd_delay_clear_callback()
 {
   menu_cmd_delay = 0;
-}
+}*/ //debouncing
 
 /* Offsets */
 const unsigned int OFFSET_PHYSICAL_GAME_FIELD_X = 242;
@@ -658,17 +659,25 @@ void _spawn_random_dynamic_piece()
 void draw_general_menu()
 {
   drawString(380, 240, "TETRIS", COLOR_RED, 3);
-
+  drawRectARGB32(240, 187, 785, 584, COLOR_BLUE, 0);
   for (int i = 0; i < sizeof(menu_items) / sizeof(menu_item); i++)
   {
     drawString(menu_items[i].x, menu_items[i].y, menu_items[i].item_string, 0xFFFFFF, 1);
-    if (i == selected_item && i != 1)
+    if (i == selected_item)
     {
       // Highlight the selected item
       uart_dec(selected_item);
       print("\n");
-      drawLineWithThicknessARGB32(menu_items[i].x - 20, menu_items[i].y - 20, menu_items[i].x - 20, menu_items[i].y + 20, COLOR_WHITE, 1);   // left line
-      drawLineWithThicknessARGB32(menu_items[i].x + 140, menu_items[i].y - 20, menu_items[i].x + 140, menu_items[i].y + 20, COLOR_WHITE, 1); // right line
+      if (selected_item == 1)
+      {
+        drawLineWithThicknessARGB32(779, 430, 779, 480, 0xFFFFFF, 1); // Right line of difficulty
+        drawLineWithThicknessARGB32(254, 430, 254, 480, 0xFFFFFF, 1); // Left line of difficulty
+      }
+      else
+      {
+        drawLineWithThicknessARGB32(menu_items[i].x - 20, menu_items[i].y - 20, menu_items[i].x - 20, menu_items[i].y + 20, COLOR_WHITE, 1);   // left line
+        drawLineWithThicknessARGB32(menu_items[i].x + 140, menu_items[i].y - 20, menu_items[i].x + 140, menu_items[i].y + 20, COLOR_WHITE, 1); // right line
+      }
     }
     else
     {
@@ -676,55 +685,54 @@ void draw_general_menu()
       drawLineWithThicknessARGB32(menu_items[i].x + 140, menu_items[i].y - 20, menu_items[i].x + 140, menu_items[i].y + 20, COLOR_BLACK, 1);
     }
   }
-  // Draw difficulty highlight if applicable
-  if (selected_item == 1)
-  {
-    uart_dec(selected_item);
-    print("\n");
-    drawLineWithThicknessARGB32(779, 430, 779, 480, 0xFFFFFF, 1); // Right line of difficulty
-    drawLineWithThicknessARGB32(254, 430, 254, 480, 0xFFFFFF, 1); // Left line of difficulty
-  }
 }
 void handle_menu()
-{
+{ // whether time and menu_cmd_delay is used or not does not fix the issue
   draw_general_menu();
   while (!menu_flag)
   {
-    if (!menu_cmd_delay)
-    {
 
-      set_wait_timer_cb1(1, 500, _uart_scanning_callback);
-      set_wait_timer_cb1(0, 500, _uart_scanning_callback);
-      if (_is_enter_or_space_command())
-      {
-        menu_items[selected_item].action();
-        menu_cmd_delay = 1;
-      }
-      else if (_is_up_command())
-      {
-        uart_dec(selected_item);
-        selected_item = max(0, selected_item - 1);
-        draw_general_menu();
-        menu_cmd_delay = 1;
-        set_wait_timer_cb1(1, 500, menu_cmd_delay_clear_callback);
-        set_wait_timer_cb1(0, 500, menu_cmd_delay_clear_callback);
-      }
-      else if (_is_down_command())
-      {
-        uart_dec(selected_item);
-        selected_item = min(sizeof(menu_items) / sizeof(menu_item) - 1, selected_item + 1);
-        draw_general_menu();
-        menu_cmd_delay = 1;
-        set_wait_timer_cb1(1, 500, menu_cmd_delay_clear_callback);
-        set_wait_timer_cb1(0, 500, menu_cmd_delay_clear_callback);
-      }
-    }
-    if (should_exit_game_mode)
+    // set_wait_timer(1, 500);
+    _uart_scanning_callback();
+    // set_wait_timer(0, 500);
+    if (_is_enter_or_space_command())
     {
-      menu_flag = 1;
+      menu_items[selected_item].action();
+    }
+    else if (_is_up_command() && !menu_cmd_delay)
+    {
+      // uart_dec(selected_item);
+      // set_wait_timer(1, 100);
+      selected_item = max(0, selected_item - 1);
+
+      // set_wait_timer(0, 100);
+
+      draw_general_menu();
+      // menu_cmd_delay = 1;
+      // set_wait_timer_cb1(1, 100, menu_cmd_delay_clear_callback);
+      // set_wait_timer_cb1(0, 100, menu_cmd_delay_clear_callback);
+    }
+    else if (_is_down_command() && !menu_cmd_delay)
+    {
+      // uart_dec(selected_item);
+      // set_wait_timer(1, 100);
+      selected_item = min(sizeof(menu_items) / sizeof(menu_item) - 1, selected_item + 1);
+      // set_wait_timer(0, 100);
+      draw_general_menu();
+
+      // menu_cmd_delay = 1;
+      // set_wait_timer_cb1(1, 100, menu_cmd_delay_clear_callback);
+      // set_wait_timer_cb1(0, 100, menu_cmd_delay_clear_callback);
+      
     }
   }
+  if (should_exit_game_mode)
+  {
+    menu_flag = 1;
+    // menu_cmd_delay_clear_callback();
+  }
 }
+
 void select_difficulty()
 {
   if (_is_enter_or_space_command())

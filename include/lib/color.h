@@ -3,6 +3,7 @@
 #define COLOR_BLACK 0x00000000
 #define COLOR_WHITE 0x00ffffff
 #define COLOR_RED 0x00db1a04
+#define COLOR_BLUE 0x728fce
 
 // CMD colors
 // refer to: https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124
