@@ -272,15 +272,21 @@ void _handle_welcome_screen_input() {
         displayWelcomeScreen(currentIndex);
         if (_is_up_command() && currentIndex > 0) {
             currentIndex = (currentIndex - 1 + 5) % 5;
-        } else if (_is_down_command() && currentIndex < 3) {
+        } else if (_is_down_command() && currentIndex < 2) {
             currentIndex = (currentIndex + 1) % 5;
         } else if (_is_enter_or_space_command()) {
-            if (currentIndex == 0) {   // Index 0: Start (New Game)
+            if (currentIndex == 0) {   
                 _init_game();
                 break;
-            } else if (currentIndex == 2) {  // Index 2: Exit
+            } else if (currentIndex == 2) {  
                  _exit_game();
                 break;
+            } else if (currentIndex == 1) {  
+                 currentIndex = 3;
+            } else if (currentIndex == 3) {  
+                 currentIndex = 4;
+            } else if (currentIndex == 4) {  
+                 currentIndex = 1;
             }
         }
     }
