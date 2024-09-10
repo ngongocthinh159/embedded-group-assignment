@@ -10,6 +10,7 @@
 #include "game/game.h"
 #include "lib/timer.h"
 #include "lib/math.h"
+#include "game/screen/gameWelcomeScreen.h"
 
 /* Function prototypes */
 void _uart_scanning_callback();
@@ -24,7 +25,6 @@ void _handle_events_call_every_1s();
 /* Global variables */  
 int should_exit_game_mode = 0;
 const int smallest_interval_ms = 10;
-int selected_difficulty = 0;
 
 /* Offsets */
 const unsigned int OFFSET_PHYSICAL_GAME_FIELD_X = 242;
@@ -112,11 +112,7 @@ void handle_game_mode() {
   print_prefix();
   should_exit_game_mode = 0;
 
-  displayWelcomeScreen();
 
-  _handle_welcome_screen_input();
-
-  
   while (is_game_mode() && !should_exit_game_mode) {
     set_wait_timer_cb1(1, smallest_interval_ms, _uart_scanning_callback);
     _handle_timing_events();
@@ -151,35 +147,22 @@ void _handle_timing_events() {
 }
 
 void _handle_welcome_screen_input() {
-    int currentOption = 0;
-    int currentDifficulty = 0; 
-
+    int currentIndex = 0; 
     while (1) {
-        // Display current welcome screen state
-        displayWelcomeScreen(currentOption, currentDifficulty);
-
-        // Handle user input
-        if (_is_up_command()) {
-            currentOption = (currentOption + 2) % 3;
-        } else if (_is_down_command()) {
-            currentOption = (currentOption + 1) % 3; 
-        } else if (_is_left_command() || _is_right_command()) {
-            if (currentOption == 1) {
-                currentDifficulty = (currentDifficulty + (_is_right_command() ? 1 : 2)) % 3;
-            }
+        displayWelcomeScreen(currentIndex);
+        if (_is_left_command()) {
+            currentIndex = (currentIndex - 1 + welcome_bitmap_allArray_LEN) % welcome_bitmap_allArray_LEN;
+        } else if (_is_right_command()) {
+            currentIndex = (currentIndex + 1) % welcome_bitmap_allArray_LEN;
         } else if (_is_enter_or_space_command()) {
-            if (currentOption == 0) {
+            if (currentIndex == 0) {   // Index 0: Start (New Game)
                 _init_game();
                 break;
-            } else if (currentOption == 2) { 
-                exit(0); 
+            } else if (currentIndex == 2) {  // Index 2: Exit
+                break;
             }
         }
     }
-
-
-    // Proceed to the game screen
-    displayGamePlayScreen();
 }
 
 void _handle_events_call_every_50ms() {
