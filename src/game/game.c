@@ -173,25 +173,6 @@ void _handle_timing_events() {
   }
 }
 
-void _handle_welcome_screen_input() {
-    int currentIndex = 0; 
-    while (1) {
-        displayWelcomeScreen(currentIndex);
-        if (_is_left_command()) {
-            currentIndex = (currentIndex - 1 + welcome_bitmap_allArray_LEN) % welcome_bitmap_allArray_LEN;
-        } else if (_is_right_command()) {
-            currentIndex = (currentIndex + 1) % welcome_bitmap_allArray_LEN;
-        } else if (_is_enter_or_space_command()) {
-            if (currentIndex == 0) {   // Index 0: Start (New Game)
-                _init_game();
-                break;
-            } else if (currentIndex == 2) {  // Index 2: Exit
-                break;
-            }
-        }
-    }
-}
-
 void _handle_events_call_every_50ms() {}
 
 void _handle_events_call_every_100ms() {}
