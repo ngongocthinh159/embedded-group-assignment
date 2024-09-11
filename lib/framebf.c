@@ -476,7 +476,7 @@ void drawClearBlock(int x, int y){
 // Play field is a 330 x 630 rectangle, starts from (242, 64) ends at (572, 694)
 // Next-block field is a 150 x 150 square, starts from (602, 522) ends at (752, 694)
 void displayGamePlayScreen() {
-    drawImage(playImageBitmap, 212, 34, playImage_width, playImage_height);
+    drawImage(playImageBitmap, 0, 0, playImage_width, playImage_height);
     drawString(602,64,"SCORE",0xff4D3D, 2);
     drawString(602,510,"NEXT",0xff4D3D, 2);
     drawString(638,248,"CONTROLS",0xff4D3D, 1);
