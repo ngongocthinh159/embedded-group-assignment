@@ -250,7 +250,7 @@ void _exit_game() {
 // Pressing A or D will change the screen to the other difficulty and the cursor will always be on "Start Game"
 // The user should be able to navigate up and down using the correspond buttons...
 // tho doing so will change the displayed difficulty back to "easy"
-// visit https://www.canva.com/design/DAGPhrhXRlo/OsR2ud-hSujq-Xf2F9K9fg/edit to see the screens
+// visit https://www.canva.com/design/DAGPhrhXRlo/OsR2ud-hSujq-Xf2F9K9fg/edit?utm_content=DAGPhrhXRlo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton to see the screens
 
 void _handle_welcome_screen_input() {
     int currentIndex = 0; 
