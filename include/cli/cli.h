@@ -27,6 +27,7 @@ void _handle_baudrate_config();
 void _handle_stopbit_config();
 void _print_list_of_valid_baudrates();
 void _print_current_baudrate_and_stopbit();
+void _handle_help_command();
 int welcome();
 void handle_cli_mode();
 int handle_flow_control_commands();

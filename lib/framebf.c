@@ -8,6 +8,7 @@
 #include "game/screen/playScreen.h"
 #include "game/blocks/block.h"
 #include "cli/font.h"
+#include "game/screen/gameWelcomeScreen.h"
 
 // Use RGBA32 (32 bits for each pixel)
 #define COLOR_DEPTH 32
@@ -477,4 +478,11 @@ void drawClearBlock(int x, int y){
 // Next-block field is a 150 x 150 square, starts from (602, 544) ends at (752, 694)
 void displayGamePlayScreen() {
     drawImage(playImageBitmap, 0, 0, playImage_width, playImage_height);
+}
+
+// index 0: choose Start Game       index 1: Choose difficulty Easy     index 2: Exit       index 3: Choose difficulty Medium 
+// index 4: Choose difficulty Hard
+//Phuc written an implementation of this function in game.c
+void displayWelcomeScreen(int currentIndex) {
+    drawImage(welcome_bitmap_allArray[currentIndex], 212, 34, welcomeScreen_width, welcomeScreen_height);
 }
