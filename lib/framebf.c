@@ -479,4 +479,10 @@ void displayGamePlayScreen() {
     drawImage(playImageBitmap, 212, 34, playImage_width, playImage_height);
     drawString(602,64,"SCORE",0xff4D3D, 2);
     drawString(602,510,"NEXT",0xff4D3D, 2);
+    drawString(638,248,"CONTROLS",0xff4D3D, 1);
+    drawString(602,287,"LEFT : A, <-",0xFFFFFF, 1);
+    drawString(602,327,"RIGHT: D, ->",0xFFFFFF, 1);
+    drawString(602,367,"DOWN : S, % ",0xFFFFFF, 1);
+    drawString(593,407,"ROTATE: SPACE",0xFFFFFF, 1);
+    drawString(602,447,"EXIT : ' ",0xFFFFFF, 1);
 }
