@@ -10,6 +10,7 @@
 #include "cli/font.h"
 #include "game/screen/gameWelcomeScreen.h"
 #include "game/screen/gameOverPopUp.h"
+#include "game/screen/helpScreen.h"
 
 // Use RGBA32 (32 bits for each pixel)
 #define COLOR_DEPTH 32
@@ -486,6 +487,11 @@ void displayGamePlayScreen() {
 void displayGameOverPopUp(int currentIndex, char* score) {
     drawImage(gameOver_bitmap_allArray[currentIndex], 230, 200, gameOverPopUp_width, gameOverPopUp_height);
     drawString(376,367, score ,0xFFFFFF, 1);
+}
+
+// Use this to render the How to Play screen
+void displayHelpScreen() {
+    drawImage(howToPlayGame_bitmap, 0, 0, helpScreen_width, helpScreen_height);
 }
 
 //written by Phuc
