@@ -43,7 +43,7 @@ typedef struct {
   int y;
 } Point;
 
-// dynamic piece in the board (should be one piece existed at a time)
+// dynamic piece in the board (should be one moving piece and one next spawn piece existed at a time)
 typedef struct {
   Shape shape;
   Color color;
@@ -56,6 +56,7 @@ typedef struct {
   Color color;
 } Block;
 
+// Flow control
 void handle_game_mode();
 void _print_error_game_mode();
 int _is_up_command();
@@ -68,18 +69,28 @@ void _exit_game();
 void _print_error_game_mode();
 void _handle_welcome_screen_input();
 void _init_game();
-void _init_game();
 void _increase_current_piece();
-void _draw_game_state();
-void _clear_game_piece(Piece *piece);
+void _spawn_random_piece_to(Piece *piece);
+void _rotate_piece(Piece *piece);
+
+// Drawing
 void _draw_game_piece(Piece *piece);
-void draw_game_point(int x, int y, Color color);
+void _clear_game_piece(Piece *piece);
+void _draw_game_point(int x, int y, Color color);
+
+void _draw_next_frame_piece(Piece *piece);
+void _clear_next_frame_piece(Piece *piece);
+void _draw_next_frame_point(int x, int y, Color color);
+void _adjust_x_y_for_center_drawing_next_frame(int *x, int *y, Shape shape);
+
+void _draw_game_scores(unsigned int score);
+
+// Utils
 Point* _get_init_points(Piece *piece);
 Point _get_init_center_point(Piece *piece);
-void _rotate_piece(Piece *piece);
-void _adjust_center_point_if_overflow(Piece *piece, Point points[]);
-void _copy_piece_rotated_points_to_buffer(Piece *piece, Point buffer[]);
 Point* _copy_piece_angle_0_points_to_buffer(Piece *piece, Point buffer[]);
+void _copy_piece_rotated_points_to_buffer(Piece *piece, Point buffer[]);
+void _adjust_center_point_if_overflow(Piece *piece, Point points[]);
 int _get_angle_multiplier_sin(Angle angle);
 int _get_angle_multiplier_cos(Angle angle);
-void _spawn_random_dynamic_piece();
+

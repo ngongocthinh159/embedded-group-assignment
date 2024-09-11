@@ -4,6 +4,7 @@ typedef struct {
   char *name;
   int length;
   char *help;
+  char *full_help;
   void (*fn)();
 } Command;
 
