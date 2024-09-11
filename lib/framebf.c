@@ -9,6 +9,7 @@
 #include "game/blocks/block.h"
 #include "cli/font.h"
 #include "game/screen/gameWelcomeScreen.h"
+#include "game/screen/gameOverPopUp.h"
 
 // Use RGBA32 (32 bits for each pixel)
 #define COLOR_DEPTH 32
@@ -480,9 +481,17 @@ void displayGamePlayScreen() {
     drawImage(playImageBitmap, 0, 0, playImage_width, playImage_height);
 }
 
-// index 0: choose Start Game       index 1: Choose difficulty Easy     index 2: Exit       index 3: Choose difficulty Medium 
-// index 4: Choose difficulty Hard
-//Phuc written an implementation of this function in game.c
+//Use this to render the game over popup, enter a string of number as the score to render (e.g. "0069420")
+// index 0: choose "NEW GAME"      index 1: choose "EXIT"
+void displayGameOverPopUp(int currentIndex, char* score) {
+    drawImage(gameOver_bitmap_allArray[currentIndex], 230, 200, gameOverPopUp_width, gameOverPopUp_height);
+    drawString(376,367, score ,0xFFFFFF, 1);
+}
+
+//written by Phuc
+// index 0: choose Start Game(easy)      index 1: How to Play     index 2: Exit       index 3: choose Start Game(medium)
+// index 4: choose Start Game(hard)
+//Phuc wrote an implementation of this function in game.c
 void displayWelcomeScreen(int currentIndex) {
-    drawImage(welcome_bitmap_allArray[currentIndex], 212, 34, welcomeScreen_width, welcomeScreen_height);
+    drawImage(welcome_bitmap_allArray[currentIndex], 0, 0, welcomeScreen_width, welcomeScreen_height);
 }
