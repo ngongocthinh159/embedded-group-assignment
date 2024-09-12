@@ -8,6 +8,9 @@
 #include "game/screen/playScreen.h"
 #include "game/blocks/block.h"
 #include "cli/font.h"
+#include "game/screen/gameWelcomeScreen.h"
+#include "game/screen/gameOverPopUp.h"
+#include "game/screen/helpScreen.h"
 
 // Use RGBA32 (32 bits for each pixel)
 #define COLOR_DEPTH 32
@@ -474,9 +477,27 @@ void drawClearBlock(int x, int y){
 
 // Use this to render the play screen
 // Play field is a 330 x 630 rectangle, starts from (242, 64) ends at (572, 694)
-// Next-block field is a 150 x 150 square, starts from (602, 522) ends at (752, 694)
+// Next-block field is a 150 x 150 square, starts from (602, 544) ends at (752, 694)
 void displayGamePlayScreen() {
-    drawImage(playImageBitmap, 212, 34, playImage_width, playImage_height);
-    drawString(602,64,"SCORE",0xff4D3D, 2);
-    drawString(602,510,"NEXT",0xff4D3D, 2);
+    drawImage(playImageBitmap, 0, 0, playImage_width, playImage_height);
+}
+
+//Use this to render the game over popup, enter a string of number as the score to render (e.g. "0069420")
+// index 0: choose "NEW GAME"      index 1: choose "EXIT"
+void displayGameOverPopUp(int currentIndex, char* score) {
+    drawImage(gameOver_bitmap_allArray[currentIndex], 230, 200, gameOverPopUp_width, gameOverPopUp_height);
+    drawString(376,367, score ,0xFFFFFF, 1);
+}
+
+// Use this to render the How to Play screen
+void displayHelpScreen() {
+    drawImage(howToPlayGame_bitmap, 0, 0, helpScreen_width, helpScreen_height);
+}
+
+//written by Phuc
+// index 0: choose Start Game(easy)      index 1: How to Play     index 2: Exit       index 3: choose Start Game(medium)
+// index 4: choose Start Game(hard)
+//Phuc wrote an implementation of this function in game.c
+void displayWelcomeScreen(int currentIndex) {
+    drawImage(welcome_bitmap_allArray[currentIndex], 0, 0, welcomeScreen_width, welcomeScreen_height);
 }

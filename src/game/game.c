@@ -25,6 +25,7 @@ void _handle_events_call_every_1s();
 /* Global variables */
 int should_exit_game_mode = 0;
 const int smallest_interval_ms = 10;
+int selected_difficulty = 0;
 
 /* Game variables */
 unsigned int scores = 120;
@@ -238,6 +239,44 @@ int _is_enter_or_space_command() { return str_equal(command, SPACE_STR); }
 void _exit_game() {
   drawRectARGB32(0, 0, width - 1, height - 1, COLOR_BLACK, 1);
   switch_to_cli_mode();
+}
+
+//written by Phuc
+//Use this to switch between the states of the welcome screen
+// Minh - commented out because the logic is not right
+//Some info for the game devs: 
+// index 0: choose Start Game(easy)      index 1: How to Play     index 2: Exit       index 3: choose Start Game(medium)
+// index 4: choose Start Game(hard) 
+// On start up, the default screen is "cursor on Start New Game, difficulty easy"
+// Pressing A or D will change the screen to the other difficulty and the cursor will always be on "Start Game"
+// The user should be able to navigate up and down using the correspond buttons...
+// tho doing so will change the displayed difficulty back to "easy"
+// visit https://www.canva.com/design/DAGPhrhXRlo/OsR2ud-hSujq-Xf2F9K9fg/edit?utm_content=DAGPhrhXRlo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton to see the screens
+
+void _handle_welcome_screen_input() {
+    int currentIndex = 0; 
+    // while (1) {
+        displayWelcomeScreen(currentIndex);
+        // if (_is_up_command() && currentIndex > 0) {
+        //     currentIndex = (currentIndex - 1 + 5) % 5;
+        // } else if (_is_down_command() && currentIndex < 2) {
+        //     currentIndex = (currentIndex + 1) % 5;
+        // } else if (_is_enter_or_space_command()) {
+        //     if (currentIndex == 0) {   
+        //         _init_game();
+        //         break;
+        //     } else if (currentIndex == 2) {  
+        //          _exit_game();
+        //         break;
+        //     } else if (currentIndex == 1) {  
+        //          currentIndex = 3;
+        //     } else if (currentIndex == 3) {  
+        //          currentIndex = 4;
+        //     } else if (currentIndex == 4) {  
+        //          currentIndex = 1;
+        //     }
+        // }
+    // }
 }
 
 void _init_game() {

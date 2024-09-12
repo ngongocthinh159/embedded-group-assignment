@@ -56,6 +56,14 @@ typedef struct {
   Color color;
 } Block;
 
+
+enum Difficulty {
+    EASY,
+    MEDIUM,
+    HARD
+};
+
+
 // Flow control
 void handle_game_mode();
 void _print_error_game_mode();
@@ -67,8 +75,7 @@ int _is_back_tick_command();
 int _is_enter_or_space_command();
 void _exit_game();
 void _print_error_game_mode();
-
-// Game logic
+void _handle_welcome_screen_input();
 void _init_game();
 void _increase_current_piece();
 void _spawn_random_piece_to(Piece *piece);
