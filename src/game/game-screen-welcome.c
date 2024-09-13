@@ -5,7 +5,7 @@
 #include "lib/color.h"
 #include "cli/cli.h"
 #include "game/game-screen-welcome.h"
-#include "game/game-how-to-play.h"
+#include "game/game-screen-how-to-play.h"
 
 // 0: new game
 // 1: difficulty

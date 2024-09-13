@@ -1,6 +1,6 @@
 #include "game/game.h"
 #include "game/game-screen-welcome.h"
-#include "game/game-how-to-play.h"
+#include "game/game-screen-how-to-play.h"
 
 #include "cli/cli.h"
 #include "cli/command.h"
