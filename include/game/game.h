@@ -2,6 +2,14 @@
 
 #define __size 4
 
+typedef enum {
+  SCREEN_WELCOME,
+  SCREEN_HOW_TO_PLAY,
+  SCREEN_GAME_PLAY,
+  SCREEN_GAME_PAUSE,
+  SCREEN_GAME_OVER
+} SCREEN;
+
 typedef struct {
   int call_every_ms; // should be mutiple of 10
   void (*handler)();
@@ -58,11 +66,13 @@ typedef struct {
 
 
 enum Difficulty {
-    EASY,
-    MEDIUM,
-    HARD
+  EASY,
+  MEDIUM,
+  HARD
 };
 
+// Global variables
+extern volatile SCREEN current_screen;
 
 // Flow control
 void handle_game_mode();
@@ -101,4 +111,3 @@ void _copy_piece_rotated_points_to_buffer(Piece *piece, Point buffer[]);
 void _adjust_center_point_if_overflow(Piece *piece, Point points[]);
 int _get_angle_multiplier_sin(Angle angle);
 int _get_angle_multiplier_cos(Angle angle);
-

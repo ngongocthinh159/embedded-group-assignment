@@ -1,4 +1,5 @@
 #include "game/game.h"
+#include "game/game-screen-welcome.h"
 
 #include "cli/cli.h"
 #include "cli/command.h"
@@ -60,6 +61,7 @@ static const int GAME_FIELD_WIDHT = 11;
 static const int GAME_FIELD_HEIGHT = 21;
 static const int VIRTUAL_GAME_FIELD_OFFSET = 3;
 static const int BLOCK_SIZE = 30;
+volatile SCREEN current_screen = SCREEN_WELCOME;
 
 static Point init_pos_shape_I[] = {
     {.x = 0, .y = 0},
@@ -136,14 +138,52 @@ void handle_game_mode() {
   print_color("\n\nGame mode!\n", CMD_COLOR_YEL);
   print_prefix();
   should_exit_game_mode = 0;
-
-  _init_game();
+  current_screen = SCREEN_WELCOME;
 
   while (is_game_mode() && !should_exit_game_mode) {
     set_wait_timer_cb1(1, smallest_interval_ms, _uart_scanning_callback);
     _handle_timing_events();
     set_wait_timer_cb1(0, smallest_interval_ms, _uart_scanning_callback);
   }
+}
+
+void _handle_game_mode_internal() {
+  int is_handled = 0;
+  if (current_screen == SCREEN_WELCOME) {
+    is_handled |= handle_screen_welcome();
+  } else if (current_screen == SCREEN_HOW_TO_PLAY) {
+
+  } else if (current_screen == SCREEN_GAME_PLAY) {
+
+  } else if (current_screen == SCREEN_GAME_PAUSE) {
+
+  } else if (current_screen == SCREEN_GAME_OVER) {
+    
+  }
+  // if (_is_up_command()) {
+  //   println("ACK: UP");
+  // } else if (_is_down_command()) {
+  //   println("ACK: DOWN");
+  // } else if (_is_left_command()) {
+  //   println("ACK: LEFT");
+  // } else if (_is_right_command()) {
+  //   println("ACK: RIGHT");
+  // } else if (_is_enter_or_space_command()) {
+  //   _clear_game_piece(&dynamic_piece);
+  //   _rotate_piece(&dynamic_piece);
+  //   _draw_game_piece(&dynamic_piece);
+  //   println("ACK: SPACE or ENTER");
+  // } else if (_is_back_tick_command()) {
+  //   println("ACK: BACK TICK");
+  // } else {
+  //   _print_error_game_mode();
+  // }
+
+  if (!is_handled) {
+    _print_error_game_mode();
+  }
+
+  print_prefix();
 }
 
 void _uart_scanning_callback() {
@@ -162,53 +202,19 @@ void _uart_scanning_callback() {
   }
 }
 
-void _handle_timing_events() {
-  for (int i = 0; i < sizeof(events) / sizeof(Event); i++) {
-    events[i].counter++;
-    if (events[i].counter >=
-        events[i].call_every_ms / smallest_interval_ms + 1) {
-      events[i].counter = 0;
-      events[i].handler();
-    }
-  }
-}
-
 void _handle_events_call_every_50ms() {}
 
 void _handle_events_call_every_100ms() {}
 
 void _handle_events_call_every_200ms() {
-  _clear_game_piece(&dynamic_piece);
-  _increase_current_piece();
-  _draw_game_piece(&dynamic_piece);
+  // _clear_game_piece(&dynamic_piece);
+  // _increase_current_piece();
+  // _draw_game_piece(&dynamic_piece);
 }
 
 void _handle_events_call_every_500ms() {}
 
 void _handle_events_call_every_1s() {}
-
-void _handle_game_mode_internal() {
-  if (_is_up_command()) {
-    println("ACK: UP");
-  } else if (_is_down_command()) {
-    println("ACK: DOWN");
-  } else if (_is_left_command()) {
-    println("ACK: LEFT");
-  } else if (_is_right_command()) {
-    println("ACK: RIGHT");
-  } else if (_is_enter_or_space_command()) {
-    _clear_game_piece(&dynamic_piece);
-    _rotate_piece(&dynamic_piece);
-    _draw_game_piece(&dynamic_piece);
-    println("ACK: SPACE or ENTER");
-  } else if (_is_back_tick_command()) {
-    println("ACK: BACK TICK");
-  } else {
-    _print_error_game_mode();
-  }
-
-  print_prefix();
-}
 
 void _print_error_game_mode() {
   print_color("NAK: Unknown command received in ", CMD_COLOR_RED);
@@ -254,29 +260,8 @@ void _exit_game() {
 // visit https://www.canva.com/design/DAGPhrhXRlo/OsR2ud-hSujq-Xf2F9K9fg/edit?utm_content=DAGPhrhXRlo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton to see the screens
 
 void _handle_welcome_screen_input() {
-    int currentIndex = 0; 
-    // while (1) {
-        displayWelcomeScreen(currentIndex);
-        // if (_is_up_command() && currentIndex > 0) {
-        //     currentIndex = (currentIndex - 1 + 5) % 5;
-        // } else if (_is_down_command() && currentIndex < 2) {
-        //     currentIndex = (currentIndex + 1) % 5;
-        // } else if (_is_enter_or_space_command()) {
-        //     if (currentIndex == 0) {   
-        //         _init_game();
-        //         break;
-        //     } else if (currentIndex == 2) {  
-        //          _exit_game();
-        //         break;
-        //     } else if (currentIndex == 1) {  
-        //          currentIndex = 3;
-        //     } else if (currentIndex == 3) {  
-        //          currentIndex = 4;
-        //     } else if (currentIndex == 4) {  
-        //          currentIndex = 1;
-        //     }
-        // }
-    // }
+  int currentIndex = 0; 
+  displayWelcomeScreen(currentIndex);
 }
 
 void _init_game() {
@@ -289,7 +274,16 @@ void _init_game() {
 
 void _increase_current_piece() { dynamic_piece.center_point.y += 1; }
 
-void _draw_game_state() { _draw_game_piece(&dynamic_piece); }
+void _handle_timing_events() {
+  for (int i = 0; i < sizeof(events) / sizeof(Event); i++) {
+    events[i].counter++;
+    if (events[i].counter >=
+        events[i].call_every_ms / smallest_interval_ms + 1) {
+      events[i].counter = 0;
+      events[i].handler();
+    }
+  }
+}
 
 void _clear_game_piece(Piece *piece) {
   _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);

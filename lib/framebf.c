@@ -494,10 +494,10 @@ void displayHelpScreen() {
     drawImage(howToPlayGame_bitmap, 0, 0, helpScreen_width, helpScreen_height);
 }
 
-//written by Phuc
-// index 0: choose Start Game(easy)      index 1: How to Play     index 2: Exit       index 3: choose Start Game(medium)
-// index 4: choose Start Game(hard)
-//Phuc wrote an implementation of this function in game.c
+// 0: new game
+// 1: difficulty
+// 2: how to play
+// 3: exit game
 void displayWelcomeScreen(int currentIndex) {
-    drawImage(welcome_bitmap_allArray[currentIndex], 0, 0, welcomeScreen_width, welcomeScreen_height);
+  drawImage(welcome_bitmap_allArray[currentIndex], 0, 0, welcomeScreen_width, welcomeScreen_height);
 }
