@@ -12,3 +12,4 @@ extern const unsigned long cyanBlock[];
 extern const unsigned long blueBlock[];
 extern const unsigned long purpleBlock[];
 extern const unsigned long clearBlock[];
+extern const unsigned long brickBlock[];

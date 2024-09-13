@@ -24,6 +24,7 @@ void drawCyanBlock(int x, int y);
 void drawBlueBlock(int x, int y);
 void drawPurpleBlock(int x, int y);
 void drawClearBlock(int x, int y);
+void drawBrickBlock(int x, int y);
 void displayWelcomeScreen(int currentIndex);
 void displayGamePlayScreen();
 void displayHelpScreen();
