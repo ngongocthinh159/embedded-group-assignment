@@ -150,10 +150,10 @@ void drawPixelARGB32(int x, int y, unsigned int attr) {
 void drawRectARGB32(int x1, int y1, int x2, int y2, unsigned int attr,
                     int fill) {
   // Clip the rectangle's coordinates to the screen boundaries
-  if (x1 < 0) x1 = 0;
-  if (y1 < 0) y1 = 0;
-  if (x2 >= width) x2 = width - 1;
-  if (y2 >= height) y2 = height - 1;
+  // if (x1 < 0) x1 = 0;
+  // if (y1 < 0) y1 = 0;
+  // if (x2 >= width) x2 = width - 1;
+  // if (y2 >= height) y2 = height - 1;
 
   for (int y = y1; y <= y2; y++) {
     for (int x = x1; x <= x2; x++) {
@@ -467,7 +467,7 @@ void displayGameOverPopUp(int currentIndex, char *score) {
 }
 
 // Use this to render the How to Play screen
-void displayHelpScreen() {
+void displayHowToPlayScreen() {
   drawImage(howToPlayGame_bitmap, 0, 0, helpScreen_width, helpScreen_height);
 }
 

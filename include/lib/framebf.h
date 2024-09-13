@@ -27,7 +27,7 @@ void drawClearBlock(int x, int y);
 void drawBrickBlock(int x, int y);
 void displayWelcomeScreen(int currentIndex);
 void displayGamePlayScreen();
-void displayHelpScreen();
+void displayHowToPlayScreen();
 void displayGameOverPopUp(int currentIndex, char* score);
 
 extern unsigned int width, height, pitch;

@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/game-screen-welcome.h"
+#include "game/game-how-to-play.h"
 
 #include "cli/cli.h"
 #include "cli/command.h"
@@ -138,7 +139,8 @@ void handle_game_mode() {
   print_color("\n\nGame mode!\n", CMD_COLOR_YEL);
   print_prefix();
   should_exit_game_mode = 0;
-  current_screen = SCREEN_WELCOME;
+  reset_welcome_screen_state();
+  switch_to_welcome_screen();
 
   while (is_game_mode() && !should_exit_game_mode) {
     set_wait_timer_cb1(1, smallest_interval_ms, _uart_scanning_callback);
@@ -152,7 +154,7 @@ void _handle_game_mode_internal() {
   if (current_screen == SCREEN_WELCOME) {
     is_handled |= handle_screen_welcome();
   } else if (current_screen == SCREEN_HOW_TO_PLAY) {
-
+    is_handled |= handle_screen_how_to_play();
   } else if (current_screen == SCREEN_GAME_PLAY) {
 
   } else if (current_screen == SCREEN_GAME_PAUSE) {
@@ -160,24 +162,6 @@ void _handle_game_mode_internal() {
   } else if (current_screen == SCREEN_GAME_OVER) {
     
   }
-  // if (_is_up_command()) {
-  //   println("ACK: UP");
-  // } else if (_is_down_command()) {
-  //   println("ACK: DOWN");
-  // } else if (_is_left_command()) {
-  //   println("ACK: LEFT");
-  // } else if (_is_right_command()) {
-  //   println("ACK: RIGHT");
-  // } else if (_is_enter_or_space_command()) {
-  //   _clear_game_piece(&dynamic_piece);
-  //   _rotate_piece(&dynamic_piece);
-  //   _draw_game_piece(&dynamic_piece);
-  //   println("ACK: SPACE or ENTER");
-  // } else if (_is_back_tick_command()) {
-  //   println("ACK: BACK TICK");
-  // } else {
-  //   _print_error_game_mode();
-  // }
 
   if (!is_handled) {
     _print_error_game_mode();

@@ -94,6 +94,7 @@ void handle_history() {
 void handle_cli_mode() {
   print_color("\n\nCLI mode!\n", CMD_COLOR_YEL);
   print_prefix();
+  switch_to_cli_mode();
 
   while (is_cli_mode()) {
     uart_scanning();  // always scanning for new char
@@ -178,7 +179,11 @@ int handle_global_commands() {
   return is_handled;
 }
 
-void switch_to_cli_mode() { current_mode = CLI; }
+void switch_to_cli_mode() {
+  drawRectARGB32(0, 0, width - 1, height - 1, COLOR_BLACK, 1);
+  drawString(400, 400, "CLI Mode", COLOR_YEL, 2);
+  current_mode = CLI; 
+}
 
 void switch_to_video_player_mode() { current_mode = VIDEO_PLAYER; }
 
