@@ -1,9 +1,9 @@
-#include "game/game-screen-welcome.h"
 #include "game/game.h"
+#include "game/game-utils.h"
+#include "game/game-screen-welcome.h"
+#include "game/game-screen-how-to-play.h"
 #include "lib/framebf.h"
 #include "util/tty.h"
-
-void _htp_go_back_welcome();
 
 int handle_screen_how_to_play() {
   int is_handled = 1;

@@ -35,7 +35,8 @@ typedef enum {
   RED,
   BLUE,
   ORANGE,
-  CLEAR
+  CLEAR,
+  BRICK
 } Color;
 
 // initial 0 angle for each piece will look like this: https://tetris.wiki/Tetromino
@@ -73,41 +74,29 @@ enum Difficulty {
 
 // Global variables
 extern volatile SCREEN current_screen;
+extern const unsigned int OFFSET_PHYSICAL_GAME_FIELD_X;
+extern const unsigned int OFFSET_PHYSICAL_GAME_FIELD_Y;
+extern const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_X;
+extern const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_Y;
+extern const int GAME_FIELD_WIDHT;
+extern const int GAME_FIELD_HEIGHT;
+extern const int VIRTUAL_GAME_FIELD_OFFSET;
+extern const int BLOCK_SIZE;
 
 // Flow control
 void handle_game_mode();
-void _print_error_game_mode();
-int _is_up_command();
-int _is_down_command();
-int _is_left_command();
-int _is_right_command();
-int _is_back_tick_command();
-int _is_enter_or_space_command();
-void _exit_game();
-void _print_error_game_mode();
-void _handle_welcome_screen_input();
+void _uart_scanning_callback();
+void _handle_game_mode_internal();
+void _handle_timing_events();
+void _handle_events_call_every_50ms();
+void _handle_events_call_every_100ms();
+void _handle_events_call_every_200ms();
+void _handle_events_call_every_500ms();
+void _handle_events_call_every_1s();
+int _handle_screen_game_play_internal();
+void _reset_timer_counters();
+
+// Game play utils
+void switch_to_game_play_screen();
 void _init_game();
 void _increase_current_piece();
-void _spawn_random_piece_to(Piece *piece);
-void _rotate_piece(Piece *piece);
-
-// Drawing
-void _draw_game_piece(Piece *piece);
-void _clear_game_piece(Piece *piece);
-void _draw_game_point(int x, int y, Color color);
-
-void _draw_next_frame_piece(Piece *piece);
-void _clear_next_frame_piece(Piece *piece);
-void _draw_next_frame_point(int x, int y, Color color);
-void _adjust_x_y_for_center_drawing_next_frame(int *x, int *y, Shape shape);
-
-void _draw_game_scores(unsigned int score);
-
-// Utils
-Point* _get_init_points(Piece *piece);
-Point _get_init_center_point(Piece *piece);
-Point* _copy_piece_angle_0_points_to_buffer(Piece *piece, Point buffer[]);
-void _copy_piece_rotated_points_to_buffer(Piece *piece, Point buffer[]);
-void _adjust_center_point_if_overflow(Piece *piece, Point points[]);
-int _get_angle_multiplier_sin(Angle angle);
-int _get_angle_multiplier_cos(Angle angle);

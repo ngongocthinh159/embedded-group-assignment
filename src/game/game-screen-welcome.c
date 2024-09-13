@@ -1,11 +1,12 @@
 #include "game/game.h"
+#include "game/game-utils.h"
+#include "game/game-screen-welcome.h"
+#include "game/game-screen-how-to-play.h"
 #include "lib/framebf.h"
 #include "util/tty.h"
 #include "lib/uart.h"
 #include "lib/color.h"
 #include "cli/cli.h"
-#include "game/game-screen-welcome.h"
-#include "game/game-screen-how-to-play.h"
 
 // 0: new game
 // 1: difficulty
@@ -38,7 +39,9 @@ int handle_screen_welcome() {
     }
   } else if (_is_enter_or_space_command()) {
     println("ACK: SPACE or ENTER");
-    if (current_welcome_index == 1) {
+    if (current_welcome_index == 0) {
+      switch_to_game_play_screen();
+    } else if (current_welcome_index == 1) {
       _toggle_difficulty();
     } else if (current_welcome_index == 2) {
       switch_to_how_to_play_screen();
