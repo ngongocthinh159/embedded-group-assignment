@@ -292,6 +292,7 @@ void _rotate_piece(Piece *piece) {
 
   _clear_game_piece(piece);
 
+  Angle before_rotate_angle = piece->angle;
   if (piece->angle == ANGLE_0) {
     piece->angle = ANGLE_90;
   } else if (piece->angle == ANGLE_90) {
@@ -300,6 +301,14 @@ void _rotate_piece(Piece *piece) {
     piece->angle = ANGLE_270;
   } else if (piece->angle == ANGLE_270) {
     piece->angle = ANGLE_0;
+  }
+
+  _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
+  for (int i = 0; i < __size; i++) {
+    if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x, points_buffer_angle_rotated[i].y)) {
+      piece->angle = before_rotate_angle; // restore angle if we can not rotate
+      break;
+    }
   }
 
   _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
