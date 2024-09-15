@@ -88,6 +88,8 @@ extern Block static_game_field[GAME_FIELD_FULL_HEIGHT][GAME_FIELD_WIDHT];
 extern volatile int random_counter;
 extern unsigned int scores;
 extern const int score_step;
+extern volatile int spawned_pieces;
+extern volatile int frozen_level;
 
 // Flow control
 void handle_game_mode();

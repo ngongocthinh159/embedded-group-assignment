@@ -38,9 +38,11 @@ volatile Event events[] = {
 /* Global variables */
 int should_exit_game_mode = 0;
 const int smallest_interval_ms = 10;
-volatile int current_difficulty = 0;  // 0: easy, 1: med, 2: hard
+volatile int current_difficulty = 2;  // 0: easy, 1: med, 2: hard
 volatile int random_counter = 0;
 const int score_step = 10;
+volatile int spawned_pieces = 0;
+volatile int frozen_level = 0;
 
 /* Game variables */
 unsigned int scores = 120;
@@ -184,6 +186,8 @@ void _uart_scanning_callback() {
 
 void _init_game() {
   scores = 0;
+  spawned_pieces = 0;
+  frozen_level = 0;
   _spawn_random_piece_to(&dynamic_piece);
   _spawn_random_piece_to(&next_piece);
   _reset_timer_counters();
@@ -342,12 +346,19 @@ void _check_settle_down_and_move_game_state(Piece *piece) {
     _draw_game_piece(piece);
     _transfer_piece_to_static_field(piece);
 
+    // check game over before checking completed row
     if (_is_game_over(piece)) {
       switch_to_game_over_screen();
       return;
     }
 
-    _adjust_complete_rows();
+    _adjust_complete_rows_and_frozen_rows();
+
+    // check game over after possibly adding frozen rows
+    if (_is_game_over(piece)) {
+      switch_to_game_over_screen();
+      return;
+    }
 
     _prepare_next_game_state_after_settling();
   }

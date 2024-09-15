@@ -79,6 +79,9 @@ Point init_pos_shape_L[] = {
 };
 Point init_center_shape_L = {.x = 1, .y = 1};
 
+/* Only for hard level */
+const int fronzen_level_threshold[] = {5, 10, 15, 20, 25, 30, 32, 34, 36, 38}; // if number of spawned pieces reach any of the threshold, the frozen level increase by 1
+
 void _increase_random_counter() {
   random_counter++;
   if (random_counter >= 2000000000) {
@@ -292,6 +295,8 @@ int _get_angle_multiplier_cos(Angle angle) {
 }
 
 void _spawn_random_piece_to(Piece *piece) {
+  spawned_pieces++;
+  
   int rand_angle = rand(1, 4);
   int rand_color = rand(1, 7);
   int rand_shape = rand(1, 7);
@@ -475,9 +480,10 @@ void _copy_piece_data(Piece *from, Piece *to) {
   to->color = from->color;
 }
 
-void _adjust_complete_rows() {
+// possibly adjust
+void _adjust_complete_rows_and_frozen_rows() {
   int isClearStaticField = 0;
-  int hasAtLeastOneCompleteRow = 0;
+  // int hasAtLeastOneCompleteRow = 0;
   for (int y = 0; y < GAME_FIELD_FULL_HEIGHT; y++) {
     int is_row_complete = 1;
     for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
@@ -487,8 +493,7 @@ void _adjust_complete_rows() {
       }
     }
     if (is_row_complete) {
-      hasAtLeastOneCompleteRow = 1;
-
+      // hasAtLeastOneCompleteRow = 1;
      
       if (debug) {
         println("row complete");
@@ -511,7 +516,18 @@ void _adjust_complete_rows() {
     }
   }
 
-  if (hasAtLeastOneCompleteRow) {
+  // frozen blocks
+  if (_is_hard_mode()) {
+    if (_should_increase_fronzen_level()) {
+      if (!isClearStaticField) {
+        _clear_static_field();
+        isClearStaticField = 1;
+      }
+      _handle_fronzen_blocks();
+    }
+  }
+
+  if (isClearStaticField) {
     _draw_static_field();
   }
 }
@@ -530,7 +546,7 @@ void _adjust_static_field_on_complete_row(int complete_row_idx) {
 void _clear_static_field() {
   for (int y = 0; y < GAME_FIELD_FULL_HEIGHT; y++) {
     for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
-      if (static_game_field[y][x].color != CLEAR && static_game_field[y][x].color != BRICK) {
+      if (static_game_field[y][x].color != CLEAR) {
         _draw_game_point(x, y, CLEAR);
       }
     }
@@ -540,7 +556,7 @@ void _clear_static_field() {
 void _draw_static_field() {
   for (int y = 0; y < GAME_FIELD_FULL_HEIGHT; y++) {
     for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
-      if (static_game_field[y][x].color != CLEAR && static_game_field[y][x].color != BRICK) {
+      if (static_game_field[y][x].color != CLEAR) {
         _draw_game_point(x, y, static_game_field[y][x].color);
       }
     }
@@ -592,6 +608,34 @@ int _is_game_over(Piece *piece) {
   _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
   for (int i = 0; i < __size; i++) {
     if (points_buffer_angle_rotated[i].y < VIRTUAL_GAME_FIELD_OFFSET) return 1;
+  }
+  return 0;
+}
+
+void _handle_fronzen_blocks() {
+  for (int y = 1; y <= GAME_FIELD_FULL_HEIGHT - frozen_level - 1; y++) {
+    for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+      static_game_field[y - 1][x].color = static_game_field[y][x].color;
+    }
+  }
+
+  // turn to brick
+  for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+    static_game_field[GAME_FIELD_FULL_HEIGHT - frozen_level - 1][x].color = BRICK;
+  }
+
+  frozen_level++;
+
+  if (is_print_statictics) {
+    println("");
+    print_color("Game difficulty adjust: increasing frozen level", CMD_COLOR_YEL);
+    println("");
+  }
+}
+
+int _should_increase_fronzen_level() {
+  for (int i = 0; i < sizeof(fronzen_level_threshold)/sizeof(int); i++) {
+    if (spawned_pieces == fronzen_level_threshold[i]) return 1;
   }
   return 0;
 }
