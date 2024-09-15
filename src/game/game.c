@@ -38,7 +38,7 @@ volatile Event events[] = {
 /* Global variables */
 int should_exit_game_mode = 0;
 const int smallest_interval_ms = 10;
-volatile int current_difficulty = 2;  // 0: easy, 1: med, 2: hard
+volatile int current_difficulty = 0;  // 0: easy, 1: med, 2: hard
 volatile int random_counter = 0;
 const int score_step = 10;
 volatile int spawned_pieces = 0;
@@ -235,6 +235,8 @@ void _move_piece_left(Piece *piece) {
     if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x,
                                      points_buffer_angle_rotated[i].y)) {
       piece->center_point.x++;
+      _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
+      _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
       break;
     }
   }
@@ -254,6 +256,8 @@ void _move_piece_right(Piece *piece) {
     if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x,
                                      points_buffer_angle_rotated[i].y)) {
       piece->center_point.x--;
+      _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
+      _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
       break;
     }
   }
