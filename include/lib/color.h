@@ -4,6 +4,7 @@
 #define COLOR_WHITE 0x00ffffff
 #define COLOR_RED 0x00db1a04
 #define COLOR_YEL 0x00ebc702
+#define COLOR_CYAN 0x000cc0df
 #define COLOR_GAME_FIELD_CLEAR 0x00404040
 
 // CMD colors

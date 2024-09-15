@@ -23,6 +23,7 @@ void main() {
   Stack _cmd_st = {stack_buffer, COMMAND_MAX_SIZE, -1}; cmd_st = &_cmd_st;
   Stack _auto_comp = {auto_complete_buffer, COMMAND_MAX_SIZE, -1}; auto_complete_st = &_auto_comp;
 
+  // clear screen and print welcome text
   clrscr();
   welcome();
 

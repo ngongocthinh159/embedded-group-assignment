@@ -1,11 +1,11 @@
 #include "game/game.h"
-#include "game/game-utils.h"
-#include "game/game-screen-welcome.h"
-#include "game/game-screen-how-to-play.h"
-#include "game/game-screen-over.h"
 
 #include "cli/cli.h"
 #include "cli/command.h"
+#include "game/game-screen-how-to-play.h"
+#include "game/game-screen-over.h"
+#include "game/game-screen-welcome.h"
+#include "game/game-utils.h"
 #include "lib/color.h"
 #include "lib/framebf.h"
 #include "lib/keyboard.h"
@@ -38,7 +38,7 @@ volatile Event events[] = {
 /* Global variables */
 int should_exit_game_mode = 0;
 const int smallest_interval_ms = 10;
-int selected_difficulty = 0;
+volatile int current_difficulty = 0;  // 0: easy, 1: med, 2: hard
 volatile int random_counter = 0;
 const int score_step = 10;
 
@@ -90,7 +90,6 @@ void _handle_game_mode_internal() {
   } else if (current_screen == SCREEN_GAME_PLAY) {
     is_handled |= _handle_screen_game_play_internal();
   } else if (current_screen == SCREEN_GAME_PAUSE) {
-
   } else if (current_screen == SCREEN_GAME_OVER) {
     is_handled |= handle_screen_game_over();
   }
@@ -121,39 +120,47 @@ int _handle_screen_game_play_internal() {
     _rotate_piece(&dynamic_piece);
   } else if (_is_back_tick_command()) {
     println("ACK: BACK TICK");
+    switch_to_welcome_screen();
   } else {
     is_handled = 0;
   }
 
   if (is_handled) {
-
   }
 
   return is_handled;
 }
 
 void _handle_events_call_every_50ms() {
-
+  if (_is_hard_mode()) {
+    _game_progess_event();
+  }
 }
 
-void _handle_events_call_every_100ms() {
-  
-}
+void _handle_events_call_every_100ms() {}
 
 void _handle_events_call_every_200ms() {
-  
+  if (_is_medium_mode()) {
+    _game_progess_event();
+  }
 }
 
 void _handle_events_call_every_500ms() {}
 
 void _handle_events_call_every_1s() {
+  if (_is_easy_mode()) {
+    _game_progess_event();
+  }
+}
+
+void _game_progess_event() {
   _clear_game_piece(&dynamic_piece);
   _increase_current_piece();
   _draw_game_piece(&dynamic_piece);
 
   set_wait_timer_cb2(1, 200, _uart_scanning_callback);
   set_wait_timer_cb2(0, 200, _uart_scanning_callback);
-  
+
   _check_settle_down_and_move_game_state(&dynamic_piece);
 }
 
@@ -183,18 +190,20 @@ void _init_game() {
   _init_static_game_field();
 
   // draw
-  displayGamePlayScreen();
+  displayGamePlayScreen(current_difficulty == 0
+                            ? "Mode: Easy"
+                            : (current_difficulty == 1 ? "Mode: Medidum" : "Mode: Hard"));
   _draw_next_frame_piece(&next_piece);
   _draw_game_scores(scores);
 }
 
+void _increase_current_piece() { dynamic_piece.center_point.y += 1; }
+
 void _reset_timer_counters() {
-  for (int i = 0; i < sizeof(events)/sizeof(Event); i++) {
+  for (int i = 0; i < sizeof(events) / sizeof(Event); i++) {
     events[i].counter = 0;
   }
 }
-
-void _increase_current_piece() { dynamic_piece.center_point.y += 1; }
 
 void _handle_timing_events() {
   for (int i = 0; i < sizeof(events) / sizeof(Event); i++) {
@@ -219,7 +228,8 @@ void _move_piece_left(Piece *piece) {
   _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
   _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
   for (int i = 0; i < __size; i++) {
-    if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x, points_buffer_angle_rotated[i].y)) {
+    if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x,
+                                     points_buffer_angle_rotated[i].y)) {
       piece->center_point.x++;
       break;
     }
@@ -237,7 +247,8 @@ void _move_piece_right(Piece *piece) {
   _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
   _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
   for (int i = 0; i < __size; i++) {
-    if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x, points_buffer_angle_rotated[i].y)) {
+    if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x,
+                                     points_buffer_angle_rotated[i].y)) {
       piece->center_point.x--;
       break;
     }
@@ -255,7 +266,8 @@ void _move_piece_down(Piece *piece) {
   _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
   _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
   for (int i = 0; i < __size; i++) {
-    if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x, points_buffer_angle_rotated[i].y)) {
+    if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x,
+                                     points_buffer_angle_rotated[i].y)) {
       piece->center_point.y--;
       break;
     }
@@ -300,16 +312,18 @@ void _check_settle_down_and_move_game_state(Piece *piece) {
   for (int i = 0; i < __size; i++) {
     int p_x = points_buffer_angle_rotated[i].x;
     int p_y = points_buffer_angle_rotated[i].y;
-    
+
     deepest_y = max(p_x, deepest_y);
 
     // check collapsed with static field
     if (_is_occupied_by_static_field(p_x, p_y)) {
-      height_y_occupied_by_static_field = max(height_y_occupied_by_static_field, p_y);
-      deepest_y_occupied_by_static_field = min(deepest_y_occupied_by_static_field, p_y);
+      height_y_occupied_by_static_field =
+          max(height_y_occupied_by_static_field, p_y);
+      deepest_y_occupied_by_static_field =
+          min(deepest_y_occupied_by_static_field, p_y);
       should_settle = 1;
     }
-    
+
     // check under each piece
     if (_is_point_settle_down_by_overflow_y_or_static_field_point(p_x, p_y)) {
       should_settle = 1;
@@ -318,14 +332,16 @@ void _check_settle_down_and_move_game_state(Piece *piece) {
 
   // have collapse with static field => adjust piece
   if (height_y_occupied_by_static_field != 9999) {
-    adjust_y = (height_y_occupied_by_static_field - deepest_y_occupied_by_static_field + 1); // should be negative for offset piece up
+    adjust_y = (height_y_occupied_by_static_field -
+                deepest_y_occupied_by_static_field +
+                1);  // should be negative for offset piece up
   }
   piece->center_point.y += adjust_y;
 
   if (should_settle) {
     _draw_game_piece(piece);
     _transfer_piece_to_static_field(piece);
-    
+
     if (_is_game_over(piece)) {
       switch_to_game_over_screen();
       return;
@@ -338,10 +354,17 @@ void _check_settle_down_and_move_game_state(Piece *piece) {
 }
 
 void _prepare_next_game_state_after_settling() {
-  _copy_piece_data(&next_piece, &dynamic_piece); // copy next piece to dynamic piece
+  _copy_piece_data(&next_piece,
+                   &dynamic_piece);  // copy next piece to dynamic piece
   _clear_next_frame_piece(&next_piece);
   _spawn_random_piece_to(&next_piece);
   _draw_next_frame_piece(&next_piece);
 
   _reset_timer_counters();
 }
+
+int _is_easy_mode() { return current_difficulty == 0; }
+
+int _is_medium_mode() { return current_difficulty == 1; }
+
+int _is_hard_mode() { return current_difficulty == 2; }

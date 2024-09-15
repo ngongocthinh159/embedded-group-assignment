@@ -454,8 +454,9 @@ void drawBrickBlock(int x, int y) {
 // Play field is a 330 x 630 rectangle, starts from (242, 64) ends at (572, 694)
 // Next-block field is a 150 x 150 square, starts from (602, 544) ends at (752,
 // 694)
-void displayGamePlayScreen() {
+void displayGamePlayScreen(char *difficulty_mode) {
   drawImage(playImageBitmap, 0, 0, playImage_width, playImage_height);
+  drawString(242, 16, difficulty_mode, COLOR_CYAN, 2);
 }
 
 // Use this to render the game over popup, enter a string of number as the score

@@ -79,6 +79,7 @@ enum Difficulty {
 
 // Global variables
 extern volatile SCREEN current_screen;
+extern volatile int current_difficulty;
 extern const unsigned int OFFSET_PHYSICAL_GAME_FIELD_X;
 extern const unsigned int OFFSET_PHYSICAL_GAME_FIELD_Y;
 extern const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_X;
@@ -102,6 +103,7 @@ int _handle_screen_game_play_internal();
 void _reset_timer_counters();
 
 // Game play utils
+void _game_progess_event();
 void switch_to_game_play_screen();
 void _init_game();
 void _increase_current_piece();
@@ -111,3 +113,6 @@ void _move_piece_down(Piece *piece);
 void _rotate_piece(Piece *piece); // rotate only Angle attribute
 void _check_settle_down_and_move_game_state(Piece *piece);
 void _prepare_next_game_state_after_settling();
+int _is_easy_mode();
+int _is_medium_mode();
+int _is_hard_mode();
