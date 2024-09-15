@@ -39,7 +39,7 @@ Stack *auto_complete_st;
 
 char tmp_buffer[COMMAND_MAX_SIZE + 1];
 
-volatile int current_mode = CLI;  // mode switching in kernel.c
+volatile int current_mode = GAME;  // mode switching in kernel.c
 int history_req = 0;
 
 int welcome() {

@@ -13,6 +13,7 @@
 #include "lib/mbox.h"
 #include "lib/timer.h"
 #include "lib/uart.h"
+#include "lib/color.h"
 
 // Use RGBA32 (32 bits for each pixel)
 #define COLOR_DEPTH 32
@@ -463,7 +464,7 @@ void displayGamePlayScreen() {
 void displayGameOverPopUp(int currentIndex, char *score) {
   drawImage(gameOver_bitmap_allArray[currentIndex], 230, 200,
             gameOverPopUp_width, gameOverPopUp_height);
-  drawString(376, 367, score, 0xFFFFFF, 1);
+  drawString(376, 367, score, COLOR_YEL, 2);
 }
 
 // Use this to render the How to Play screen

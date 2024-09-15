@@ -2,6 +2,7 @@
 #include "game/game-utils.h"
 #include "game/game-screen-welcome.h"
 #include "game/game-screen-how-to-play.h"
+#include "game/game-screen-over.h"
 
 #include "cli/cli.h"
 #include "cli/command.h"
@@ -38,9 +39,12 @@ volatile Event events[] = {
 int should_exit_game_mode = 0;
 const int smallest_interval_ms = 10;
 int selected_difficulty = 0;
+volatile int random_counter = 0;
+const int score_step = 10;
 
 /* Game variables */
 unsigned int scores = 120;
+unsigned int brick_height = 0;
 
 /* Offsets */
 const unsigned int OFFSET_PHYSICAL_GAME_FIELD_X = 242;
@@ -49,10 +53,6 @@ const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_X = 602;
 const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_Y = 544;
 
 /* Game init */
-const int GAME_FIELD_WIDHT = 11;
-const int GAME_FIELD_HEIGHT = 21;
-const int VIRTUAL_GAME_FIELD_OFFSET = 3;
-const int BLOCK_SIZE = 30;
 volatile SCREEN current_screen = SCREEN_WELCOME;
 
 Piece dynamic_piece = {.shape = SHAPE_I,
@@ -64,6 +64,8 @@ Piece next_piece = {.shape = SHAPE_I,
                     .color = RED,
                     .center_point = {.x = 1, .y = 0},
                     .angle = ANGLE_0};
+
+Block static_game_field[GAME_FIELD_FULL_HEIGHT][GAME_FIELD_WIDHT];
 
 void handle_game_mode() {
   print_color("\n\nGame mode!\n", CMD_COLOR_YEL);
@@ -90,7 +92,7 @@ void _handle_game_mode_internal() {
   } else if (current_screen == SCREEN_GAME_PAUSE) {
 
   } else if (current_screen == SCREEN_GAME_OVER) {
-    
+    is_handled |= handle_screen_game_over();
   }
 
   if (!is_handled) {
@@ -107,13 +109,16 @@ int _handle_screen_game_play_internal() {
 
   } else if (_is_down_command()) {
     println("ACK: DOWN");
-
+    _move_piece_down(&dynamic_piece);
   } else if (_is_left_command()) {
     println("ACK: LEFT");
+    _move_piece_left(&dynamic_piece);
   } else if (_is_right_command()) {
     println("ACK: RIGHT");
+    _move_piece_right(&dynamic_piece);
   } else if (_is_enter_or_space_command()) {
     println("ACK: SPACE or ENTER");
+    _rotate_piece(&dynamic_piece);
   } else if (_is_back_tick_command()) {
     println("ACK: BACK TICK");
   } else {
@@ -127,19 +132,30 @@ int _handle_screen_game_play_internal() {
   return is_handled;
 }
 
-void _handle_events_call_every_50ms() {}
+void _handle_events_call_every_50ms() {
 
-void _handle_events_call_every_100ms() {}
+}
+
+void _handle_events_call_every_100ms() {
+  
+}
 
 void _handle_events_call_every_200ms() {
-  _clear_game_piece(&dynamic_piece);
-  _increase_current_piece();
-  _draw_game_piece(&dynamic_piece);
+  
 }
 
 void _handle_events_call_every_500ms() {}
 
-void _handle_events_call_every_1s() {}
+void _handle_events_call_every_1s() {
+  _clear_game_piece(&dynamic_piece);
+  _increase_current_piece();
+  _draw_game_piece(&dynamic_piece);
+
+  set_wait_timer_cb2(1, 200, _uart_scanning_callback);
+  set_wait_timer_cb2(0, 200, _uart_scanning_callback);
+  
+  _check_settle_down_and_move_game_state(&dynamic_piece);
+}
 
 void _uart_scanning_callback() {
   uart_scanning();  // always scanning for new char
@@ -155,6 +171,8 @@ void _uart_scanning_callback() {
 
     _handle_game_mode_internal();
   }
+
+  _increase_random_counter();
 }
 
 void _init_game() {
@@ -162,6 +180,7 @@ void _init_game() {
   _spawn_random_piece_to(&dynamic_piece);
   _spawn_random_piece_to(&next_piece);
   _reset_timer_counters();
+  _init_static_game_field();
 
   // draw
   displayGamePlayScreen();
@@ -191,4 +210,138 @@ void _handle_timing_events() {
 void switch_to_game_play_screen() {
   _init_game();
   current_screen = SCREEN_GAME_PLAY;
+}
+
+void _move_piece_left(Piece *piece) {
+  _clear_game_piece(piece);
+
+  piece->center_point.x--;
+  _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
+  _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
+  for (int i = 0; i < __size; i++) {
+    if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x, points_buffer_angle_rotated[i].y)) {
+      piece->center_point.x++;
+      break;
+    }
+  }
+
+  _check_settle_down_and_move_game_state(piece);
+
+  _draw_game_piece(piece);
+}
+
+void _move_piece_right(Piece *piece) {
+  _clear_game_piece(piece);
+
+  piece->center_point.x++;
+  _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
+  _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
+  for (int i = 0; i < __size; i++) {
+    if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x, points_buffer_angle_rotated[i].y)) {
+      piece->center_point.x--;
+      break;
+    }
+  }
+
+  _check_settle_down_and_move_game_state(piece);
+
+  _draw_game_piece(piece);
+}
+
+void _move_piece_down(Piece *piece) {
+  _clear_game_piece(piece);
+
+  piece->center_point.y++;
+  _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
+  _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
+  for (int i = 0; i < __size; i++) {
+    if (_is_occupied_by_static_field(points_buffer_angle_rotated[i].x, points_buffer_angle_rotated[i].y)) {
+      piece->center_point.y--;
+      break;
+    }
+  }
+
+  _check_settle_down_and_move_game_state(piece);
+  _reset_timer_counters();
+
+  _draw_game_piece(piece);
+}
+
+void _rotate_piece(Piece *piece) {
+  if (piece->shape == SHAPE_O) return;
+
+  _clear_game_piece(piece);
+
+  if (piece->angle == ANGLE_0) {
+    piece->angle = ANGLE_90;
+  } else if (piece->angle == ANGLE_90) {
+    piece->angle = ANGLE_180;
+  } else if (piece->angle == ANGLE_180) {
+    piece->angle = ANGLE_270;
+  } else if (piece->angle == ANGLE_270) {
+    piece->angle = ANGLE_0;
+  }
+
+  _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
+  _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
+  _check_settle_down_and_move_game_state(piece);
+
+  _draw_game_piece(piece);
+}
+
+void _check_settle_down_and_move_game_state(Piece *piece) {
+  int deepest_y = -9999;
+  int height_y_occupied_by_static_field = 9999;
+  int deepest_y_occupied_by_static_field = -9999;
+  _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
+  int should_settle = 0;
+  int adjust_y = 0;
+
+  for (int i = 0; i < __size; i++) {
+    int p_x = points_buffer_angle_rotated[i].x;
+    int p_y = points_buffer_angle_rotated[i].y;
+    
+    deepest_y = max(p_x, deepest_y);
+
+    // check collapsed with static field
+    if (_is_occupied_by_static_field(p_x, p_y)) {
+      height_y_occupied_by_static_field = max(height_y_occupied_by_static_field, p_y);
+      deepest_y_occupied_by_static_field = min(deepest_y_occupied_by_static_field, p_y);
+      should_settle = 1;
+    }
+    
+    // check under each piece
+    if (_is_point_settle_down_by_overflow_y_or_static_field_point(p_x, p_y)) {
+      should_settle = 1;
+    }
+  }
+
+  // have collapse with static field => adjust piece
+  if (height_y_occupied_by_static_field != 9999) {
+    adjust_y = (height_y_occupied_by_static_field - deepest_y_occupied_by_static_field + 1); // should be negative for offset piece up
+  }
+  piece->center_point.y += adjust_y;
+
+  if (should_settle) {
+    _draw_game_piece(piece);
+    _transfer_piece_to_static_field(piece);
+    
+    if (_is_game_over(piece)) {
+      switch_to_game_over_screen();
+      return;
+    }
+
+    _adjust_complete_rows();
+
+    _prepare_next_game_state_after_settling();
+  }
+}
+
+void _prepare_next_game_state_after_settling() {
+  _copy_piece_data(&next_piece, &dynamic_piece); // copy next piece to dynamic piece
+  _clear_next_frame_piece(&next_piece);
+  _spawn_random_piece_to(&next_piece);
+  _draw_next_frame_piece(&next_piece);
+
+  _reset_timer_counters();
 }

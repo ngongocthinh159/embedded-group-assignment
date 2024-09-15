@@ -1,6 +1,11 @@
 #pragma once
 
 #define __size 4
+#define GAME_FIELD_WIDHT 11
+#define GAME_FIELD_HEIGHT 21
+#define GAME_FIELD_FULL_HEIGHT 24
+#define VIRTUAL_GAME_FIELD_OFFSET 3
+#define BLOCK_SIZE 30
 
 typedef enum {
   SCREEN_WELCOME,
@@ -78,10 +83,10 @@ extern const unsigned int OFFSET_PHYSICAL_GAME_FIELD_X;
 extern const unsigned int OFFSET_PHYSICAL_GAME_FIELD_Y;
 extern const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_X;
 extern const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_Y;
-extern const int GAME_FIELD_WIDHT;
-extern const int GAME_FIELD_HEIGHT;
-extern const int VIRTUAL_GAME_FIELD_OFFSET;
-extern const int BLOCK_SIZE;
+extern Block static_game_field[GAME_FIELD_FULL_HEIGHT][GAME_FIELD_WIDHT];
+extern volatile int random_counter;
+extern unsigned int scores;
+extern const int score_step;
 
 // Flow control
 void handle_game_mode();
@@ -100,3 +105,9 @@ void _reset_timer_counters();
 void switch_to_game_play_screen();
 void _init_game();
 void _increase_current_piece();
+void _move_piece_left(Piece *piece);
+void _move_piece_right(Piece *piece);
+void _move_piece_down(Piece *piece);
+void _rotate_piece(Piece *piece); // rotate only Angle attribute
+void _check_settle_down_and_move_game_state(Piece *piece);
+void _prepare_next_game_state_after_settling();

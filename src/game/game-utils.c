@@ -13,6 +13,8 @@
 #include "util/string.h"
 #include "util/tty.h"
 
+int debug = 0;
+int is_print_statictics = 1;
 
 /* Buffers */
 Point points_buffer_angle_rotated[__size];
@@ -77,6 +79,12 @@ Point init_pos_shape_L[] = {
 };
 Point init_center_shape_L = {.x = 1, .y = 1};
 
+void _increase_random_counter() {
+  random_counter++;
+  if (random_counter >= 2000000000) {
+    random_counter = 0;
+  }
+}
 
 void _print_error_game_mode() {
   print_color("NAK: Unknown command received in ", CMD_COLOR_RED);
@@ -123,7 +131,7 @@ void _draw_game_piece(Piece *piece) {
 }
 
 void _draw_game_point(int x, int y, Color color) {
-  if (y <= VIRTUAL_GAME_FIELD_OFFSET) {  // no draw virtual point
+  if (y < VIRTUAL_GAME_FIELD_OFFSET) {  // no draw virtual point
     return;
   }
 
@@ -209,23 +217,6 @@ Point _get_init_center_point(Piece *piece) {
   }
 }
 
-void _rotate_piece(Piece *piece) {
-  if (piece->shape == SHAPE_O) return;
-
-  if (piece->angle == ANGLE_0) {
-    piece->angle = ANGLE_90;
-  } else if (piece->angle == ANGLE_90) {
-    piece->angle = ANGLE_180;
-  } else if (piece->angle == ANGLE_180) {
-    piece->angle = ANGLE_270;
-  } else if (piece->angle == ANGLE_270) {
-    piece->angle = ANGLE_0;
-  }
-
-  _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
-  _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
-}
-
 void _adjust_center_point_if_overflow(Piece *piece, Point points[]) {
   int x_adjust = 0;
   int y_adjust = 0;
@@ -247,7 +238,7 @@ void _adjust_center_point_if_overflow(Piece *piece, Point points[]) {
   int real_max_y = max_y - VIRTUAL_GAME_FIELD_OFFSET;
 
   if (real_min_y < 0) {
-    y_adjust = (-real_min_y);
+    y_adjust = (-real_min_y - 1);
   } else if (real_max_y >= GAME_FIELD_HEIGHT) {
     y_adjust = -(real_max_y - GAME_FIELD_HEIGHT + 1);
   }
@@ -351,8 +342,6 @@ void _spawn_random_piece_to(Piece *piece) {
   piece->center_point.x = rand_center_point_x;
   piece->center_point.y = 0;
 
-  piece->shape = SHAPE_L;
-
   _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
   _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
 }
@@ -430,4 +419,179 @@ void _draw_game_scores(unsigned int score) {
   char score_buffer[10];
   int_to_string_padding(score, score_buffer, 5);
   drawString(602 + 12, 64 * 3/2 + 32, score_buffer, COLOR_YEL, 2);
+}
+
+void _clear_game_scores(unsigned int score) {
+  char score_buffer[10];
+  int_to_string_padding(score, score_buffer, 5);
+  drawString(602 + 12, 64 * 3/2 + 32, score_buffer, COLOR_GAME_FIELD_CLEAR, 2);
+}
+
+void _init_static_game_field() {
+  for (int i = 0; i < GAME_FIELD_FULL_HEIGHT; i++) {
+    for (int j = 0; j < GAME_FIELD_WIDHT; j++) {
+      static_game_field[i][j].color = CLEAR;
+    }
+  }
+}
+
+int _is_occupied_by_static_field(int x, int y) {
+  return static_game_field[y][x].color == CLEAR ? 0 : 1;
+}
+
+int _is_point_settle_down_by_overflow_y_or_static_field_point(int x, int y) {
+  int check_y = y + 1;
+  if (check_y >= GAME_FIELD_FULL_HEIGHT) return 1;
+  if (static_game_field[check_y][x].color != CLEAR) return 1;
+  return 0;
+}
+
+void _transfer_piece_to_static_field(Piece *piece) {
+  _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
+  int p_x, p_y;
+  for (int i = 0; i < __size; i++) {
+    p_x = points_buffer_angle_rotated[i].x;
+    p_y = points_buffer_angle_rotated[i].y;
+    static_game_field[p_y][p_x].color = piece->color;
+    
+    if (debug) {
+      println("");
+      print("set static game field: at x = ");
+      uart_dec(p_x);
+      print(", y = ");
+      uart_dec(p_y);
+      print(" to color: ");
+      print(_get_color_str(piece->color));
+      println("");
+    }
+  }
+}
+
+void _copy_piece_data(Piece *from, Piece *to) {
+  to->shape = from->shape;
+  to->angle = from->angle;
+  to->center_point.x = from->center_point.x;
+  to->center_point.y = from->center_point.y;
+  to->color = from->color;
+}
+
+void _adjust_complete_rows() {
+  int isClearStaticField = 0;
+  int hasAtLeastOneCompleteRow = 0;
+  for (int y = 0; y < GAME_FIELD_FULL_HEIGHT; y++) {
+    int is_row_complete = 1;
+    for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+      if (static_game_field[y][x].color == CLEAR || static_game_field[y][x].color == BRICK) {
+        is_row_complete = 0;
+        break;
+      }
+    }
+    if (is_row_complete) {
+      hasAtLeastOneCompleteRow = 1;
+
+     
+      if (debug) {
+        println("row complete");
+        uart_dec(y);
+        println("");
+      }
+
+      if (!isClearStaticField) {
+        _clear_static_field();
+        isClearStaticField = 1;
+      }
+      
+      _adjust_static_field_on_complete_row(y);
+
+      // score change
+      _make_score_change(score_step);
+      if (is_print_statictics) {
+        _print_score_change(y);
+      }
+    }
+  }
+
+  if (hasAtLeastOneCompleteRow) {
+    _draw_static_field();
+  }
+}
+
+void _adjust_static_field_on_complete_row(int complete_row_idx) {
+  for (int y = complete_row_idx; y >= 1; y--) {
+    for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+      static_game_field[y][x].color = static_game_field[y - 1][x].color;
+    }
+  }
+  for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+    static_game_field[0][x].color = CLEAR;
+  }
+}
+
+void _clear_static_field() {
+  for (int y = 0; y < GAME_FIELD_FULL_HEIGHT; y++) {
+    for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+      if (static_game_field[y][x].color != CLEAR && static_game_field[y][x].color != BRICK) {
+        _draw_game_point(x, y, CLEAR);
+      }
+    }
+  }
+}
+ 
+void _draw_static_field() {
+  for (int y = 0; y < GAME_FIELD_FULL_HEIGHT; y++) {
+    for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+      if (static_game_field[y][x].color != CLEAR && static_game_field[y][x].color != BRICK) {
+        _draw_game_point(x, y, static_game_field[y][x].color);
+      }
+    }
+  }
+}
+
+char* _get_color_str(Color color) {
+  if (color == CYAN) {
+    return "cyan";
+  } else if (color == YELLOW) {
+    return "yellow";
+  } else if (color == PURPLE) {
+    return "purple";
+  } else if (color == GREEN) {
+    return "green";
+  } else if (color == RED) {
+    return "red";
+  } else if (color == BLUE) {
+    return "blue";
+  } else if (color == ORANGE) {
+    return "orange";
+  } else if (color == CLEAR) {
+    return "clear";
+  } else if (color == BRICK) {
+    return "brick";
+  }
+  return "no color";
+}
+
+void _print_score_change(int complete_row_number) {
+  println("");
+  print("Row ");
+  uart_dec(complete_row_number - 3 + 1);
+  print(" complete! Score +");
+  uart_dec(score_step);
+  println("");
+  println("");
+  print_prefix();
+}
+
+void _make_score_change(int complete_row_number) {
+  _clear_game_scores(scores);
+  scores += complete_row_number;
+  _draw_game_scores(scores);
+}
+
+// check last settle down piece is overflowing top
+int _is_game_over(Piece *piece) {
+  _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
+  for (int i = 0; i < __size; i++) {
+    if (points_buffer_angle_rotated[i].y < VIRTUAL_GAME_FIELD_OFFSET) return 1;
+  }
+  return 0;
 }

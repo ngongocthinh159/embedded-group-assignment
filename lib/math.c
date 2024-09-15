@@ -1,4 +1,5 @@
 #include "lib/math.h"
+#include "game/game.h"
 
 unsigned int RGB_to_hex(int r, int g, int b) {
   return ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
@@ -116,13 +117,16 @@ unsigned int lcg_rand() {
 
 // Function to generate a random number within a specified range [min, max]
 int rand(int min, int max) {
-  max++;
-  if (min >= max) {
-    return min;  // Return min if range is invalid
-  }
-  int range = max - min;
-  int num = lcg_rand();
-  return num % range + min;
+  int res = random_counter % (max - min + 1);
+  res += min;
+  return res;
+  // max++;
+  // if (min >= max) {
+  //   return min;  // Return min if range is invalid
+  // }
+  // int range = max - min;
+  // int num = lcg_rand();
+  // return num % range + min;
 }
 
 int min(int a, int b) { return (a < b) ? a : b; }
