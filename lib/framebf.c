@@ -8,6 +8,7 @@
 #include "game/screen/gameWelcomeScreen.h"
 #include "game/screen/helpScreen.h"
 #include "game/screen/playScreen.h"
+#include "game/screen/scoreBackground.h"
 #include "image-renderer/image.h"
 #include "lib/math.h"
 #include "lib/mbox.h"
@@ -480,4 +481,9 @@ void displayHowToPlayScreen() {
 void displayWelcomeScreen(int currentIndex) {
   drawImage(welcome_bitmap_allArray[currentIndex], 0, 0, welcomeScreen_width,
             welcomeScreen_height);
+}
+
+
+void displayScoreBackground() {
+  drawImage(score_background_img, 598, 96, score_background_img_width, score_background_img_height);
 }

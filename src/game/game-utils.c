@@ -598,7 +598,7 @@ void _print_score_change(int complete_row_number) {
 }
 
 void _make_score_change(int complete_row_number) {
-  _clear_game_scores(scores);
+  displayScoreBackground();
   scores += complete_row_number;
   _draw_game_scores(scores);
 }

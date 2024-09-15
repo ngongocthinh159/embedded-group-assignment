@@ -29,5 +29,6 @@ void displayWelcomeScreen(int currentIndex);
 void displayGamePlayScreen(char *difficulty_mode);
 void displayHowToPlayScreen();
 void displayGameOverPopUp(int currentIndex, char* score);
+void displayScoreBackground();
 
 extern unsigned int width, height, pitch;

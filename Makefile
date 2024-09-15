@@ -126,7 +126,9 @@ $(BUILD_DIR_CACHE)/helpScreen.o: $(ASSETS_DIR)/helpScreen.c
 	$(GCC) $(GCCFLAGS) -c $< -o $@
 $(BUILD_DIR_CACHE)/playScreen.o: $(ASSETS_DIR)/playScreen.c
 	$(GCC) $(GCCFLAGS) -c $< -o $@
-all_assets_target:$(BUILD_DIR_CACHE)/img-background.o $(BUILD_DIR_CACHE)/video.o $(BUILD_DIR_CACHE)/block.o $(BUILD_DIR_CACHE)/gameOverPopUp.o $(BUILD_DIR_CACHE)/gameWelcomeScreen.o $(BUILD_DIR_CACHE)/helpScreen.o $(BUILD_DIR_CACHE)/playScreen.o
+$(BUILD_DIR_CACHE)/scoreBackground.o: $(ASSETS_DIR)/scoreBackground.c
+	$(GCC) $(GCCFLAGS) -c $< -o $@
+all_assets_target:$(BUILD_DIR_CACHE)/img-background.o $(BUILD_DIR_CACHE)/video.o $(BUILD_DIR_CACHE)/block.o $(BUILD_DIR_CACHE)/gameOverPopUp.o $(BUILD_DIR_CACHE)/gameWelcomeScreen.o $(BUILD_DIR_CACHE)/helpScreen.o $(BUILD_DIR_CACHE)/playScreen.o $(BUILD_DIR_CACHE)/scoreBackground.o
 
 # build final image
 $(BUILD_DIR)/kernel8.img: $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(VIDEO_PLAYER_OBJ) $(GAME_OBJ) $(OBJ) all_assets_target
