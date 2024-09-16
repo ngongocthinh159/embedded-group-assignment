@@ -21,6 +21,11 @@
 #define KEYBOARD_A "a"
 #define KEYBOARD_D "d"
 
+#define UNDERSCORE '_'
+#define PLUS '+'
+#define KEYBOARD_UNDERSCORE "_"
+#define KEYBOARD_PLUS "+"
+
 // ansi escape sequence
 #define CSI_CUU "[A" // up
 #define CSI_CUD "[B" // down

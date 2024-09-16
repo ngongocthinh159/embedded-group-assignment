@@ -63,6 +63,9 @@ void _internal_char_handle(char ch) {
             
             uart_sendc(ENTER);
         }
+    } else if (ch == UNDERSCORE || ch == PLUS) {
+      ansi_escaped_received = 3;
+      st_push(cmd_st, ch);
     } else if (ch == ESC) {
         // for (int i = 0; i < st_size(cmd_st); i++) {
         //     uart_puts(REMOVE_A_CHAR);
