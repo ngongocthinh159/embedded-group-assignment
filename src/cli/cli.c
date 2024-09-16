@@ -84,9 +84,9 @@ int _handle_cli_internal() {
 }
 
 void handle_history() {
-  if (strstr(command, CSI_CUU)) {
+  if (strstr(command, CSI_CUU) || strstr(command, KEYBOARD_UNDERSCORE)) {
     history_req = cir_buf_previous(history_req);
-  } else if (strstr(command, CSI_CUD)) {
+  } else if (strstr(command, CSI_CUD) || strstr(command, KEYBOARD_PLUS)) {
     history_req = cir_buf_next(history_req);
   }
 }
