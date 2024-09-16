@@ -14,7 +14,7 @@
 #include "util/tty.h"
 
 int debug = 0;
-int is_print_statictics = 1;
+int is_print_statictics = 0;
 
 /* Buffers */
 Point points_buffer_angle_rotated[__size];
@@ -349,6 +349,87 @@ void _spawn_random_piece_to(Piece *piece) {
 
   _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
   _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
+
+  if (is_print_statictics) {
+    println("");
+    println("");
+    println("New piece spawned:");
+    
+    print_color("+ Shape: ", CMD_COLOR_YEL);
+    print_color(_get_shape_str(piece->shape), CMD_COLOR_YEL);
+    println("");
+
+    print_color("+ Color: ", CMD_COLOR_GRN);
+    print_color(_get_color_str(piece->color), CMD_COLOR_GRN);
+    println("");
+
+    print_color("+ Rotation: ", CMD_COLOR_MAG);
+    print_color(_get_angle_str(piece->angle), CMD_COLOR_MAG);
+    print_color(" degrees", CMD_COLOR_MAG);
+    println("");
+
+    print_color("+ Center point: ", CMD_COLOR_BLU);
+    print("x = ");
+    uart_dec(piece->center_point.x);
+    print(", y = ");
+    uart_dec(piece->center_point.y);
+    println("");
+    println("");
+  }
+}
+
+char* _get_shape_str(Shape shape) {
+  if (shape == SHAPE_I) {
+    return "I";
+  } else if (shape == SHAPE_O) {
+    return "O";
+  } else if (shape == SHAPE_T) {
+    return "T";
+  } else if (shape == SHAPE_S) {
+    return "S";
+  } else if (shape == SHAPE_Z) {
+    return "Z";
+  } else if (shape == SHAPE_J) {
+    return "J";
+  } else {
+    return "L";
+  }
+}
+
+char* _get_color_str(Color color) {
+  if (color == CYAN) {
+    return "CYAN";
+  } else if (color == YELLOW) {
+    return "YELLOW";
+  } else if (color == PURPLE) {
+    return "PURPLE";
+  } else if (color == GREEN) {
+    return "GREEN";
+  } else if (color == RED) {
+    return "RED";
+  } else if (color == BLUE) {
+    return "BLUE";
+  } else if (color == ORANGE) {
+    return "ORANGE";
+  } else if (color == CLEAR) {
+    return "CLEAR";
+  } else if (color == BRICK) {
+    return "BRICK";
+  }
+  return "";
+}
+
+char* _get_angle_str(Angle angle) {
+  if (angle == ANGLE_0) {
+    return "0";
+  } else if (angle == ANGLE_90) {
+    return "90";
+  } else if (angle == ANGLE_180) {
+    return "180";
+  } else {
+    return "270";
+  }
+  return "";
 }
 
 void _draw_next_frame_piece(Piece *piece) {
@@ -513,6 +594,8 @@ void _adjust_complete_rows_and_frozen_rows() {
       if (is_print_statictics) {
         _print_score_change(y);
       }
+
+      completed_rows++;
     }
   }
 
@@ -563,34 +646,11 @@ void _draw_static_field() {
   }
 }
 
-char* _get_color_str(Color color) {
-  if (color == CYAN) {
-    return "cyan";
-  } else if (color == YELLOW) {
-    return "yellow";
-  } else if (color == PURPLE) {
-    return "purple";
-  } else if (color == GREEN) {
-    return "green";
-  } else if (color == RED) {
-    return "red";
-  } else if (color == BLUE) {
-    return "blue";
-  } else if (color == ORANGE) {
-    return "orange";
-  } else if (color == CLEAR) {
-    return "clear";
-  } else if (color == BRICK) {
-    return "brick";
-  }
-  return "no color";
-}
-
 void _print_score_change(int complete_row_number) {
   println("");
   print("Row ");
   uart_dec(complete_row_number - 3 + 1);
-  print(" complete! Score +");
+  print(" is cleared! Score +");
   uart_dec(score_step);
   println("");
   println("");
@@ -605,9 +665,13 @@ void _make_score_change(int complete_row_number) {
 
 // check last settle down piece is overflowing top
 int _is_game_over(Piece *piece) {
-  _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
-  for (int i = 0; i < __size; i++) {
-    if (points_buffer_angle_rotated[i].y < VIRTUAL_GAME_FIELD_OFFSET) return 1;
+  for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+    if (_is_occupied_by_static_field(x, VIRTUAL_GAME_FIELD_OFFSET - 1)) {
+      if (is_print_statictics) {
+        _print_game_over_statistic();
+      }
+      return 1;
+    }
   }
   return 0;
 }
@@ -638,4 +702,37 @@ int _should_increase_fronzen_level() {
     if (spawned_pieces == fronzen_level_threshold[i]) return 1;
   }
   return 0;
+}
+
+void _print_game_over_statistic() {
+  println("");
+  println("");
+  println_color("***************************************", CMD_COLOR_YEL);
+  println_color("***************************************", CMD_COLOR_YEL);
+  println("");
+  println_color("GAME OVER! ", CMD_COLOR_RED);
+  
+  print_color("Final scores: ", CMD_COLOR_GRN);
+  uart_dec(scores);
+  println("");
+
+  print_color("Rows clear: ", CMD_COLOR_GRN);
+  uart_dec(completed_rows);
+  println("");
+
+  print_color("Spawned pieces: ", CMD_COLOR_GRN);
+  uart_dec(spawned_pieces);
+  println("");
+
+  print_color("Total commands received in game: ", CMD_COLOR_GRN);
+  uart_dec(total_received_commands);
+  println("");
+
+  println("");
+  println_color("***************************************", CMD_COLOR_YEL);
+  println_color("***************************************", CMD_COLOR_YEL);
+  println("");
+  println("");
+  
+  print_prefix();
 }

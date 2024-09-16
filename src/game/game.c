@@ -43,6 +43,8 @@ volatile int random_counter = 0;
 const int score_step = 10;
 volatile int spawned_pieces = 0;
 volatile int frozen_level = 0;
+volatile int completed_rows = 0;
+volatile int total_received_commands = 0;
 
 /* Game variables */
 unsigned int scores = 120;
@@ -84,6 +86,8 @@ void handle_game_mode() {
 }
 
 void _handle_game_mode_internal() {
+  total_received_commands++;
+
   int is_handled = 0;
   if (current_screen == SCREEN_WELCOME) {
     is_handled |= handle_screen_welcome();
@@ -188,6 +192,8 @@ void _init_game() {
   scores = 0;
   spawned_pieces = 0;
   frozen_level = 0;
+  completed_rows = 0;
+  total_received_commands = 0;
   _spawn_random_piece_to(&dynamic_piece);
   _spawn_random_piece_to(&next_piece);
   _reset_timer_counters();

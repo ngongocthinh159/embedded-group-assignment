@@ -67,3 +67,7 @@ void _make_score_change(int change_number);
 int _is_game_over(Piece *piece);
 void _handle_fronzen_blocks();
 int _should_increase_fronzen_level();
+char* _get_shape_str(Shape shape);
+char* _get_color_str(Color color);
+char* _get_angle_str(Angle angle);
+void _print_game_over_statistic();

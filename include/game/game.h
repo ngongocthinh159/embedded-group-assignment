@@ -90,6 +90,8 @@ extern unsigned int scores;
 extern const int score_step;
 extern volatile int spawned_pieces;
 extern volatile int frozen_level;
+extern volatile int completed_rows;
+extern volatile int total_received_commands;
 
 // Flow control
 void handle_game_mode();
