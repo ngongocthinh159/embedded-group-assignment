@@ -5,7 +5,9 @@ OBJCOPY = aarch64-none-elf-objcopy
 
 SRC_DIR = src
 BUILD_DIR = build
+BUILD_DIR_CACHE = build/cache
 LIB_DIR = lib
+ASSETS_DIR = assets
 
 # library
 LIB = $(wildcard $(LIB_DIR)/*.c)
@@ -26,6 +28,9 @@ VIDEO_PLAYER_OBJ = $(VIDEO_PLAYER:$(SRC_DIR)/video-player/%.c=$(BUILD_DIR)/%.o)
 
 GAME = $(wildcard $(SRC_DIR)/game/*c)
 GAME_OBJ = $(GAME:$(SRC_DIR)/game/%.c=$(BUILD_DIR)/%.o)
+
+ASSETS_C = $(wildcard $(ASSETS_DIR)/*c)
+ASSETS_OBJ = $(ASSETS_C:$(ASSETS_DIR)/%.c=$(BUILD_DIR_CACHE)/%.o)
 
 GCCFLAGS = -Wall -O2 -ffreestanding -nostdinc -nostdlib -Iinclude
 
@@ -106,9 +111,28 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/video-player/%.c
 $(BUILD_DIR)/%.o: $(SRC_DIR)/game/%.c
 	$(GCC) $(GCCFLAGS) -c $< -o $@
 
+# assets - declare each target for caching
+$(BUILD_DIR_CACHE)/img-background.o: $(ASSETS_DIR)/img-background.c
+	$(GCC) $(GCCFLAGS) -c $< -o $@
+$(BUILD_DIR_CACHE)/video.o: $(ASSETS_DIR)/video.c
+	$(GCC) $(GCCFLAGS) -c $< -o $@
+$(BUILD_DIR_CACHE)/block.o: $(ASSETS_DIR)/block.c
+	$(GCC) $(GCCFLAGS) -c $< -o $@
+$(BUILD_DIR_CACHE)/gameOverPopUp.o: $(ASSETS_DIR)/gameOverPopUp.c
+	$(GCC) $(GCCFLAGS) -c $< -o $@
+$(BUILD_DIR_CACHE)/gameWelcomeScreen.o: $(ASSETS_DIR)/gameWelcomeScreen.c
+	$(GCC) $(GCCFLAGS) -c $< -o $@
+$(BUILD_DIR_CACHE)/helpScreen.o: $(ASSETS_DIR)/helpScreen.c
+	$(GCC) $(GCCFLAGS) -c $< -o $@
+$(BUILD_DIR_CACHE)/playScreen.o: $(ASSETS_DIR)/playScreen.c
+	$(GCC) $(GCCFLAGS) -c $< -o $@
+$(BUILD_DIR_CACHE)/scoreBackground.o: $(ASSETS_DIR)/scoreBackground.c
+	$(GCC) $(GCCFLAGS) -c $< -o $@
+all_assets_target:$(BUILD_DIR_CACHE)/img-background.o $(BUILD_DIR_CACHE)/video.o $(BUILD_DIR_CACHE)/block.o $(BUILD_DIR_CACHE)/gameOverPopUp.o $(BUILD_DIR_CACHE)/gameWelcomeScreen.o $(BUILD_DIR_CACHE)/helpScreen.o $(BUILD_DIR_CACHE)/playScreen.o $(BUILD_DIR_CACHE)/scoreBackground.o
+
 # build final image
-$(BUILD_DIR)/kernel8.img: $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(VIDEO_PLAYER_OBJ) $(GAME_OBJ) $(OBJ)
-	$(LD) -nostdlib $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(VIDEO_PLAYER_OBJ) $(GAME_OBJ) $(OBJ) -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
+$(BUILD_DIR)/kernel8.img: $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(VIDEO_PLAYER_OBJ) $(GAME_OBJ) $(OBJ) all_assets_target
+	$(LD) -nostdlib $(BUILD_DIR)/boot.o $(LIB_OBJ) $(UTIL_OBJ) $(CLI_OBJ) $(VIDEO_PLAYER_OBJ) $(GAME_OBJ) $(OBJ) $(ASSETS_OBJ) -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
 	$(OBJCOPY) -O binary $(BUILD_DIR)/kernel8.elf kernel8.img
 	@echo build successfully for $(if $(filter 1,$(RPI4)),RPI4,RPI3) $(if $(filter 1,$(UART1)),UART1,UART0)
 

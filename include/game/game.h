@@ -1,6 +1,19 @@
 #pragma once
 
 #define __size 4
+#define GAME_FIELD_WIDHT 11
+#define GAME_FIELD_HEIGHT 21
+#define GAME_FIELD_FULL_HEIGHT 24
+#define VIRTUAL_GAME_FIELD_OFFSET 3
+#define BLOCK_SIZE 30
+
+typedef enum {
+  SCREEN_WELCOME,
+  SCREEN_HOW_TO_PLAY,
+  SCREEN_GAME_PLAY,
+  SCREEN_GAME_PAUSE,
+  SCREEN_GAME_OVER
+} SCREEN;
 
 typedef struct {
   int call_every_ms; // should be mutiple of 10
@@ -27,7 +40,8 @@ typedef enum {
   RED,
   BLUE,
   ORANGE,
-  CLEAR
+  CLEAR,
+  BRICK
 } Color;
 
 // initial 0 angle for each piece will look like this: https://tetris.wiki/Tetromino
@@ -58,47 +72,55 @@ typedef struct {
 
 
 enum Difficulty {
-    EASY,
-    MEDIUM,
-    HARD
+  EASY,
+  MEDIUM,
+  HARD
 };
 
+// Global variables
+extern volatile SCREEN current_screen;
+extern volatile int current_difficulty;
+extern const unsigned int OFFSET_PHYSICAL_GAME_FIELD_X;
+extern const unsigned int OFFSET_PHYSICAL_GAME_FIELD_Y;
+extern const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_X;
+extern const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_Y;
+extern Block static_game_field[GAME_FIELD_FULL_HEIGHT][GAME_FIELD_WIDHT];
+extern volatile int random_counter;
+extern unsigned int scores;
+extern const int score_step;
+extern volatile int spawned_pieces;
+extern volatile int frozen_level;
+extern volatile int completed_rows;
+extern volatile int total_received_commands;
+extern volatile int total_rotation_commands;
+extern volatile int total_left_commands;
+extern volatile int total_right_commands;
+extern volatile int total_down_commands;
 
 // Flow control
 void handle_game_mode();
-void _print_error_game_mode();
-int _is_up_command();
-int _is_down_command();
-int _is_left_command();
-int _is_right_command();
-int _is_back_tick_command();
-int _is_enter_or_space_command();
-void _exit_game();
-void _print_error_game_mode();
-void _handle_welcome_screen_input();
+void _uart_scanning_callback();
+void _handle_game_mode_internal();
+void _handle_timing_events();
+void _handle_events_call_every_50ms();
+void _handle_events_call_every_100ms();
+void _handle_events_call_every_200ms();
+void _handle_events_call_every_500ms();
+void _handle_events_call_every_1s();
+int _handle_screen_game_play_internal();
+void _reset_timer_counters();
+
+// Game play utils
+void _game_progess_event();
+void switch_to_game_play_screen();
 void _init_game();
 void _increase_current_piece();
-void _spawn_random_piece_to(Piece *piece);
-void _rotate_piece(Piece *piece);
-
-// Drawing
-void _draw_game_piece(Piece *piece);
-void _clear_game_piece(Piece *piece);
-void _draw_game_point(int x, int y, Color color);
-
-void _draw_next_frame_piece(Piece *piece);
-void _clear_next_frame_piece(Piece *piece);
-void _draw_next_frame_point(int x, int y, Color color);
-void _adjust_x_y_for_center_drawing_next_frame(int *x, int *y, Shape shape);
-
-void _draw_game_scores(unsigned int score);
-
-// Utils
-Point* _get_init_points(Piece *piece);
-Point _get_init_center_point(Piece *piece);
-Point* _copy_piece_angle_0_points_to_buffer(Piece *piece, Point buffer[]);
-void _copy_piece_rotated_points_to_buffer(Piece *piece, Point buffer[]);
-void _adjust_center_point_if_overflow(Piece *piece, Point points[]);
-int _get_angle_multiplier_sin(Angle angle);
-int _get_angle_multiplier_cos(Angle angle);
-
+void _move_piece_left(Piece *piece);
+void _move_piece_right(Piece *piece);
+void _move_piece_down(Piece *piece);
+void _rotate_piece(Piece *piece); // rotate only Angle attribute
+void _check_settle_down_and_move_game_state(Piece *piece);
+void _prepare_next_game_state_after_settling();
+int _is_easy_mode();
+int _is_medium_mode();
+int _is_hard_mode();

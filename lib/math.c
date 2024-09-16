@@ -1,4 +1,6 @@
 #include "lib/math.h"
+#include "game/game.h"
+#include "lib/timer.h"
 
 unsigned int RGB_to_hex(int r, int g, int b) {
   return ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
@@ -106,23 +108,10 @@ double cos(double x) {
   return result;
 }
 
-// Global variable to hold the current seed/state.
-unsigned long seed = 1234;
-
-unsigned int lcg_rand() {
-  seed = (LCG_A * seed + LCG_C) % LCG_M;
-  return (unsigned int)seed;
-}
-
 // Function to generate a random number within a specified range [min, max]
 int rand(int min, int max) {
-  max++;
-  if (min >= max) {
-    return min;  // Return min if range is invalid
-  }
-  int range = max - min;
-  int num = lcg_rand();
-  return num % range + min;
+  wait_msec(2);
+  return (SYS_TIMER_COUNTER_LOWER % (max - min + 1)) + min;
 }
 
 int min(int a, int b) { return (a < b) ? a : b; }
