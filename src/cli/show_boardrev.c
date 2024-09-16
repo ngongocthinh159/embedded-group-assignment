@@ -1,4 +1,5 @@
 #include "cli/show_boardrev.h"
+#include "lib/color.h"
 #include "lib/uart.h"
 #include "util/tty.h"
 
@@ -14,125 +15,107 @@ void show_boardrev(unsigned int revision) {
     unsigned int otp_program = (revision >> 30) & 1;
     unsigned int overvoltage = (revision >> 31) & 1;
 
-    for (int i = 0; i <= 5; i++) {
-        if (revision_bits == i) {
-            print("Revisions: 1.");
-            uart_dec(i);
-            print(" \n");
-        }
-    }
-    print("Revision bits value: ");
-    uart_hex_no_base(revision_bits, 1);
-    print("\n\n");
+    println_color("Hardware", CMD_COLOR_BLU);
+
+    print_color("Model", CMD_COLOR_BLU);
+    print(": Raspberry Pi ");
 
     if (type_bits == 0x11) {
-        print("Model: 4B");
+        println("4B");
     } else if (type_bits == 0xD) {
-        print("Model: 3B+");
-    }else if(type_bits ==0xE){
-        print("Model: 3A+");
-    }else if(type_bits == 0x8){
-        print("Model: 3B");
+        println("3B+");
+    } else if (type_bits == 0xE){
+        println("3A+");
+    } else if (type_bits == 0x8){
+        println("3B");
     }
-    // cover 4 types of board
-    print("\nModel bits value: ");
-    uart_hex_no_base(type_bits, 2);
-    print("\n\n");
 
-    print("Processor:");
+    print_color("Revision", CMD_COLOR_BLU);
+    print(": 1.");
+    uart_dec(revision_bits);
+    println("");
+
+    print_color("Processor", CMD_COLOR_BLU);
+    print(": ");
     if (processor_bits == 0x0) {
-        print(" BCM2835");
+        println("Broadcom BCM2835");
     } else if (processor_bits == 0x1) {
-        print(" BCM2836");
+        println("Broadcom BCM2836");
     } else if (processor_bits == 0x2) {
-        print(" BCM2837");
+        println("Broadcom BCM2837");
     } else if (processor_bits == 0x3) {
-        print(" BCM2711");
+        println("Broadcom BCM2711");
     } else if (processor_bits == 0x4) {
-        print(" BCM2712");
+        println("Broadcom BCM2712");
     }
-    print("\nprocessor bits value: ");
-    uart_hex_no_base(processor_bits, 1);
-    print("\n\n");
 
-    print("Manufracturer:");
-    if (manufracturer_bits == 0x0) {
-        print(" Sony UK");
-    } else if (manufracturer_bits == 0x1) {
-        print(" Egoman");
-    } else if (manufracturer_bits == 0x2) {
-        print(" Embest");
-    } else if (manufracturer_bits == 0x3) {
-        print(" Sony Japan");
-    } else if (manufracturer_bits == 0x4) {
-        print(" Embest");
-    } else if (manufracturer_bits == 0x5) {
-        print(" Stadium");
-    }
-    print("\nManufracture bit value: ");
-    uart_hex_no_base(manufracturer_bits, 1);
-    print("\n\n");
-
-    print("Memory size: ");
+    print_color("Memory", CMD_COLOR_BLU);
+    print(": ");
     if (memory_size_bits == 0x0) {
-        print(" 256MB");
+        println("256MB");
     } else if (memory_size_bits == 0x1) {
-        print(" 512MB");
+        println("512MB");
     } else if (memory_size_bits == 2) {
-        print(" 1GB");
+        println("1GB");
     } else if (memory_size_bits == 3) {
-        print(" 2GB");
+        println("2GB");
     } else if (memory_size_bits == 4) {
-        print(" 4GB");
+        println("4GB");
     } else if (memory_size_bits == 5) {
-        print(" 8GB");
+        println("8GB");
     }
-    print("\n");
-    print("Memory bit value: ");
-    uart_hex_no_base(memory_size_bits, 1);
-    print("\n\n");
+
+    print_color("Manufacturer", CMD_COLOR_BLU);
+    print(": ");
+    if (manufracturer_bits == 0x0) {
+        println("Sony UK");
+    } else if (manufracturer_bits == 0x1) {
+        println("Egoman");
+    } else if (manufracturer_bits == 0x2) {
+        println("Embest");
+    } else if (manufracturer_bits == 0x3) {
+        println("Sony Japan");
+    } else if (manufracturer_bits == 0x4) {
+        println("Embest");
+    } else if (manufracturer_bits == 0x5) {
+        println("Stadium");
+    }
+    println("");
+
+    println_color("Diagnostic", CMD_COLOR_BLU);
 
     if (style_flag_bit == 0x0) {
-        print("Revision code style: old\n");
+        print_color("Old", CMD_COLOR_CYN);
     } else if (style_flag_bit == 0x1) {
-        print("Revision code style: new\n");
+        print_color("New", CMD_COLOR_CYN);
     }
-    print("style bit value: ");
-    uart_hex_no_base(style_flag_bit, 1);
-    print("\n\n");
+    println(" revision code style");
 
+    print("Warranty ");
     if (warranty_bit == 0x0) {
-        print("Warranty intact");
+        println_color("intact", CMD_COLOR_CYN);
     } else if (warranty_bit == 0x1) {
-        print("Warranty voided");
+        println_color("voided", CMD_COLOR_CYN);
     }
-    print("\nWarranty bit value: ");
-    uart_hex_no_base(warranty_bit, 1);
-    print("\n\n");
 
+    print("OTP reading ");
     if (otp_read_bit == 0x0) {
-        print("OTP reading allowed");
+        println_color("allowed", CMD_COLOR_CYN);
     } else if (otp_read_bit == 0x1) {
-        print("OTP reading not allowed");
+        println_color("not allowed", CMD_COLOR_CYN);
     }
-    print("\nOTP read bit value: ");
-    uart_hex_no_base(otp_read_bit, 1);
-    print("\n\n");
 
+    print("OTP programming ");
     if (otp_program == 0x0) {
-        print("OTP programming allow");
+        println_color("allowed", CMD_COLOR_CYN);
     } else if (otp_program == 0x1) {
-        print("OTP programming not allow");
+        println_color("not allowed", CMD_COLOR_CYN);
     }
-    print("\n");
-    print("OTP programming bit value: ");
-    uart_hex_no_base(otp_program, 1);
-    print("\n\n");
+
+    print("Overvoltage capabilities ");
     if (overvoltage == 0x0) {
-        print("Overvoltage allowed\nOvervoltage value: ");
+        println_color("allowed", CMD_COLOR_CYN);
     } else if (overvoltage == 0x1) {
-        print("Overvoltage not allowed\nOvervoltage value: ");
+        println_color("not allowed", CMD_COLOR_CYN);
     }
-    uart_hex_no_base(overvoltage, 1);
-    print("\n");
 }

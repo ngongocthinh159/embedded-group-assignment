@@ -230,6 +230,9 @@ void print_command_received() {
 }
 
 void showinfo() {
+  print_color("INFO  ", CMD_COLOR_GRN);
+  println("Getting system information...");
+
   mBuf[0] = 12 * 4;
   mBuf[1] = MBOX_REQUEST;
 
@@ -247,23 +250,40 @@ void showinfo() {
   mBuf[11] = MBOX_TAG_LAST;
 
   if (mbox_call(ADDR(mBuf), MBOX_CH_PROP)) {
-    print("\nResponse Code for whole message: ");
-    uart_hex(mBuf[1]);
-
-    print("\n\n+ Response Code in Message TAG MBOX_TAG_GETBOARDREV: ");
-    uart_hex(mBuf[4]);
-    uart_puts("\nDATA: Board revision = ");
     unsigned int revision = mBuf[5];
-    uart_hex(mBuf[5]);
 
-    print("\n\n");
+    print_color("INFO  ", CMD_COLOR_GRN);
+    print("Response code for mailbox message: ");
+    uart_hex(mBuf[1]);
+    println("");
+
+    print_color("INFO  ", CMD_COLOR_GRN);
+    print("Response code in GET board revision message: ");
+    uart_hex(mBuf[4]);
+    println("");
+    print_color("INFO  ", CMD_COLOR_GRN);
+    print("Board revision data: ");
+    uart_hex(mBuf[5]);
+    println("");
+
+    print_color("INFO  ", CMD_COLOR_GRN);
+    print("Response code in GET MAC address message: ");
+    uart_hex(mBuf[8]);
+    println("");
+    print_color("INFO  ", CMD_COLOR_GRN);
+    print("MAC address data: ");
+    uart_hex(mBuf[9]);
+    print(" & ");
+    uart_hex(mBuf[10]);
+    println("");
+    println("");
 
     show_boardrev(revision);
+    println("");
 
-    uart_puts("\n+ Response Code in Message TAG MBOX_TAG_GETMAC: ");
-    uart_hex(mBuf[8]);
-    uart_puts("\nDATA: MAC address = ");
-    // unsigned int MAC_address = &mBuf[9];
+    println_color("Networking", CMD_COLOR_BLU);
+    print_color("MAC address", CMD_COLOR_BLU);
+    print(": ");
     unsigned char *byte_ptr = (unsigned char *)(&mBuf[9]);
     for (int i = 0; i <= 5; i++) {
       uart_hex_no_base(*byte_ptr, 2);
@@ -272,10 +292,11 @@ void showinfo() {
       }
       byte_ptr++;
     }
-    print("\n");
-    print("\n");
+    println("");
+    println("");
   } else {
-    uart_puts("Unable to query!\n");
+    print_color("ERROR ", CMD_COLOR_RED);
+    println("Unable to query system information!");
   }
 }
 
