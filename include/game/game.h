@@ -92,6 +92,10 @@ extern volatile int spawned_pieces;
 extern volatile int frozen_level;
 extern volatile int completed_rows;
 extern volatile int total_received_commands;
+extern volatile int total_rotation_commands;
+extern volatile int total_left_commands;
+extern volatile int total_right_commands;
+extern volatile int total_down_commands;
 
 // Flow control
 void handle_game_mode();

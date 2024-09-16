@@ -737,8 +737,24 @@ void _print_game_over_statistic() {
   uart_dec(spawned_pieces);
   println("");
 
-  print_color("Total commands received in game: ", CMD_COLOR_GRN);
+  print_color("Total commands received in game (both ACK and NAK): ", CMD_COLOR_GRN);
   uart_dec(total_received_commands);
+  println("");
+
+  print_color("Total rotation commands: ", CMD_COLOR_GRN);
+  uart_dec(total_rotation_commands);
+  println("");
+
+  print_color("Total go left commands: ", CMD_COLOR_GRN);
+  uart_dec(total_left_commands);
+  println("");
+
+  print_color("Total go right commands: ", CMD_COLOR_GRN);
+  uart_dec(total_right_commands);
+  println("");
+
+  print_color("Total go down commands: ", CMD_COLOR_GRN);
+  uart_dec(total_down_commands);
   println("");
 
   println("");

@@ -45,6 +45,10 @@ volatile int spawned_pieces = 0;
 volatile int frozen_level = 0;
 volatile int completed_rows = 0;
 volatile int total_received_commands = 0;
+volatile int total_rotation_commands = 0;
+volatile int total_left_commands = 0;
+volatile int total_right_commands = 0;
+volatile int total_down_commands = 0;
 
 /* Game variables */
 unsigned int scores = 120;
@@ -115,17 +119,22 @@ int _handle_screen_game_play_internal() {
   } else if (_is_down_command()) {
     println("ACK: DOWN");
     _move_piece_down(&dynamic_piece);
+    total_down_commands++;
   } else if (_is_left_command()) {
     println("ACK: LEFT");
     _move_piece_left(&dynamic_piece);
+    total_left_commands++;
   } else if (_is_right_command()) {
     println("ACK: RIGHT");
     _move_piece_right(&dynamic_piece);
+    total_right_commands++;
   } else if (_is_enter_or_space_command()) {
     println("ACK: SPACE or ENTER");
     _rotate_piece(&dynamic_piece);
+    total_rotation_commands++;
   } else if (_is_back_tick_command()) {
     println("ACK: BACK TICK");
+    _print_game_over_statistic();
     switch_to_welcome_screen();
   } else {
     is_handled = 0;
@@ -194,6 +203,10 @@ void _init_game() {
   frozen_level = 0;
   completed_rows = 0;
   total_received_commands = 0;
+  total_rotation_commands = 0;
+  total_left_commands = 0;
+  total_right_commands = 0;
+  total_down_commands = 0;
   _spawn_random_piece_to(&dynamic_piece);
   _spawn_random_piece_to(&next_piece);
   _reset_timer_counters();
