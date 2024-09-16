@@ -14,7 +14,7 @@
 #include "util/tty.h"
 
 int debug = 0;
-int is_print_statictics = 0;
+int is_print_statictics = 1;
 
 /* Buffers */
 Point points_buffer_angle_rotated[__size];
@@ -564,7 +564,7 @@ void _copy_piece_data(Piece *from, Piece *to) {
 // possibly adjust
 void _adjust_complete_rows_and_frozen_rows() {
   int isClearStaticField = 0;
-  // int hasAtLeastOneCompleteRow = 0;
+  int number_of_rows_cleared_this_time = 0;
   for (int y = 0; y < GAME_FIELD_FULL_HEIGHT; y++) {
     int is_row_complete = 1;
     for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
@@ -574,7 +574,7 @@ void _adjust_complete_rows_and_frozen_rows() {
       }
     }
     if (is_row_complete) {
-      // hasAtLeastOneCompleteRow = 1;
+      number_of_rows_cleared_this_time++;
      
       if (debug) {
         println("row complete");
@@ -589,13 +589,16 @@ void _adjust_complete_rows_and_frozen_rows() {
       
       _adjust_static_field_on_complete_row(y);
 
-      // score change
-      _make_score_change(score_step);
-      if (is_print_statictics) {
-        _print_score_change(y);
-      }
-
       completed_rows++;
+    }
+  }
+
+  // score change
+  if (number_of_rows_cleared_this_time) {
+    int score_change = _calculate_score_change(number_of_rows_cleared_this_time);
+    _make_score_change(score_change);
+    if (is_print_statictics) {
+      _print_score_change(score_change, number_of_rows_cleared_this_time);
     }
   }
 
@@ -646,21 +649,25 @@ void _draw_static_field() {
   }
 }
 
-void _print_score_change(int complete_row_number) {
+void _print_score_change(int score_change, int number_of_rows_cleared_at_once) {
   println("");
-  print("Row ");
-  uart_dec(complete_row_number - 3 + 1);
-  print(" is cleared! Score +");
-  uart_dec(score_step);
+  print("- ");
+  uart_dec(number_of_rows_cleared_at_once);
+  print(" rows cleared! Score +");
+  uart_dec(score_change);
   println("");
   println("");
   print_prefix();
 }
 
-void _make_score_change(int complete_row_number) {
+void _make_score_change(int score_change) {
   displayScoreBackground();
-  scores += complete_row_number;
+  scores += score_change;
   _draw_game_scores(scores);
+}
+
+int _calculate_score_change(int number_of_row_cleared_at_once) {
+  return score_step*number_of_row_cleared_at_once*number_of_row_cleared_at_once;
 }
 
 // check last settle down piece is overflowing top
@@ -712,6 +719,12 @@ void _print_game_over_statistic() {
   println("");
   println_color("GAME OVER! ", CMD_COLOR_RED);
   
+  print_color("Game mode: ", CMD_COLOR_GRN);
+  print_color(current_difficulty == 0
+                 ? "Easy"
+                 : (current_difficulty == 1 ? "Medium" : "Hard"), CMD_COLOR_MAG);
+  println("");
+
   print_color("Final scores: ", CMD_COLOR_GRN);
   uart_dec(scores);
   println("");
