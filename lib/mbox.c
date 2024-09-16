@@ -1,7 +1,9 @@
 // -----------------------------------mbox.c -------------------------------------
 #include "lib/mbox.h"
+#include "lib/color.h"
 #include "lib/gpio.h"
 #include "lib/uart.h"
+#include "util/tty.h"
 
 /* Mailbox Data Buffer (each element is 32-bit)*/
 /*
@@ -59,9 +61,10 @@ void mailbox_send(uint32_t msg, unsigned char channel)
 int mbox_call(unsigned int buffer_addr, unsigned char channel)
 {
     //Check Buffer Address
-    uart_puts("Buffer Address: ");
+    print_color("INFO  ", CMD_COLOR_GRN);
+    print("Buffer address: ");
     uart_hex(buffer_addr);
-    uart_sendc('\n');
+    println("");
 
     //Prepare Data (address of Message Buffer)
     unsigned int msg = (buffer_addr & ~0xF) | (channel & 0xF);
@@ -72,7 +75,8 @@ int mbox_call(unsigned int buffer_addr, unsigned char channel)
     if (msg == mailbox_read(channel)) {
         /* is it a valid successful response (Response Code) ? */
         if (mBuf[1] == MBOX_RESPONSE) {
-            uart_puts("Got successful response \n");
+            print_color("INFO  ", CMD_COLOR_GRN);
+            println("Got successful response!");
         }
 
         return (mBuf[1] == MBOX_RESPONSE);
