@@ -113,7 +113,7 @@ void _internal_char_handle(char ch) {
 
       int push_success = st_push(cmd_st, ch);
       if (push_success && !ansi_escaped_received) {
-          if (is_game_mode()) return; // not output receved char in game mode 
+          if (is_game_mode()) return; // not output received char in game mode 
           uart_sendc(ch);
       }  else {
           // TODO: when stack buffer is full might do something..
@@ -133,14 +133,14 @@ void get_line(char *buffer) {
     // transfer chars from stack buffer to command buffer
     int size = char_buffer_cpy(st_get_buffer(cmd_st), buffer, st_size(cmd_st));
 
-  // remove all redudant chars
+  // remove all redundant chars
   str_beautify(buffer, size);
 
-  // reset stack after transering
+  // reset stack after transferring
   st_reset_buffer(cmd_st);
 }
 
-// return size of destination buffer after transfering
+// return size of destination buffer after transferring
 // make sure dest buffer has enough buffer memory (>= src_size + 1 for '\0')
 int char_buffer_cpy(char *src, char *dest, int src_size) {
     for (int i = 0; i < src_size; i++) {
@@ -176,7 +176,7 @@ void _apply_auto_completion() {
     uart_puts(st_get_buffer(auto_complete_st));
     st_append_from_st(auto_complete_st, cmd_st);
 
-    // reset auto complet stack
+    // reset auto complete stack
     st_reset_buffer(auto_complete_st);
 }
 
@@ -238,7 +238,7 @@ void get_ansi_control(char *buffer) {
   // transfer chars from stack buffer to command buffer
   int size = char_buffer_cpy(st_get_buffer(cmd_st), buffer, st_size(cmd_st));
 
-  // remove all redudant chars
+  // remove all redundant chars
   str_beautify(buffer, size);
 
   st_reset_buffer(cmd_st);

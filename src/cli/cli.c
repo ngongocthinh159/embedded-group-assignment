@@ -131,7 +131,7 @@ void handle_cli_mode() {
       }
 
       if (!command_is_handled) {
-        print_command_not_regconized_error();
+        print_command_not_recognized_error();
       }
 
       print_prefix();
@@ -209,7 +209,7 @@ void print_current_mode() {
   println("");
 }
 
-void print_command_not_regconized_error() {
+void print_command_not_recognized_error() {
   print_color("The term '", CMD_COLOR_RED);
   print_color(command, CMD_COLOR_RED);
   print_color("' is not recognized as any valid command in the ", CMD_COLOR_RED);

@@ -72,7 +72,7 @@ char push(char *str, char value) {
   return value;
 }
 
-int str_is_space_charaters(char c) {
+int str_is_space_characters(char c) {
   for (int i = 0; i < sizeof(space_characters) / sizeof(char); i++) {
     if (c == space_characters[i]) return 1;
   }
@@ -84,10 +84,10 @@ int str_is_space_charaters(char c) {
 int str_strip(char *str, unsigned int size) {
   int startIdx = -1, endIdx = -2;
   for (int i = 0; i < size; i++) {
-    if (startIdx == -1 && !str_is_space_charaters(str[i])) {
+    if (startIdx == -1 && !str_is_space_characters(str[i])) {
       startIdx = i;
       endIdx = i;
-    } else if (startIdx != -1 && !str_is_space_charaters(str[i])) {
+    } else if (startIdx != -1 && !str_is_space_characters(str[i])) {
       endIdx = i;
     }
   }
@@ -120,14 +120,14 @@ int compress_mutiple_space_chars_into_one_space(char *str, unsigned int size) {
   int i = 0, j = 0;
   int new_size = 0;
   while (i < size) {
-    if (!str_is_space_charaters(str[i])) {
+    if (!str_is_space_characters(str[i])) {
       str[j++] = str[i++];
       new_size++;
       continue;
     }
 
     // keep skipping char is space character
-    while (i + 1 < size && str_is_space_charaters(str[i + 1])) {
+    while (i + 1 < size && str_is_space_characters(str[i + 1])) {
       i++;
     }
 
@@ -167,7 +167,7 @@ int str_is_blank(char *str, unsigned int size) {
 
 // fetch last token from str to buffer
 // str must be called with str_beautify() first
-// must make sure the buffer size is enought for storing token
+// must make sure the buffer size is enough for storing token
 // example: "fsdf my_token"
 // return: "my_token"
 int str_last_token(char *str, char *buffer, int str_size) {
@@ -175,7 +175,7 @@ int str_last_token(char *str, char *buffer, int str_size) {
 
   int i = str_size - 1;
   int start_idx = -1;
-  while (i >= 0 && !str_is_space_charaters(str[i])) {
+  while (i >= 0 && !str_is_space_characters(str[i])) {
     start_idx = i;
     i--;
   }

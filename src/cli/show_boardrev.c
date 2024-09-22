@@ -7,7 +7,7 @@ void show_boardrev(unsigned int revision) {
     unsigned int revision_bits = revision & 0b111;
     unsigned int type_bits = (revision >> 4) & 0xFF;
     unsigned int processor_bits = (revision >> 12) & 0xF;
-    unsigned int manufracturer_bits = (revision >> 15) & 0xF;
+    unsigned int manufacturer_bits = (revision >> 15) & 0xF;
     unsigned int memory_size_bits = (revision >> 20) & 0b111;
     unsigned int style_flag_bit = (revision >> 23) & 1;
     unsigned int warranty_bit = (revision >> 25) & 1;
@@ -67,17 +67,17 @@ void show_boardrev(unsigned int revision) {
 
     print_color("Manufacturer", CMD_COLOR_BLU);
     print(": ");
-    if (manufracturer_bits == 0x0) {
+    if (manufacturer_bits == 0x0) {
         println("Sony UK");
-    } else if (manufracturer_bits == 0x1) {
+    } else if (manufacturer_bits == 0x1) {
         println("Egoman");
-    } else if (manufracturer_bits == 0x2) {
+    } else if (manufacturer_bits == 0x2) {
         println("Embest");
-    } else if (manufracturer_bits == 0x3) {
+    } else if (manufacturer_bits == 0x3) {
         println("Sony Japan");
-    } else if (manufracturer_bits == 0x4) {
+    } else if (manufacturer_bits == 0x4) {
         println("Embest");
-    } else if (manufracturer_bits == 0x5) {
+    } else if (manufacturer_bits == 0x5) {
         println("Stadium");
     }
     println("");
@@ -112,7 +112,7 @@ void show_boardrev(unsigned int revision) {
         println_color("not allowed", CMD_COLOR_CYN);
     }
 
-    print("Overvoltage capabilities ");
+    print("Over voltage capabilities ");
     if (overvoltage == 0x0) {
         println_color("allowed", CMD_COLOR_CYN);
     } else if (overvoltage == 0x1) {

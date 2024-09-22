@@ -54,12 +54,12 @@ Command all_commands[] = {
                   "+ MAC Address\n"
                   "+ Model\n"
                   "+ Processor\n"
-                  "+ Manufracturer\n"
+                  "+ Manufacturer\n"
                   "+ Memory Size\n"
                   "+ Revision Code Style\n"
                   "+ Warranty\n"
                   "+ OTP Information\n"
-                  "+ Overvoltage Information\n"
+                  "+ Over voltage Information\n"
                   "Example: showinfo\n"
                   "Command only available in CLI and Video Play modes",
      .fn = showinfo},

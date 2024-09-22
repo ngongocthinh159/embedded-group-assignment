@@ -1,7 +1,7 @@
 #pragma once
 
 #define __size 4
-#define GAME_FIELD_WIDHT 11
+#define GAME_FIELD_WIDTH 11
 #define GAME_FIELD_HEIGHT 21
 #define GAME_FIELD_FULL_HEIGHT 24
 #define VIRTUAL_GAME_FIELD_OFFSET 3
@@ -84,7 +84,7 @@ extern const unsigned int OFFSET_PHYSICAL_GAME_FIELD_X;
 extern const unsigned int OFFSET_PHYSICAL_GAME_FIELD_Y;
 extern const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_X;
 extern const unsigned int OFFSET_PHYSICAL_NEXT_FRAME_Y;
-extern Block static_game_field[GAME_FIELD_FULL_HEIGHT][GAME_FIELD_WIDHT];
+extern Block static_game_field[GAME_FIELD_FULL_HEIGHT][GAME_FIELD_WIDTH];
 extern volatile int random_counter;
 extern unsigned int scores;
 extern const int score_step;
@@ -111,7 +111,7 @@ int _handle_screen_game_play_internal();
 void _reset_timer_counters();
 
 // Game play utils
-void _game_progess_event();
+void _game_progress_event();
 void switch_to_game_play_screen();
 void _init_game();
 void _increase_current_piece();
