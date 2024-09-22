@@ -54,23 +54,7 @@ The development of this game demonstrates a range of system-level programming sk
 * The project features UART communication to interact with the system via a terminal emulator.
 * Baud rate and stop bit settings can be configured through CLI commands.
 
-### Project Structure
 
-```bash
-/src
-  ├── boot.S                   # Bootloader code
-  ├── kernel.c                 # Main kernel code
-  ├── game.c                   # Game logic and rendering
-  ├── uart.c                   # UART communication functions
-  ├── timer.c                  # Timer handling functions
-  ├── tty.c                    # CLI-related utilities (ANSI codes, cursor control)
-  ├── display.c                # Image, text, and video rendering
-  ├── video_player.c           # Video playback implementation
-  ├── game_screens.c           # Game screen rendering functions
-  ├── commands.c               # Command registration and execution
-  ├── fonts.c                  # Custom font glyph definitions
-  └── Makefile                 # Build and linking instructions
-```
 
 ### CLI Commands
 
