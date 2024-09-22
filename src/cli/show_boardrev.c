@@ -112,7 +112,7 @@ void show_boardrev(unsigned int revision) {
         println_color("not allowed", CMD_COLOR_CYN);
     }
 
-    print("Overvoltage capabilities ");
+    print("Over voltage capabilities ");
     if (overvoltage == 0x0) {
         println_color("allowed", CMD_COLOR_CYN);
     } else if (overvoltage == 0x1) {

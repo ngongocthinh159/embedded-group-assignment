@@ -73,7 +73,7 @@ Piece next_piece = {.shape = SHAPE_I,
                     .center_point = {.x = 1, .y = 0},
                     .angle = ANGLE_0};
 
-Block static_game_field[GAME_FIELD_FULL_HEIGHT][GAME_FIELD_WIDHT];
+Block static_game_field[GAME_FIELD_FULL_HEIGHT][GAME_FIELD_WIDTH];
 
 void handle_game_mode() {
   print_color("\n\nGame mode!\n", CMD_COLOR_YEL);
@@ -148,7 +148,7 @@ int _handle_screen_game_play_internal() {
 
 void _handle_events_call_every_50ms() {
   if (_is_hard_mode()) {
-    _game_progess_event();
+    _game_progress_event();
   }
 }
 
@@ -156,7 +156,7 @@ void _handle_events_call_every_100ms() {}
 
 void _handle_events_call_every_200ms() {
   if (_is_medium_mode()) {
-    _game_progess_event();
+    _game_progress_event();
   }
 }
 
@@ -164,11 +164,11 @@ void _handle_events_call_every_500ms() {}
 
 void _handle_events_call_every_1s() {
   if (_is_easy_mode()) {
-    _game_progess_event();
+    _game_progress_event();
   }
 }
 
-void _game_progess_event() {
+void _game_progress_event() {
   _clear_game_piece(&dynamic_piece);
   _increase_current_piece();
   _draw_game_piece(&dynamic_piece);
@@ -215,7 +215,7 @@ void _init_game() {
   // draw
   displayGamePlayScreen(current_difficulty == 0
                             ? "Mode: Easy"
-                            : (current_difficulty == 1 ? "Mode: Medidum" : "Mode: Hard"));
+                            : (current_difficulty == 1 ? "Mode: Medium" : "Mode: Hard"));
   _draw_next_frame_piece(&next_piece);
   _draw_game_scores(scores);
 }

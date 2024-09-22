@@ -100,7 +100,7 @@ void _uart_scanning_call_back() {
     }
 
     if (!command_is_handled) {
-      print_command_not_regconized_error();
+      print_command_not_recognized_error();
     }
 
     print_prefix();

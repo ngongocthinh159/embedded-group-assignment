@@ -34,7 +34,7 @@ int handle_flow_control_commands();
 int handle_global_commands();
 void handle_history();
 void print_prefix();
-void print_command_not_regconized_error();
+void print_command_not_recognized_error();
 void print_current_mode();
 void print_command_received();
 void switch_to_cli_mode();

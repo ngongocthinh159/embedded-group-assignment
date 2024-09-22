@@ -14,7 +14,7 @@
 #include "util/tty.h"
 
 int debug = 0;
-int is_print_statictics = 1;
+int is_print_statistics = 1;
 
 /* Buffers */
 Point points_buffer_angle_rotated[__size];
@@ -80,7 +80,7 @@ Point init_pos_shape_L[] = {
 Point init_center_shape_L = {.x = 1, .y = 1};
 
 /* Only for hard level */
-const int fronzen_level_threshold[] = {5, 10, 15, 20, 25, 30, 32, 34, 36, 38}; // if number of spawned pieces reach any of the threshold, the frozen level increase by 1
+const int frozen_level_threshold[] = {5, 10, 15, 20, 25, 30, 32, 34, 36, 38}; // if number of spawned pieces reach any of the threshold, the frozen level increase by 1
 
 void _increase_random_counter() {
   random_counter++;
@@ -235,7 +235,7 @@ void _adjust_center_point_if_overflow(Piece *piece, Point points[]) {
   }
 
   if (min_x < 0) x_adjust = (-min_x);
-  else if (max_x >= GAME_FIELD_WIDHT) x_adjust = -(max_x - GAME_FIELD_WIDHT + 1);
+  else if (max_x >= GAME_FIELD_WIDTH) x_adjust = -(max_x - GAME_FIELD_WIDTH + 1);
 
   int real_min_y = min_y - VIRTUAL_GAME_FIELD_OFFSET;
   int real_max_y = max_y - VIRTUAL_GAME_FIELD_OFFSET;
@@ -300,7 +300,7 @@ void _spawn_random_piece_to(Piece *piece) {
   int rand_angle = rand(1, 4);
   int rand_color = rand(1, 7);
   int rand_shape = rand(1, 7);
-  int rand_center_point_x = rand(0, GAME_FIELD_WIDHT - 1);
+  int rand_center_point_x = rand(0, GAME_FIELD_WIDTH - 1);
 
   if (rand_angle == 1) {
     piece->angle = ANGLE_0;
@@ -350,7 +350,7 @@ void _spawn_random_piece_to(Piece *piece) {
   _copy_piece_rotated_points_to_buffer(piece, points_buffer_angle_rotated);
   _adjust_center_point_if_overflow(piece, points_buffer_angle_rotated);
 
-  if (is_print_statictics) {
+  if (is_print_statistics) {
     println("");
     println("");
     println("New piece spawned:");
@@ -515,7 +515,7 @@ void _clear_game_scores(unsigned int score) {
 
 void _init_static_game_field() {
   for (int i = 0; i < GAME_FIELD_FULL_HEIGHT; i++) {
-    for (int j = 0; j < GAME_FIELD_WIDHT; j++) {
+    for (int j = 0; j < GAME_FIELD_WIDTH; j++) {
       static_game_field[i][j].color = CLEAR;
     }
   }
@@ -567,7 +567,7 @@ void _adjust_complete_rows_and_frozen_rows() {
   int number_of_rows_cleared_this_time = 0;
   for (int y = 0; y < GAME_FIELD_FULL_HEIGHT; y++) {
     int is_row_complete = 1;
-    for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+    for (int x = 0; x < GAME_FIELD_WIDTH; x++) {
       if (static_game_field[y][x].color == CLEAR || static_game_field[y][x].color == BRICK) {
         is_row_complete = 0;
         break;
@@ -597,19 +597,19 @@ void _adjust_complete_rows_and_frozen_rows() {
   if (number_of_rows_cleared_this_time) {
     int score_change = _calculate_score_change(number_of_rows_cleared_this_time);
     _make_score_change(score_change);
-    if (is_print_statictics) {
+    if (is_print_statistics) {
       _print_score_change(score_change, number_of_rows_cleared_this_time);
     }
   }
 
   // frozen blocks
   if (_is_hard_mode()) {
-    if (_should_increase_fronzen_level()) {
+    if (_should_increase_frozen_level()) {
       if (!isClearStaticField) {
         _clear_static_field();
         isClearStaticField = 1;
       }
-      _handle_fronzen_blocks();
+      _handle_frozen_blocks();
     }
   }
 
@@ -620,18 +620,18 @@ void _adjust_complete_rows_and_frozen_rows() {
 
 void _adjust_static_field_on_complete_row(int complete_row_idx) {
   for (int y = complete_row_idx; y >= 1; y--) {
-    for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+    for (int x = 0; x < GAME_FIELD_WIDTH; x++) {
       static_game_field[y][x].color = static_game_field[y - 1][x].color;
     }
   }
-  for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+  for (int x = 0; x < GAME_FIELD_WIDTH; x++) {
     static_game_field[0][x].color = CLEAR;
   }
 }
 
 void _clear_static_field() {
   for (int y = 0; y < GAME_FIELD_FULL_HEIGHT; y++) {
-    for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+    for (int x = 0; x < GAME_FIELD_WIDTH; x++) {
       if (static_game_field[y][x].color != CLEAR) {
         _draw_game_point(x, y, CLEAR);
       }
@@ -641,7 +641,7 @@ void _clear_static_field() {
  
 void _draw_static_field() {
   for (int y = 0; y < GAME_FIELD_FULL_HEIGHT; y++) {
-    for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+    for (int x = 0; x < GAME_FIELD_WIDTH; x++) {
       if (static_game_field[y][x].color != CLEAR) {
         _draw_game_point(x, y, static_game_field[y][x].color);
       }
@@ -672,9 +672,9 @@ int _calculate_score_change(int number_of_row_cleared_at_once) {
 
 // check last settle down piece is overflowing top
 int _is_game_over(Piece *piece) {
-  for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+  for (int x = 0; x < GAME_FIELD_WIDTH; x++) {
     if (_is_occupied_by_static_field(x, VIRTUAL_GAME_FIELD_OFFSET - 1)) {
-      if (is_print_statictics) {
+      if (is_print_statistics) {
         _print_game_over_statistic();
       }
       return 1;
@@ -683,30 +683,30 @@ int _is_game_over(Piece *piece) {
   return 0;
 }
 
-void _handle_fronzen_blocks() {
+void _handle_frozen_blocks() {
   for (int y = 1; y <= GAME_FIELD_FULL_HEIGHT - frozen_level - 1; y++) {
-    for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+    for (int x = 0; x < GAME_FIELD_WIDTH; x++) {
       static_game_field[y - 1][x].color = static_game_field[y][x].color;
     }
   }
 
   // turn to brick
-  for (int x = 0; x < GAME_FIELD_WIDHT; x++) {
+  for (int x = 0; x < GAME_FIELD_WIDTH; x++) {
     static_game_field[GAME_FIELD_FULL_HEIGHT - frozen_level - 1][x].color = BRICK;
   }
 
   frozen_level++;
 
-  if (is_print_statictics) {
+  if (is_print_statistics) {
     println("");
     print_color("Game difficulty adjust: increasing frozen level", CMD_COLOR_YEL);
     println("");
   }
 }
 
-int _should_increase_fronzen_level() {
-  for (int i = 0; i < sizeof(fronzen_level_threshold)/sizeof(int); i++) {
-    if (spawned_pieces == fronzen_level_threshold[i]) return 1;
+int _should_increase_frozen_level() {
+  for (int i = 0; i < sizeof(frozen_level_threshold)/sizeof(int); i++) {
+    if (spawned_pieces == frozen_level_threshold[i]) return 1;
   }
   return 0;
 }
