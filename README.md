@@ -19,7 +19,7 @@ nix develop
 
 For others, install the according aarch64 toolchain
 
-### Project Overview
+# Project Overview
 
 This project implements a version of the classic Tetris game on a bare-metal operating system (OS) running on a Raspberry Pi. It is part of the EEET2490 Embedded Systems: OS and Interfacing course. The project focuses on various embedded systems concepts, including low-level hardware interfacing, timer handling, UART communication, and graphical rendering without relying on external libraries.
 
