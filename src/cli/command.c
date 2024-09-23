@@ -4,6 +4,7 @@
 #include "lib/framebf.h"
 #include "util/tty.h"
 
+// This list has been sorted based on "name" attribute
 Command all_commands[] = {
     {.name = CMD_BAUDRATE_PREFIX,
      .length = 8,
@@ -116,8 +117,8 @@ Command all_commands[] = {
      .help = "Change board stopbit (available in: CLI mode)",
      .full_help = "Change board number of stop bits including RPI3 and RPI4, "
                   "available number of stop bits configuration:\n"
-                  "+ For RPI3: 1 stop bit only\n"
-                  "+ For RPI4: 1 or 2 stop bits\n"
+                  "+ For UART1: 1 stop bit only\n"
+                  "+ For UART0: 1 or 2 stop bits\n"
                   "Example: stopbit 2\n"
                   "Command only available in CLI mode",
      .fn = _handle_stopbit_config},
