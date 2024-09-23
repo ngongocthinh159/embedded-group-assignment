@@ -54,8 +54,6 @@ The development of this game demonstrates a range of system-level programming sk
 * The project features UART communication to interact with the system via a terminal emulator.
 * Baud rate and stop bit settings can be configured through CLI commands.
 
-
-
 ### CLI Commands
 
 * **baudrate**: Change board baud rate (available in: CLI mode)
@@ -108,7 +106,6 @@ We would like to thank our lecturer, Dr. Linh Tran, for guiding us through the c
 ![Image 1](./previews/game-hard.png)
 ![Image 1](./previews/game-over.png)
 
-
 ## Project Demo
 
-TBU
+[Click here](https://youtu.be/froshQd_5R0)
